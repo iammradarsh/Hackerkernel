@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HackerKernel | Enterprise Software Development & Custom AI Solutions Agency</title>
+  <meta name="description" content="We build premium tech products for global brands and startups. Leverage top-tier developer talent, scalable staff augmentation, and cutting-edge artificial intelligence solutions.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%236366f1%22/><text y=%22.9em%22 font-size=%2280%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>HK</text></svg>">
+
+  <!-- Style Sheets -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Premium Radial Glow Overlays -->
+  <div class="bg-glow-wrapper">
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+    <div class="bg-glow-3"></div>
+  </div>
+
+  <!-- Header Section -->
+  <header class="header" id="header">
+    <div class="container header-container">
+      <a href="#" class="logo">
+        <div class="logo-icon">H</div>
+        Hacker<span>Kernel</span>
+      </a>
+      
+      <nav class="nav" id="nav-menu">
+        <a href="#services" class="nav-link active">Services</a>
+        <a href="#staff-aug" class="nav-link">Staff Augmentation</a>
+        <a href="#ai-solutions" class="nav-link">AI Solutions</a>
+        <a href="#portfolio" class="nav-link">Case Studies</a>
+        <a href="#process" class="nav-link">Process</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="#contact" class="btn btn-secondary" style="padding: 0.6rem 1.4rem; font-size: 0.85rem;">Let's Talk</a>
+      </div>
+
+      <button class="hamburger" id="hamburger-menu" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="badge-tag">
+          <span></span>#BuiltToPerform
+        </div>
+        <h1 class="hero-title">
+          Architecting <span class="gradient-text">Scalable Software</span> & Smart AI
+        </h1>
+        <p class="hero-description">
+          HackerKernel empowers global enterprises and fast-growing startups with top-tier developer talent, custom digital engineering, and custom Artificial Intelligence solutions.
+        </p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">
+            <span>Find Your Perfect Team</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="#portfolio" class="btn btn-secondary">Explore Our Work</a>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="hero-glow-card">
+          <div class="hero-glow-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>200+ Projects</h3>
+          <p>Delivered worldwide with exceptional engineering standards and state-of-the-art architectures.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge-tag"><span></span>What We Offer</div>
+        <h2>Our Core Capabilities</h2>
+        <p>Explore the world through the lens of our visual and technical expertise and find what suits your business best.</p>
+      </div>
+
+      <div class="services-grid">
+        <!-- Service 1 -->
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </div>
+          <h3>Web Development</h3>
+          <p>Highly scalable, fast-loading, and responsive enterprise web portals and cloud application suites designed for modern businesses.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </a>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          </div>
+          <h3>Mobile App Development</h3>
+          <p>Robust native iOS, Android, and hybrid cross-platform mobile apps built to engage users and scale dynamically as userbases grow.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </a>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor"></path><path d="M12 8V16M8 12H16" stroke="currentColor"></path></svg>
+          </div>
+          <h3>UI/UX Designing</h3>
+          <p>Exceptional and intuitive user experiences engineered through meticulous user research, smooth prototyping, and high-end animations.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Staff Augmentation Section -->
+  <section class="staff-aug" id="staff-aug">
+    <div class="container staff-grid">
+      <div class="staff-content">
+        <div class="badge-tag"><span></span>Why Staff Augmentation</div>
+        <h2>Scale Instantly With Specialized Developers</h2>
+        <p class="hero-description" style="margin-bottom: 2.5rem;">
+          We empower industries by combining the right talent, cutting-edge solutions, and seamless integration practices to meet evolving corporate business needs.
+        </p>
+
+        <div class="staff-features">
+          <!-- Feature 1 -->
+          <div class="staff-feature-card">
+            <h4>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+              Rapid Onboarding
+            </h4>
+            <p>Get fully-aligned technical resources integrated into your team in days, not weeks.</p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="staff-feature-card">
+            <h4>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              Dedicated Teams
+            </h4>
+            <p>100% focused full-time developers aligned completely with your objectives.</p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="staff-feature-card">
+            <h4>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              Scalable Teams
+            </h4>
+            <p>Scale technical resources up or down dynamically depending on project milestones.</p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="staff-feature-card">
+            <h4>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              Full Control
+            </h4>
+            <p>You manage the scope and direction, while we handle HR, support, and infrastructure.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="staff-visual">
+        <div class="staff-visual-wrapper">
+          <div class="staff-visual-globe">
+            <div class="staff-visual-globe-pulse"></div>
+            <div class="staff-visual-globe-pulse"></div>
+            <div class="staff-visual-globe-pulse"></div>
+            <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="rgba(6, 182, 212, 0.4)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+          </div>
+          <h3>Global Operations</h3>
+          <p>Access exceptional engineers based in India working with companies worldwide.</p>
+          <a href="#contact" class="btn btn-primary" style="width: 100%;">
+            <span>Find Developers Now</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Solutions Showcase -->
+  <section class="ai-solutions" id="ai-solutions">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge-tag"><span></span>Artificial Intelligence</div>
+        <h2>Enterprise AI Solutions</h2>
+        <p>We leverage cutting-edge Artificial Intelligence models to automate business processes, gain deep insights, and build high-performance tools.</p>
+      </div>
+
+      <div class="ai-solutions-wrapper">
+        <div class="ai-solutions-grid">
+          <!-- Vertical Tabs Button List -->
+          <div class="ai-tabs-list">
+            <button class="ai-tab-btn active" data-tab="cust-service">
+              <span>Customer Service AI</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="ai-tab-btn" data-tab="procurement">
+              <span>Procurement & Contracts</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="ai-tab-btn" data-tab="hr">
+              <span>HR & Recruitment</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="ai-tab-btn" data-tab="sales">
+              <span>Sales & Marketing Automation</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="ai-tab-btn" data-tab="finance">
+              <span>Finance Operations</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <button class="ai-tab-btn" data-tab="it-ops">
+              <span>IT & Infrastructure Ops</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+          <!-- Dynamic Panels Content -->
+          <div class="ai-panels-container">
+            <!-- Panel 1: Customer Service -->
+            <div class="ai-content-panel active" id="cust-service">
+              <div class="ai-panel-header">
+                <div class="ai-panel-num">01</div>
+                <h3>AI for Customer Service</h3>
+              </div>
+              <p class="description">
+                AI agents that instantly resolve Tier 1 queries, summarize complex tickets, and intelligently prioritize escalations. Give your clients rapid support while scaling operational costs down.
+              </p>
+              <div class="ai-capabilities-grid">
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Conversational Agents</h4>
+                    <p>Highly human-like support agents trained directly on your business knowledge base.</p>
+                  </div>
+                </div>
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Smart Escalations</h4>
+                    <p>Identify sentiment patterns and route complex requests to human agents with summarized history.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 2: Procurement -->
+            <div class="ai-content-panel" id="procurement">
+              <div class="ai-panel-header">
+                <div class="ai-panel-num">02</div>
+                <h3>AI for Procurement</h3>
+              </div>
+              <p class="description">
+                Automate vendor risk assessments, extract critical terms from complex supplier contracts, and forecast supply chain disruptions using historical data trends.
+              </p>
+              <div class="ai-capabilities-grid">
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Contract Extraction</h4>
+                    <p>Extract risk terms, liabilities, and custom compliance requirements automatically from PDFs.</p>
+                  </div>
+                </div>
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Disruption Forecasting</h4>
+                    <p>Analyze weather, shipping times, and supplier histories to predict delays before they affect you.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 3: HR -->
+            <div class="ai-content-panel" id="hr">
+              <div class="ai-panel-header">
+                <div class="ai-panel-num">03</div>
+                <h3>AI for HR</h3>
+              </div>
+              <p class="description">
+                Streamline candidate screening, generate personalized employee onboarding schedules, and answer employee policy questions instantly through a custom conversational portal.
+              </p>
+              <div class="ai-capabilities-grid">
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Screening Automation</h4>
+                    <p>Match complex resume profiles with strict requirements without human bias.</p>
+                  </div>
+                </div>
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Interactive Policy Q&A</h4>
+                    <p>Employees query insurance, leaves, and handbook questions directly with immediate responses.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 4: Sales -->
+            <div class="ai-content-panel" id="sales">
+              <div class="ai-panel-header">
+                <div class="ai-panel-num">04</div>
+                <h3>AI for Sales & Marketing</h3>
+              </div>
+              <p class="description">
+                Tailor lead scoring models, automate intelligent follow-up email sequences, and generate hyper-personalized sales outreach pitches based on prospect social profiles.
+              </p>
+              <div class="ai-capabilities-grid">
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Predictive Scoring</h4>
+                    <p>Identify warm opportunities and rank leads automatically by intent triggers and activity.</p>
+                  </div>
+                </div>
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Hyper-Personalized Outreach</h4>
+                    <p>Generate highly engaging custom messaging sequences at scale based on company research.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 5: Finance -->
+            <div class="ai-content-panel" id="finance">
+              <div class="ai-panel-header">
+                <div class="ai-panel-num">05</div>
+                <h3>AI for Finance</h3>
+              </div>
+              <p class="description">
+                Detect anomalies in expense reports automatically, categorize raw transactions with high accuracy, and generate preliminary narrative insights for quarterly reports.
+              </p>
+              <div class="ai-capabilities-grid">
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Anomaly Auditing</h4>
+                    <p>Identify unusual payment spikes, duplicate invoices, and outlier charges in milliseconds.</p>
+                  </div>
+                </div>
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Insight Generation</h4>
+                    <p>Turn numbers and ledger logs into executive summaries and formatted tables instantly.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel 6: IT Ops -->
+            <div class="ai-content-panel" id="it-ops">
+              <div class="ai-panel-header">
+                <div class="ai-panel-num">06</div>
+                <h3>AI for IT Operations</h3>
+              </div>
+              <p class="description">
+                Predict server outages before they occur, automate routine infrastructure provisioning, and accelerate incident root-cause analysis through automated log parsing.
+              </p>
+              <div class="ai-capabilities-grid">
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Outage Prediction</h4>
+                    <p>Proactively monitor load limits and system performance markers to flag risk trends.</p>
+                  </div>
+                </div>
+                <div class="ai-capability-item">
+                  <div class="ai-cap-icon">&#10003;</div>
+                  <div>
+                    <h4>Root-Cause Extraction</h4>
+                    <p>Accelerate system resolution by locating logs and parsing traces instantly with LLMs.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Studies / Portfolio Section -->
+  <section class="portfolio" id="portfolio">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge-tag"><span></span>Our Work</div>
+        <h2>Selected Digital Innovations</h2>
+        <p>We design and build products that don't just look beautiful — they perform at maximum scale.</p>
+      </div>
+
+      <!-- Featured Project -->
+      <div class="portfolio-featured">
+        <div class="portfolio-featured-visual">
+          <div class="featured-visual-app">
+            <div class="app-header">
+              <span>Rise Pathway</span>
+              <span>10:42 AM</span>
+            </div>
+            <div class="app-mood-circle">
+              <div class="mood-smile">☻</div>
+              <h4>How are you today?</h4>
+              <p>Capture your current mental routine patterns.</p>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-featured-content">
+          <div class="badge-tag" style="margin-bottom: 1rem; width: fit-content; background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.2); color: var(--accent-violet);">Featured Product</div>
+          <h3>Rise Pathway</h3>
+          <h4>Mood Analyzer Mobile Application</h4>
+          <p>
+            A mood-driven platform that captures daily emotions, analyzes behavioral patterns over time, and provides personalized suggestions, challenges, and insights to help users build a healthier mental routine.
+          </p>
+          <a href="#contact" class="btn btn-primary" style="width: fit-content;">View Case Study</a>
+        </div>
+      </div>
+
+      <!-- Secondary Projects Grid -->
+      <div class="portfolio-grid">
+        <!-- Project 1 -->
+        <div class="portfolio-card">
+          <div class="portfolio-card-visual">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          </div>
+          <div class="portfolio-card-body">
+            <div class="category">Web Platform</div>
+            <h4>Vortx Analytics Dashboard</h4>
+            <p>Modern analytical hub presenting real-time logistics mapping, system diagnostics, and financial reports.</p>
+            <a href="#contact" class="service-link">
+              <span>View Case Study</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="portfolio-card">
+          <div class="portfolio-card-visual">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="portfolio-card-body">
+            <div class="category">Mobile Application</div>
+            <h4>FitSphere Tracker</h4>
+            <p>Smart fitness mobile application connecting wearables, mapping exercises, and social trackers.</p>
+            <a href="#contact" class="service-link">
+              <span>View Case Study</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="portfolio-card">
+          <div class="portfolio-card-visual">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+          </div>
+          <div class="portfolio-card-body">
+            <div class="category">Cloud Automation</div>
+            <h4>SkyScale DevOps Pipeline</h4>
+            <p>Automated provisioning platform coordinating zero-downtime scaling operations on multi-cloud environments.</p>
+            <a href="#contact" class="service-link">
+              <span>View Case Study</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Industries We Serve Section -->
+  <section class="industries" id="industries">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge-tag"><span></span>Serves Worldwide</div>
+        <h2>Industries We Empower</h2>
+        <p>We engineer solutions that solve real-world problems and scale beautifully across multiple industry verticals.</p>
+      </div>
+
+      <div class="industries-grid">
+        <!-- Industry 1 -->
+        <div class="industry-card">
+          <div class="industry-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <h4>FinTech</h4>
+          <p>Compliance-ready transaction platforms, banking gateways, and analytical portals.</p>
+        </div>
+
+        <!-- Industry 2 -->
+        <div class="industry-card">
+          <div class="industry-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          </div>
+          <h4>HealthTech</h4>
+          <p>Intuitive EHR portals, telemedicine software, and secure clinical trackers.</p>
+        </div>
+
+        <!-- Industry 3 -->
+        <div class="industry-card">
+          <div class="industry-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          </div>
+          <h4>E-Commerce</h4>
+          <p>Global storefront networks, AI recommendations, and inventory automations.</p>
+        </div>
+
+        <!-- Industry 4 -->
+        <div class="industry-card">
+          <div class="industry-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h4>FoodTech</h4>
+          <p>Order systems, fleet trackers, and vendor panel dashboards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header" style="text-align: center; margin: 0 auto 4rem auto;">
+        <div class="badge-tag"><span></span>Testimonials</div>
+        <h2>What Our Clients Say</h2>
+        <p>Real reviews from businesses who partnered with HackerKernel to scale their technical systems.</p>
+      </div>
+
+      <div class="testimonials-slider-container">
+        <div class="testimonial-track" id="testimonial-track">
+          <!-- Slide 1 -->
+          <div class="testimonial-slide">
+            <div class="testimonial-card">
+              <p class="testimonial-quote">
+                "HackerKernel has been an absolute game-changer for our engineering pipeline. We were able to onboard three specialized full-stack engineers in under four days. Their code quality is superb and team alignment was seamless."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">AM</div>
+                <div class="author-info">
+                  <h4>Adarsh Mishra</h4>
+                  <p>Chief Product Officer, Rise Pathway</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="testimonial-slide">
+            <div class="testimonial-card">
+              <p class="testimonial-quote">
+                "Developing our custom AI analytics models with HackerKernel exceeded our goals. Their understanding of LLM fine-tuning, vector pipelines, and prompt structures allowed us to launch weeks ahead of our baseline schedule."
+              </p>
+              <div class="testimonial-author">
+                <div class="author-avatar">SC</div>
+                <div class="author-info">
+                  <h4>Sarah Connor</h4>
+                  <p>VP of Tech Operations, Vortx Analytics</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slider Controls -->
+        <div class="slider-controls">
+          <button class="slider-arrow" id="slide-prev" aria-label="Previous Slide">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <div class="slider-dots" id="slider-dots"></div>
+          <button class="slider-arrow" id="slide-next" aria-label="Next Slide">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process Timeline Section -->
+  <section class="process" id="process">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge-tag"><span></span>Our Flow</div>
+        <h2>Engineering Process</h2>
+        <p>How we shape raw startup ideas, model architectures, design, and deploy flawless digital products.</p>
+      </div>
+
+      <div class="process-timeline" id="timeline">
+        <!-- Step 1 -->
+        <div class="process-step active">
+          <div class="process-indicator"></div>
+          <div class="process-card">
+            <div class="process-num">01.</div>
+            <h3>Requirement Gathering</h3>
+            <p>Meticulously capturing business concepts, product objectives, operational requirements, and your long-term roadmap goals.</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="process-step">
+          <div class="process-indicator"></div>
+          <div class="process-card">
+            <div class="process-num">02.</div>
+            <h3>Analysis & Idea Molding</h3>
+            <p>Translating captured data into architectural guides, selecting language frameworks, and setting project milestones.</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="process-step">
+          <div class="process-indicator"></div>
+          <div class="process-card">
+            <div class="process-num">03.</div>
+            <h3>UI/UX Designing</h3>
+            <p>Designing interactive, gorgeous, and premium layout wireframes that represent your brand aesthetics and delight users.</p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="process-step">
+          <div class="process-indicator"></div>
+          <div class="process-card">
+            <div class="process-num">04.</div>
+            <h3>Product Development</h3>
+            <p>Writing clean, production-grade, and compile-ready code inside structured cloud repositories under continuous pipelines.</p>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="process-step">
+          <div class="process-indicator"></div>
+          <div class="process-card">
+            <div class="process-num">05.</div>
+            <h3>Quality Analysis</h3>
+            <p>Conducting extensive automated unit testing, manual browser checks, and security audits to ensure perfect operation.</p>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="process-step">
+          <div class="process-indicator"></div>
+          <div class="process-card">
+            <div class="process-num">06.</div>
+            <h3>Final Deployment</h3>
+            <p>Deploying products to hosting systems and production pipelines, giving your business immediate market presence.</p>
+          </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="process-step">
+          <div class="process-indicator"></div>
+          <div class="process-card">
+            <div class="process-num">07.</div>
+            <h3>Client Support</h3>
+            <p>Long-term maintenance support, performance updates, framework migrations, and continued feature expansions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section -->
+  <section class="about" id="about">
+    <div class="container about-grid">
+      <div class="about-stats">
+        <div class="about-stat-item">
+          <div class="stat-number gradient-accent-text">6+</div>
+          <div class="stat-label">Years of Excellence</div>
+        </div>
+        <div class="about-stat-item">
+          <div class="stat-number gradient-accent-text">200+</div>
+          <div class="stat-label">Projects Completed</div>
+        </div>
+        <div class="about-stat-item">
+          <div class="stat-number gradient-accent-text">150+</div>
+          <div class="stat-label">Clients Satisfied</div>
+        </div>
+        <div class="about-stat-item">
+          <div class="stat-number gradient-accent-text">98%</div>
+          <div class="stat-label">Client Retention</div>
+        </div>
+      </div>
+
+      <div class="about-content">
+        <div class="badge-tag"><span></span>About Us</div>
+        <h2>Based in India, Serving Global Markets</h2>
+        <p class="hero-description" style="margin-bottom: 2rem;">
+          We build superior digital products and AI pipelines that render effective, long-term solutions for established firms and high-growth startups alike.
+        </p>
+        
+        <p style="margin-bottom: 2.5rem; line-height: 1.8;">
+          Founded on the dream to accelerate technical success rates, our Bhopal-based team combines technical fluency in modern frameworks with agile delivery structures. We collaborate with clients on robust engagements designed for total alignment.
+        </p>
+
+        <div class="tech-stack-wrapper">
+          <h4 class="tech-stack-title">Our Technical Stack</h4>
+          <div class="tech-badges-grid">
+            <span class="tech-badge">Node.js</span>
+            <span class="tech-badge">React</span>
+            <span class="tech-badge">Python</span>
+            <span class="tech-badge">Angular</span>
+            <span class="tech-badge">Flutter</span>
+            <span class="tech-badge">Swift</span>
+            <span class="tech-badge">Kotlin</span>
+            <span class="tech-badge">Laravel</span>
+            <span class="tech-badge">PostgreSQL</span>
+            <span class="tech-badge">MongoDB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section class="contact" id="contact">
+    <div class="container contact-grid">
+      <div class="contact-form-wrapper">
+        <!-- Interactive Success Overlay -->
+        <div class="form-success-overlay" id="form-success">
+          <div class="success-icon">&#10004;</div>
+          <h3>Message Sent!</h3>
+          <p>Thank you for reaching out. A HackerKernel solution specialist will contact you in under 12 hours.</p>
+          <button class="btn btn-secondary" style="margin-top: 2rem;" onclick="resetForm()">Send Another Message</button>
+        </div>
+
+        <div class="contact-form-title">
+          <h3>Have an Idea?</h3>
+          <p class="gradient-accent-text" style="font-weight: 700; font-size: 1.5rem; font-family: var(--font-display);">We'll Build It.</p>
+        </div>
+
+        <form id="project-form" novalidate>
+          <div class="form-row">
+            <div class="form-group" id="group-name">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" class="form-control" placeholder="Enter Name">
+              <div class="error-msg">Please enter your name.</div>
+            </div>
+            <div class="form-group" id="group-email">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" class="form-control" placeholder="Enter Email">
+              <div class="error-msg">Please enter a valid email.</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" id="group-phone">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" class="form-control" placeholder="Enter Phone Number">
+              <div class="error-msg">Please enter a valid phone number.</div>
+            </div>
+            <div class="form-group" id="group-message">
+              <label for="message">Message</label>
+              <textarea id="message" class="form-control" placeholder="Tell us briefly about your project"></textarea>
+              <div class="error-msg">Please enter a brief message.</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <span class="form-radio-label">How Did You Hear About Us?</span>
+            <div class="radio-group">
+              <label class="radio-btn-card">
+                <input type="radio" name="source" value="Google" checked>
+                <span class="radio-btn-card-content">Google</span>
+              </label>
+              <label class="radio-btn-card">
+                <input type="radio" name="source" value="LinkedIn">
+                <span class="radio-btn-card-content">LinkedIn</span>
+              </label>
+              <label class="radio-btn-card">
+                <input type="radio" name="source" value="Friend">
+                <span class="radio-btn-card-content">Referral</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <span>Submit Inquiry</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="contact-info-column">
+        <div class="contact-info-details">
+          <!-- Info Item 1 -->
+          <div class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div class="contact-info-text">
+              <h4>Email Inquiries</h4>
+              <p>sales@hackerkernel.com</p>
+            </div>
+          </div>
+
+          <!-- Info Item 2 -->
+          <div class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div class="contact-info-text">
+              <h4>Headquarters</h4>
+              <p>Bhopal, Madhya Pradesh, India</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D float visual alternative with CSS animations -->
+        <div class="contact-info-rocket">
+          <div class="rocket-glow"></div>
+          <div class="rocket-svg-wrapper">
+            <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5h6c0-2.31-1-4.24-2.5-5.5z"></path><path d="M12 2C6.48 2 2 6.48 2 12c0 2.21.72 4.25 1.93 5.92l4.82-4.82C8.28 12.3 8 11.18 8 10c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.18-.28 2.3-.75 3.1l4.82 4.82C21.28 16.25 22 14.21 22 12c0-5.52-4.48-10-10-10z"></path><path d="M19.5 16.5c1.5 1.26 2.5 3.19 2.5 5.5h-6c0-2.31 1-4.24 2.5-5.5z"></path></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo" style="font-size: 1.6rem;">
+          <div class="logo-icon">H</div>
+          Hacker<span>Kernel</span>
+        </a>
+        <p>Building high-performance software architectures and enterprise AI pipelines worldwide.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-icon" aria-label="LinkedIn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+          <a href="#" class="social-icon" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Services</h4>
+        <div class="footer-links">
+          <a href="#services" class="footer-link">Web Development</a>
+          <a href="#services" class="footer-link">Mobile Apps</a>
+          <a href="#services" class="footer-link">UI/UX Design</a>
+          <a href="#services" class="footer-link">DevOps Systems</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Solutions</h4>
+        <div class="footer-links">
+          <a href="#ai-solutions" class="footer-link">Enterprise AI Solutions</a>
+          <a href="#staff-aug" class="footer-link">Staff Augmentation</a>
+          <a href="#process" class="footer-link">Engagement Flow</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Company</h4>
+        <div class="footer-links">
+          <a href="#about" class="footer-link">About Our Team</a>
+          <a href="#portfolio" class="footer-link">Selected Work</a>
+          <a href="#contact" class="footer-link">Submit Inquiry</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 HackerKernel. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#contact">Privacy Policy</a>
+        <a href="#contact">Terms of Engagement</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script File -->
+  <script src="Script.js"></script>
+</body>
+</html>

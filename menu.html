@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu | HackerKernel</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/hk-logo.png">
+
+  <!-- Style Sheets -->
+  <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+
+  <div class="hk-menu" id="hk-menu">
+
+    <!-- Left Panel -->
+    <div class="hk-menu__left">
+      <img class="hk-menu__bg" src="assets/menu-bg.png" alt="" aria-hidden="true">
+
+      <nav class="hk-menu__links" aria-label="Main menu">
+        <div class="hk-primary-nav">
+          <a href="#home">Home</a>
+          <a href="#services">Services</a>
+          <a href="#portfolio">Portfolio</a>
+          <a href="#industries">Industries</a>
+          <a href="#about">About Us</a>
+        </div>
+
+        <div class="hk-secondary-nav">
+          <div class="hk-secondary-nav__col">
+            <a href="https://hackerkernel.com/food-delivery-app-development-company" target="_blank" rel="noopener">Foodtech</a>
+            <a href="#traveltech">Traveltech</a>
+            <a href="#fintech">Fintech</a>
+            <a href="#realestate">RealEstate</a>
+            <a href="#education">Education</a>
+            <a href="#healthcare">Healthcare</a>
+            <a href="#ecommerce">E-Commerce</a>
+            <a href="#media-social">Media &amp; Social</a>
+          </div>
+
+          <div class="hk-secondary-nav__col hk-secondary-nav__col--pages">
+            <a href="#home">Home</a>
+            <a href="#services">Services</a>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#industries">Industries</a>
+            <a href="#about">About Us</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="hk-socials">
+        <a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a>
+        <a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://twitter.com/hackerkernel" target="_blank" rel="noopener">Twitter</a>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="hk-menu__right">
+      <div class="hk-cta">
+        <div class="hk-cta__copy">
+          <p class="hk-cta__eyebrow">Got An Idea?</p>
+          <h2 class="hk-cta__title">Let&rsquo;s Craft<br>Brilliance Together!</h2>
+        </div>
+
+        <button class="hk-btn" type="button">
+          <span class="hk-btn__label">Get In Touch</span>
+          <span class="hk-btn__circle">
+            <img class="hk-btn__icon" src="assets/arrow.svg" alt="" aria-hidden="true">
+          </span>
+        </button>
+      </div>
+
+      <div class="hk-locations">
+        <a href="#india">India</a>
+        <a href="#usa">USA</a>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <div class="hk-navbar">
+      <div class="hk-navbar__inner">
+        <a class="hk-logo" href="/">
+          <img class="hk-logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+          <span class="hk-logo__text"><span>Hacker</span><span>Kernel</span></span>
+        </a>
+
+        <button class="hk-menu-toggle" type="button" id="hk-menu-close" aria-label="Close menu">
+          <img src="assets/menu-icon.svg" alt="">
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    document.getElementById('hk-menu-close').addEventListener('click', function () {
+      window.history.length > 1 ? window.history.back() : (window.location.href = 'index.html');
+    });
+  </script>
+
+</body>
+</html>

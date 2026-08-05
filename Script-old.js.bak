@@ -1,0 +1,324 @@
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+  initStickyHeader();
+  initMobileMenu();
+  initScrollSpy();
+  initAiTabs();
+  initTestimonialSlider();
+  initProcessObserver();
+  initContactForm();
+});
+
+// --- STICKY HEADER ---
+function initStickyHeader() {
+  const header = document.getElementById('header');
+  
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  handleScroll(); // Trigger immediately in case page loads scrolled down
+}
+
+// --- MOBILE HAMBURGER MENU ---
+function initMobileMenu() {
+  const hamburger = document.getElementById('hamburger-menu');
+  const navMenu = document.getElementById('nav-menu');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const toggleMenu = () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+  };
+
+  hamburger.addEventListener('click', toggleMenu);
+
+  // Close menu when a link is clicked
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+    });
+  });
+}
+
+// --- ACTIVE NAVIGATION LINK ON SCROLL (SCROLL SPY) ---
+function initScrollSpy() {
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-30% 0px -60% 0px', // Trigger when section occupies the sweet spot of viewport
+    threshold: 0
+  };
+
+  const observerCallback = (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
+  sections.forEach(section => observer.observe(section));
+}
+
+// --- AI SOLUTIONS TABS ---
+function initAiTabs() {
+  const tabButtons = document.querySelectorAll('.ai-tab-btn');
+  const panels = document.querySelectorAll('.ai-content-panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.getAttribute('data-tab');
+
+      // Update active button state
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Update active panel state
+      panels.forEach(panel => {
+        if (panel.getAttribute('id') === tabId) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+    });
+  });
+}
+
+// --- TESTIMONIAL SLIDER ---
+function initTestimonialSlider() {
+  const track = document.getElementById('testimonial-track');
+  const slides = document.querySelectorAll('.testimonial-slide');
+  const prevBtn = document.getElementById('slide-prev');
+  const nextBtn = document.getElementById('slide-next');
+  const dotsContainer = document.getElementById('slider-dots');
+  
+  if (slides.length === 0) return;
+  
+  let currentIndex = 0;
+  const slideCount = slides.length;
+  let autoPlayInterval;
+
+  // Create indicator dots dynamically
+  for (let i = 0; i < slideCount; i++) {
+    const dot = document.createElement('div');
+    dot.classList.add('slider-dot');
+    if (i === 0) dot.classList.add('active');
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  const dots = document.querySelectorAll('.slider-dot');
+
+  const updateSliderState = () => {
+    // Translate the track container
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    
+    // Update dots active class
+    dots.forEach((dot, idx) => {
+      if (idx === currentIndex) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  };
+
+  const goToSlide = (index) => {
+    currentIndex = index;
+    updateSliderState();
+    resetAutoPlay();
+  };
+
+  const nextSlide = () => {
+    currentIndex = (currentIndex + 1) % slideCount;
+    updateSliderState();
+  };
+
+  const prevSlide = () => {
+    currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+    updateSliderState();
+  };
+
+  // Button Listeners
+  nextBtn.addEventListener('click', () => {
+    nextSlide();
+    resetAutoPlay();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    prevSlide();
+    resetAutoPlay();
+  });
+
+  // Autoplay Logic
+  const startAutoPlay = () => {
+    autoPlayInterval = setInterval(nextSlide, 6000); // Autoplay slide every 6s
+  };
+
+  const stopAutoPlay = () => {
+    clearInterval(autoPlayInterval);
+  };
+
+  const resetAutoPlay = () => {
+    stopAutoPlay();
+    startAutoPlay();
+  };
+
+  // Stop auto play on hover
+  track.addEventListener('mouseenter', stopAutoPlay);
+  track.addEventListener('mouseleave', startAutoPlay);
+
+  startAutoPlay();
+}
+
+// --- PROCESS TIMELINE SCROLL ACTIVE HIGH-LIGHTS ---
+function initProcessObserver() {
+  const steps = document.querySelectorAll('.process-step');
+  
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -40% 0px', // Trigger slightly before it hits mid viewport
+    threshold: 0.2
+  };
+
+  const observerCallback = (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
+  steps.forEach(step => observer.observe(step));
+}
+
+// --- CONTACT FORM REAL-TIME VALIDATION & ACTION CALLBACKS ---
+let projectForm;
+let successOverlay;
+
+function initContactForm() {
+  projectForm = document.getElementById('project-form');
+  successOverlay = document.getElementById('form-success');
+
+  if (!projectForm) return;
+
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const phoneInput = document.getElementById('phone');
+  const messageInput = document.getElementById('message');
+
+  // Input events for real-time validation triggers
+  const fields = [
+    { el: nameInput, validateFn: validateName, group: 'group-name' },
+    { el: emailInput, validateFn: validateEmail, group: 'group-email' },
+    { el: phoneInput, validateFn: validatePhone, group: 'group-phone' },
+    { el: messageInput, validateFn: validateMessage, group: 'group-message' }
+  ];
+
+  fields.forEach(field => {
+    field.el.addEventListener('blur', () => {
+      checkFieldState(field);
+    });
+
+    field.el.addEventListener('input', () => {
+      const parentGroup = document.getElementById(field.group);
+      if (parentGroup.classList.contains('has-error')) {
+        checkFieldState(field); // Re-validate actively if it currently has an error state
+      }
+    });
+  });
+
+  // Submit Listener
+  projectForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    let isAllValid = true;
+
+    // Check validation of all fields at once
+    fields.forEach(field => {
+      const isValid = checkFieldState(field);
+      if (!isValid) isAllValid = false;
+    });
+
+    if (isAllValid) {
+      // Simulate high-end network submission state
+      const submitBtn = projectForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Sending Request...</span>';
+      
+      setTimeout(() => {
+        // Successful simulation callback
+        successOverlay.classList.add('active');
+        projectForm.reset();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }, 1500); // 1.5s simulated loading delay
+    }
+  });
+}
+
+// Helper Validation Functions
+function checkFieldState(fieldObj) {
+  const isValid = fieldObj.validateFn(fieldObj.el.value);
+  const parentGroup = document.getElementById(fieldObj.group);
+  
+  if (isValid) {
+    parentGroup.classList.remove('has-error');
+  } else {
+    parentGroup.classList.add('has-error');
+  }
+  return isValid;
+}
+
+function validateName(val) {
+  return val.trim().length > 0;
+}
+
+function validateEmail(val) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(val.trim());
+}
+
+function validatePhone(val) {
+  const phoneTrim = val.trim();
+  // Ensure non-empty and has at least 8 numbers
+  const numberRegex = /^[+]?[0-9\s-]{8,15}$/;
+  return numberRegex.test(phoneTrim);
+}
+
+function validateMessage(val) {
+  return val.trim().length > 3; // Basic non-empty check
+}
+
+// Reset form to write another message
+window.resetForm = function() {
+  if (successOverlay) {
+    successOverlay.classList.remove('active');
+  }
+  
+  // Clear any existing error styles
+  const errorGroups = document.querySelectorAll('.form-group.has-error');
+  errorGroups.forEach(group => group.classList.remove('has-error'));
+};
