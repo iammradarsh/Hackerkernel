@@ -61,6 +61,9 @@
   --shell-inset: 18px;
   --shell-radius: 28px;
   --shell-bg: #f4f4f4;
+  /* content inset from the panel edge — the Figma sections all start at
+     left:102px, so the navbar grid has to use the same number */
+  --shell-gutter: 102px;
 }
 
 *,
@@ -114,21 +117,32 @@ p {
 
 /* ===========================================================
    Page shell — the whole design sits on one grey rounded panel
-   inset from a white page frame. The 18px inset is the same gutter
-   .wrap used to hold, so content keeps its Figma position.
+   floating in a white page frame.
+
+   The panel is full-bleed — an 18px frame at any viewport, never a wide
+   white margin. It is the design canvas, so everything inside measures
+   from its edges rather than from the viewport; .navbar__inner tracks it
+   through --shell-gutter so the logo keeps lining up with the section
+   headings as the panel grows.
+
+   overflow:hidden means sections crop against the white edge and follow
+   the rounded corners — nothing gets cut short of the frame. The fixed
+   navbar and .talk-tab escape it, since overflow does not clip fixed
+   descendants.
    =========================================================== */
 .page-shell {
   position: relative;
+  overflow: hidden;
   margin: var(--shell-inset);
   border-radius: var(--shell-radius);
   background: var(--shell-bg);
 }
 
+/* full-bleed inside the shell — no gutter of its own, so every section
+   runs the full width of the grey panel */
 .wrap {
   position: relative;
-  width: var(--wrap);
-  max-width: 100%;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .inner {
@@ -159,16 +173,17 @@ body:not(.cs-page) .wrap {
   padding-top: 67px;
 }
 
+/* inset off the panel, not centred on the viewport — the shell inset plus the
+   sections' 102px gutter. Resolves to the old 1040px grid at the 1280 design
+   width, and keeps the logo over the section headings as the panel widens. */
 .navbar__inner {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: var(--inner);
-  max-width: calc(100% - 36px);
   height: 100%;
-  margin: 0 auto;
+  margin: 0 calc(var(--shell-inset) + var(--shell-gutter));
 }
 
 /* ── Scrolled backdrop: white gradient + progressive blur ──
@@ -560,10 +575,11 @@ body:not(.cs-page) .wrap {
   width: 208px;
 }
 
-/* Hero media */
+/* Hero media — anchored to the right edge so it rides the panel instead of
+   stranding grey to its right. 21px = 1244 - 795 - 428, the Figma gap. */
 .hero__media {
   position: absolute;
-  left: 795px;
+  right: 21px;
   top: 75px;
   width: 428px;
   height: 388px;
@@ -704,11 +720,10 @@ body:not(.cs-page) .wrap {
    =========================================================== */
 .brands {
   position: absolute;
-  left: 13px;
+  left: 0;
+  right: 0;
   top: 511px;
   z-index: 5;
-  width: 1217px;
-  max-width: 100%;
   height: 108px;
   overflow: hidden;
 }
@@ -787,34 +802,34 @@ body:not(.cs-page) .wrap {
   top: 28.23px;
 }
 
+/* 127px = 1244 - 1051 - 66 (its measured width), so it holds its Figma spot
+   at 1280 and tracks the right edge past that */
 .services__index {
   position: absolute;
-  left: 1051px;
+  right: 127px;
   top: 233px;
 }
 
 .services__rule {
   position: absolute;
-  left: 50%;
+  left: var(--shell-gutter);
+  right: var(--shell-gutter);
   top: 309px;
-  width: var(--inner);
   height: 1px;
   background: #d9d9d9;
-  transform: translateX(-50%);
 }
 
 .services__slider {
   position: absolute;
-  left: 50%;
+  left: var(--shell-gutter);
+  right: var(--shell-gutter);
   top: 338px;
-  width: var(--inner);
   height: 352px;
-  transform: translateX(-50%);
 }
 
 .services__arrows {
   position: absolute;
-  left: 872px;
+  right: 0;
   top: 0;
   display: flex;
   align-items: center;
@@ -849,8 +864,8 @@ body:not(.cs-page) .wrap {
 .services__viewport {
   position: absolute;
   left: 0;
+  right: 0;
   top: 108px;
-  width: var(--inner);
   height: 244px;
   overflow: hidden;
 }
@@ -1018,12 +1033,12 @@ body:not(.cs-page) .wrap {
 
 .ai-sec__top {
   position: absolute;
-  left: 102px;
+  left: var(--shell-gutter);
+  right: 118px;
   top: 48px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  width: 1024px;
   height: 499px;
 }
 
@@ -1381,13 +1396,13 @@ body:not(.cs-page) .wrap {
 
 .case-sec__main {
   position: absolute;
-  left: 102px;
+  left: var(--shell-gutter);
+  right: var(--shell-gutter);
   top: 223px;
   display: flex;
   flex-direction: column;
   gap: 28px;
   align-items: center;
-  width: var(--inner);
   height: 734px;
 }
 
@@ -1538,9 +1553,10 @@ body:not(.cs-page) .wrap {
   width: 159px;
 }
 
+/* 92px = the 1040 - 948 inset the rule had in Figma, kept as the panel grows */
 .case-sec__rule {
   flex: 0 0 auto;
-  width: 948px;
+  width: calc(100% - 92px);
   height: 2px;
   background: #d9d9d9;
 }
@@ -1553,21 +1569,27 @@ body:not(.cs-page) .wrap {
   flex: 0 0 auto;
   width: 100%;
   height: 248px;
+  padding: 1.8vw;
 }
 
+/* the three cards share the row evenly instead of sitting as a fixed-width
+   cluster with dead space either side once the panel is wider than 1280 */
 .case-card {
   position: relative;
-  flex: 0 0 auto;
-  width: 312px;
+  flex: 1 1 0;
+  min-width: 0;
   height: 248px;
 }
 
+/* width:100%, not left+right — an absolutely positioned <img> with width:auto
+   falls back to its intrinsic width and ignores `right` */
 .case-card__img {
   position: absolute;
   left: 0;
   top: 0;
-  width: 312px;
+  width: 100%;
   height: 248px;
+  /* object-fit: cover; */
 }
 
 .case-card__badge {
@@ -1581,12 +1603,12 @@ body:not(.cs-page) .wrap {
 .case-card__body {
   position: absolute;
   left: 18px;
+  right: 42px;
   top: 18px;
   display: flex;
   flex-direction: column;
   gap: 18px;
   align-items: flex-start;
-  width: 252px;
 }
 
 .case-card__body > img {
@@ -1595,7 +1617,7 @@ body:not(.cs-page) .wrap {
 }
 
 .case-card__body p {
-  width: 252px;
+  width: 100%;
   font-size: 20px;
   font-weight: 500;
   line-height: 1.12;
@@ -1614,9 +1636,9 @@ body:not(.cs-page) .wrap {
 
 .ind-sec__grid {
   position: absolute;
-  left: 1px;
+  left: 0;
+  right: 0;
   top: 22px;
-  width: 1244px;
   height: 740px;
   overflow: hidden;
   pointer-events: none;
@@ -1633,9 +1655,9 @@ body:not(.cs-page) .wrap {
 
 .ind-sec__map {
   position: absolute;
-  left: -0.59px;
+  left: 0;
+  width: 100%;
   top: 188.72px;
-  width: 1244.591px;
   height: 632.462px;
   max-width: none;
   object-fit: cover;
@@ -1644,9 +1666,9 @@ body:not(.cs-page) .wrap {
 
 .ind-sec__head {
   position: absolute;
-  left: 102px;
+  left: var(--shell-gutter);
+  right: var(--shell-gutter);
   top: 28px;
-  width: var(--inner);
   height: 145px;
 }
 
@@ -1667,7 +1689,7 @@ body:not(.cs-page) .wrap {
 
 .ind-sec__arrows {
   position: absolute;
-  left: 872px;
+  right: 0;
   top: 63px;
   display: flex;
   gap: 8px;
@@ -1676,9 +1698,9 @@ body:not(.cs-page) .wrap {
 
 .ind-sec__viewport {
   position: absolute;
-  left: 102px;
+  left: var(--shell-gutter);
+  right: 26px;
   top: 281px;
-  width: 1116px;
   height: 371px;
   overflow: hidden;
 }
@@ -1799,8 +1821,8 @@ body:not(.cs-page) .wrap {
 .test-vids {
   position: absolute;
   left: 86px;
+  right: 86px;
   top: 240px;
-  width: 1072px;
   height: 366px;
   overflow: hidden;
 }
@@ -1958,10 +1980,10 @@ body:not(.cs-page) .wrap {
 .test-sec__arrows {
   position: absolute;
   left: 48px;
+  right: 48px;
   top: 403px;
   display: flex;
   justify-content: space-between;
-  width: 1148px;
   height: 80px;
 }
 
@@ -1981,9 +2003,9 @@ body:not(.cs-page) .wrap {
 /* ── Review card marquee ── */
 .reviews {
   position: absolute;
-  left: 2px;
+  left: 0;
+  right: 0;
   top: 701px;
-  width: 1242px;
   height: 369px;
   overflow: hidden;
 }
@@ -2094,8 +2116,8 @@ body:not(.cs-page) .wrap {
 .proc-sec__grid {
   position: absolute;
   left: 0;
+  right: 0;
   top: 125px;
-  width: 1244px;
   height: 740px;
   overflow: hidden;
   pointer-events: none;
@@ -2119,8 +2141,8 @@ body:not(.cs-page) .wrap {
 .proc-sec__stage {
   position: absolute;
   left: 0;
+  right: 0;
   top: 179px;
-  width: 1244px;
   height: 632px;
 }
 
@@ -2241,11 +2263,11 @@ body:not(.cs-page) .wrap {
 .footer__inner {
   position: absolute;
   left: 88.89px;
+  right: 52.888px;
   top: 60px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 1102.222px;
   height: 278px;
 }
 
@@ -2449,8 +2471,8 @@ body:not(.cs-page) .wrap {
 .cs-stats {
   position: absolute;
   left: 152px;
+  right: 188px;
   top: 505px;
-  width: 904px;
   height: 100px;
   border-radius: 12px;
   overflow: hidden;
@@ -2497,8 +2519,8 @@ body:not(.cs-page) .wrap {
 .cs-work__grid {
   position: absolute;
   left: 0;
+  right: 0;
   top: 64px;
-  width: 1244px;
   height: 740px;
   overflow: hidden;
   pointer-events: none;
@@ -2524,8 +2546,8 @@ body:not(.cs-page) .wrap {
 .cs-work__body {
   position: absolute;
   left: 67px;
+  right: 67px;
   top: 0;
-  width: 1110px;
   height: 1414px;
 }
 
@@ -2533,7 +2555,7 @@ body:not(.cs-page) .wrap {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  width: 1110px;
+  width: 100%;
   height: 132px;
 }
 
@@ -2609,11 +2631,18 @@ body:not(.cs-page) .wrap {
 .cs-grid {
   position: absolute;
   left: 0;
+  right: 0;
   top: 160px;
   display: flex;
   flex-wrap: wrap;
   gap: 48px;
-  width: 1110px;
+}
+
+/* two per row at any panel width, rather than reflowing to three on a wide
+   screen — 24px is half the 48px gap */
+.cs-grid > .cs-card {
+  flex: 1 1 calc(50% - 24px);
+  min-width: 0;
 }
 
 .cs-card {
@@ -2762,26 +2791,35 @@ body:not(.cs-page) .wrap {
               width 0.45s cubic-bezier(0.76, 0, 0.24, 1),
               left 0.45s cubic-bezier(0.76, 0, 0.24, 1),
               top 0.45s cubic-bezier(0.76, 0, 0.24, 1),
-              background-color 0.3s ease;
+              background-color 1s ease;
 }
 
 .burger span:nth-child(1) { top: 12.083px; }
 .burger span:nth-child(2) { top: 25.417px; }
 
-/* open state reproduces the 9 -> 30.125 cross drawn in the Figma icon */
+/* open state reproduces the 9 -> 30.125 cross drawn in the Figma icon.
+   The bar behind it is white while the menu is open, so the cross keeps the
+   brand red rather than flipping to white. */
 .is-menu-open .burger span {
   left: 5.063px;
   top: 18.75px;
   width: 29.875px;
-  background: #fff;
+  background: var(--primary-color);
 }
 
 .is-menu-open .burger span:nth-child(1) { transform: rotate(45deg); }
 .is-menu-open .burger span:nth-child(2) { transform: rotate(-45deg); }
 
-/* keep the navbar (logo + burger) above the panel while it is open */
+/* Keep the navbar (logo + burger) above the panel while it is open, on a
+   solid white bar. The progressive-blur veil is switched off here: it samples
+   whatever is behind it, so leaving it on smears the menu panel underneath. */
 .is-menu-open .navbar {
   z-index: 120;
+  /* background: #fff; */
+}
+
+.is-menu-open .navbar__veil {
+  opacity: 0;
 }
 
 /* ===========================================================
@@ -2960,4 +2998,2112 @@ body:not(.cs-page) .wrap {
 
 body.is-menu-open {
   overflow: hidden;
+}
+
+/* ===========================================================
+   Staff Augmentation — hero
+   =========================================================== */
+.sa-hero {
+  position: relative;
+  height: 632px;
+  background: #f4f4f4;
+  overflow: hidden;
+}
+
+.sa-hero__grid {
+  position: absolute;
+  left: -621px;
+  top: 0;
+  width: 1244px;
+  height: 877.272px;
+  pointer-events: none;
+}
+
+.sa-hero__grid img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.sa-hero__grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+              rgba(244, 244, 244, 0) 0%, rgba(244, 244, 244, 1) 100%);
+}
+
+/* white swoosh behind the badges */
+.sa-hero__blobs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sa-hero__blobs img {
+  position: absolute;
+  max-width: none;
+}
+
+.sa-hero__blobs .b-a {
+  top: 22.47%;
+  right: 21.53%;
+  bottom: 45.63%;
+  left: 61.17%;
+  width: auto;
+  height: auto;
+}
+
+.sa-hero__blobs .b-b {
+  top: 55.7%;
+  right: 15.1%;
+  bottom: 12.41%;
+  left: 67.6%;
+}
+
+.sa-hero__blobs .b-c {
+  top: 25.7%;
+  right: 9.57%;
+  bottom: 16.84%;
+  left: 60.72%;
+  transform: scaleX(-1);
+}
+
+.sa-hero__blobs img {
+  width: auto;
+  height: auto;
+}
+
+/* ── copy column ── */
+.sa-hero__copy {
+  position: absolute;
+  left: 127px;
+  top: calc(50% + 53px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+  width: 580px;
+  transform: translateY(-50%);
+}
+
+.sa-hero__titlebox {
+  position: relative;
+  width: 100%;
+  height: 154px;
+}
+
+.sa-hero__titleinner {
+  position: absolute;
+  left: 11px;
+  top: 4px;
+  width: 540px;
+  height: 150px;
+}
+
+.sa-hero__eyebrow {
+  position: absolute;
+  left: -11px;
+  top: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 18px;
+  border-left: 2px solid var(--primary-color);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 0.8;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.sa-hero__title {
+  position: absolute;
+  left: 0;
+  top: 42px;
+  font-size: 54px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.sa-hero__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.sa-hero__btn {
+  width: 159px;
+}
+
+/* ── the two glass feature cards ── */
+.sa-hero__cards {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  height: 204px;
+}
+
+.sa-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  width: 244px;
+  padding: 24px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  overflow: hidden;
+}
+
+.sa-card__icon {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 6px;
+  background: rgba(237, 49, 58, 0.1);
+}
+
+.sa-card--blue .sa-card__icon {
+  background: rgba(45, 77, 241, 0.1);
+}
+
+.sa-card__icon img {
+  width: 30px;
+  height: 30px;
+}
+
+.sa-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.sa-card__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.sa-card__head p {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-color);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sa-card__rule {
+  width: 24px;
+  height: 2px;
+  border-radius: 6px;
+  background: var(--primary-color);
+}
+
+.sa-card--blue .sa-card__rule {
+  background: #2d4df1;
+}
+
+.sa-card__text {
+  width: 100%;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text-color);
+}
+
+/* ── trust badges ── */
+.sa-badges {
+  position: absolute;
+  left: 776px;
+  top: calc(50% + 44.12px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-start;
+  align-content: flex-start;
+  justify-content: center;
+  width: 333px;
+  transform: translateY(-50%);
+}
+
+.sa-badge {
+  position: relative;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.sa-badge img {
+  position: absolute;
+  max-width: none;
+}
+
+.sa-badge--1 { width: 125.031px; height: 97.494px; }
+.sa-badge--1 .top  { top: 4.79%;  right: 0.42%;  bottom: 85.27%; left: 0.34%; }
+.sa-badge--1 .seal { top: 23.68%; right: 29.51%; bottom: 23.73%; left: 29.48%; }
+.sa-badge--1 .btm  { top: 88.98%; right: 20.99%; bottom: 3.33%;  left: 21.24%; }
+
+.sa-badge--2 { width: 119.077px; height: 97.494px; }
+.sa-badge--2 img { inset: 0; width: 100%; height: 100%; }
+
+.sa-badge--3 { width: 107.169px; height: 96.75px; }
+.sa-badge--3 .l01 { top: 4.45%;  right: 21.87%; bottom: 87.58%; left: 22.02%; }
+.sa-badge--3 .l02 { top: 24.62%; right: 69.4%;  bottom: 44.61%; left: 26%; }
+.sa-badge--3 .l03 { top: 34.58%; right: 48.8%;  bottom: 44.62%; left: 34%; }
+.sa-badge--3 .l04 { top: 27%;    right: 36.4%;  bottom: 44.62%; left: 52.2%; }
+.sa-badge--3 .l05 { top: 34.15%; right: 18.2%;  bottom: 44.62%; left: 64.4%; }
+.sa-badge--3 .l06 { top: 24.62%; right: 0;      bottom: 44.61%; left: 84%; }
+.sa-badge--3 .l07 { top: 41.3%;  right: 22.8%;  bottom: 51.77%; left: 70.8%; }
+.sa-badge--3 .l08 { top: 25.7%;  right: 76.6%;  bottom: 44.61%; left: 0; }
+.sa-badge--3 .s1  { top: 60%;    right: 76.39%; bottom: 25.38%; left: 9.72%; }
+.sa-badge--3 .s2  { top: 60%;    right: 59.72%; bottom: 25.38%; left: 26.39%; }
+.sa-badge--3 .s3  { top: 60%;    right: 43.05%; bottom: 25.38%; left: 43.06%; }
+.sa-badge--3 .s4  { top: 60%;    right: 26.39%; bottom: 25.38%; left: 59.72%; }
+.sa-badge--3 .s5  { top: 60%;    right: 9.72%;  bottom: 25.38%; left: 76.39%; }
+.sa-badge--3 .rev { top: 89.55%; right: 22.37%; bottom: 2.97%;  left: 21.99%; }
+
+/* ===========================================================
+   Staff Augmentation — Our IT Staff Augmentation Process
+   =========================================================== */
+.sa-proc {
+  position: relative;
+  height: 736px;
+  background: #fff;
+}
+
+.sa-proc__head {
+  position: absolute;
+  left: 67px;
+  top: 48px;
+  width: 1110px;
+  height: 152px;
+}
+
+.sa-proc__headcol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 415px;
+}
+
+.sa-proc__title {
+  position: absolute;
+  left: 0;
+  top: 54px;
+  width: 415px;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.225;
+  color: var(--text-color);
+}
+
+.sa-proc__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.sa-proc__lede {
+  position: absolute;
+  left: 543px;
+  top: 0;
+  width: 567px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-color);
+}
+
+.sa-proc__lede u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── the component itself ── */
+.sa-proc__steps {
+  position: absolute;
+  left: 67px;
+  top: 245px;
+  width: 1110px;
+  height: 443px;
+  border-top: 1px solid var(--hairline);
+}
+
+/* left panel */
+.pl-panel {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 378px;
+  height: 445px;
+  border-right: 1px solid var(--hairline);
+}
+
+.pl-viewport {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 378px;
+  height: 316px;
+  overflow: hidden;
+}
+
+.pl-track {
+  display: flex;
+  gap: 80px;
+  align-items: flex-start;
+  height: 316px;
+  padding: 28px 38px 6px;
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.pl-slide {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 13px;
+  align-items: flex-end;
+  align-self: stretch;
+  width: 302px;
+}
+
+.pl-slide__num {
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.075;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.pl-slide__body {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.pl-slide__title {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.075;
+  color: var(--text-color);
+}
+
+.pl-slide__text {
+  width: 100%;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--sub-text-color);
+}
+
+/* controls */
+.pl-controls {
+  position: absolute;
+  left: 38px;
+  top: 360px;
+  display: flex;
+  gap: 70px;
+  align-items: center;
+  width: 302px;
+}
+
+.pl-arrows {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pl-arrow {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 100px;
+  background: #383636;
+  overflow: hidden;
+  transition: background-color 0.2s ease;
+}
+
+.pl-arrow:hover {
+  background: var(--primary-color);
+}
+
+.pl-arrow img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+}
+
+.pl-arrow--prev img { transform: translate(-50%, -50%) rotate(90deg) scaleY(-1); }
+.pl-arrow--next img { transform: translate(-50%, -50%) rotate(90deg); }
+
+.pl-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pl-dots i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 12px;
+  background: #d9d9d9;
+  transition: width 0.35s ease, background-color 0.35s ease;
+}
+
+.pl-dots i.is-active {
+  width: 18px;
+  background: var(--primary-color);
+}
+
+/* ── right diagram ── */
+.pl-diagram {
+  position: absolute;
+  left: 378px;
+  top: -1px;
+  width: 732px;
+  height: 445px;
+  overflow: hidden;
+}
+
+.pl-col {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+}
+
+.pl-col--right {
+  right: 1.99px;
+  top: 159px;
+  gap: 33px;
+  align-items: flex-end;
+  width: 276.011px;
+}
+
+.pl-col--left {
+  left: 29px;
+  top: 120px;
+  gap: 23px;
+  align-items: flex-start;
+  width: 290.011px;
+}
+
+.pl-node {
+  display: flex;
+  align-items: center;
+}
+
+.pl-col--right .pl-node {
+  justify-content: flex-end;
+}
+
+.pl-line {
+  flex: 0 0 auto;
+  height: 2px;
+  background-image: repeating-linear-gradient(90deg,
+                    #383636 0 4px, transparent 4px 8px);
+  transition: background-image 0.3s ease;
+}
+
+.pl-node.is-active .pl-line {
+  background-image: repeating-linear-gradient(90deg,
+                    var(--primary-color) 0 4px, transparent 4px 8px);
+}
+
+.pl-pill {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  border-radius: 100px;
+  background: var(--text-color);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.075;
+  color: #fff;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+
+.pl-node.is-active .pl-pill {
+  background: var(--primary-color);
+}
+
+.pl-col--right .pl-pill--wrap {
+  white-space: normal;
+  text-align: left;
+}
+
+/* the exploded stack */
+.pl-stack {
+  position: absolute;
+  left: calc(50% + 23.1px);
+  top: calc(50% + 20.61px);
+  width: 190px;
+  height: 258.226px;
+  transform: translate(-50%, -50%);
+}
+
+.pl-stack svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pl-layer .face-top { fill: #383636; transition: fill 0.3s ease; }
+.pl-layer .face-a   { fill: #1b1b1b; transition: fill 0.3s ease; }
+.pl-layer .face-b   { fill: #5b5b5b; transition: fill 0.3s ease; }
+
+.pl-layer.is-active .face-top { fill: #ed313a; }
+.pl-layer.is-active .face-a   { fill: #b41b22; }
+.pl-layer.is-active .face-b   { fill: #ff4a52; }
+
+/* ===========================================================
+   Staff Augmentation — Augmented Teams (accordion)
+   =========================================================== */
+.sa-teams {
+  position: relative;
+  height: 1090px;
+  background: #fff;
+}
+
+.sa-teams__head {
+  position: absolute;
+  left: 67px;
+  top: 48px;
+  width: 1110px;
+  height: 103px;
+}
+
+.sa-teams__headcol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 346px;
+}
+
+.sa-teams__title {
+  margin-top: 20px;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.225;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.sa-teams__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.sa-teams__lede {
+  position: absolute;
+  left: 589px;
+  top: 0;
+  width: 521px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--sub-text-color);
+}
+
+.sa-teams__list {
+  position: absolute;
+  left: 67px;
+  top: 196px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 1110px;
+}
+
+/* ── one row ── */
+.tm {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px 0;
+  border-top: 1px solid var(--hairline);
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tm__title {
+  flex: 0 0 auto;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.075;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.tm__right {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.tm__panel {
+  position: relative;
+  flex: 0 0 auto;
+  width: 500px;
+  height: 80px;
+  border-radius: 12px;
+  background: rgba(244, 244, 244, 0);
+  overflow: hidden;
+  transition: width 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+              height 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+              background-color 0.45s ease;
+}
+
+.tm.is-open .tm__panel {
+  width: 530px;
+  height: 140px;
+  background: rgba(244, 244, 244, 1);
+}
+
+.tm__tile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: var(--text-color);
+  overflow: hidden;
+  transition: left 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+              top 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.tm.is-open .tm__tile {
+  left: 30px;
+  top: 30px;
+}
+
+.tm__glyph {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+}
+
+.tm__glyph img {
+  position: absolute;
+  max-width: none;
+}
+
+/* per-icon insets, straight from the component */
+.tm__glyph.g-ux img      { inset: 13.79% 15.09% 15.08% 13.79%; }
+.tm__glyph.g-web img     { inset: 16.67% 12.5%; }
+.tm__glyph.g-app img     { top: 8.33%; right: 20.83%; bottom: 8.33%; left: 25%; }
+.tm__glyph.g-data img    { bottom: 6px; left: 2px; width: 30px; height: 34px; }
+.tm__glyph.g-pm img      { inset: 10.34% 14.58% 10.49% 14.58%; }
+.tm__glyph.g-analyst img { inset: 12.07% 12.07% 10.35% 10.34%; }
+
+.tm__desc {
+  position: absolute;
+  left: 158px;
+  top: calc(50% + 3px);
+  width: 305px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--text-color);
+  opacity: 0;
+  transform: translateY(-50%) translateX(-8px);
+  transition: opacity 0.3s ease 0.1s, transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.tm.is-open .tm__desc {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.tm__plus {
+  position: relative;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 100px;
+  background: var(--text-color);
+  overflow: hidden;
+  transition: background-color 0.25s ease;
+}
+
+.tm:hover .tm__plus {
+  background: var(--primary-color);
+}
+
+.tm__plus img {
+  position: absolute;
+  left: 11px;
+  top: 11px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ===========================================================
+   Staff Augmentation — Technologies We Use
+   =========================================================== */
+.sa-tech { position: relative; height: 881px; background: #fff; overflow: hidden; }
+
+.sa-tech__head { position: absolute; left: 67px; top: 48px; width: 1110px; height: 103px; }
+
+.sa-tech__headcol {
+  position: absolute; left: 0; top: 0;
+  display: flex; flex-direction: column; align-items: flex-start; width: 390px;
+}
+
+.sa-tech__title {
+  margin-top: 20px; font-size: 40px; font-weight: 600; line-height: 1.225;
+  color: var(--text-color); white-space: nowrap;
+}
+.sa-tech__title em { font-style: normal; color: var(--primary-color); }
+
+.sa-tech__lede {
+  position: absolute; left: 589px; top: 0; width: 521px;
+  font-size: 18px; font-weight: 400; line-height: 1.35; color: var(--sub-text-color);
+}
+
+.sa-skills { position: absolute; left: 67px; top: 196px; width: 1132px; height: 637px; }
+
+/* ── the five capability cards ── */
+.sa-skills__cards {
+  position: absolute; left: 50%; top: 0; z-index: 2;
+  display: flex; gap: 28px; align-items: center; transform: translateX(-50%);
+}
+
+.tk-card {
+  position: relative; flex: 0 0 auto; width: 204px; height: 208px;
+  border: 1px solid var(--hairline); border-radius: 24px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tk-card__title {
+  position: absolute; left: 50%; top: 44.5px; transform: translate(-50%, -50%);
+  font-size: 14px; font-weight: 600; line-height: 31px; letter-spacing: 0.28px;
+  color: var(--text-color); text-align: center; white-space: nowrap;
+}
+
+.tk-card__icons {
+  position: absolute; top: 78px;
+  display: flex; flex-wrap: wrap; gap: 10px;
+  align-items: center; align-content: center; justify-content: center;
+}
+
+.tk-chip {
+  display: flex; flex: 0 0 auto; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 22px; background: var(--text-color);
+}
+
+.tk-chip img { display: block; max-width: none; }
+.tk-chip img.blend { mix-blend-mode: lighten; }
+
+/* ── orbit illustration ── */
+.sa-orbit { position: absolute; inset: 0; pointer-events: none; }
+.sa-orbit img { position: absolute; max-width: none; }
+.sa-orbit .mirror { transform: scaleX(-1); }
+
+/* ===========================================================
+   Staff Augmentation — Benefits (hover swaps the backdrop)
+   =========================================================== */
+.sa-ben {
+  position: relative;
+  height: 831px;
+  background: var(--text-color);
+  overflow: hidden;
+}
+
+.sa-ben__art {
+  position: absolute;
+  left: 740px;
+  top: 108px;
+  width: 504px;
+  height: 270px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.sa-ben__inner {
+  position: absolute;
+  left: 66px;
+  top: 80px;
+  width: 1112px;
+  height: 671px;
+}
+
+.sa-ben__head {
+  display: flex;
+  align-items: center;
+  width: 1112px;
+  height: 201px;
+}
+
+.sa-ben__headcol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.sa-ben__title {
+  width: 414px;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.225;
+  color: #fff;
+}
+
+.sa-ben__title b {
+  font-weight: inherit;
+  color: var(--primary-color);
+}
+
+.sa-ben__title i {
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ── the three-column card ── */
+.wp {
+  position: absolute;
+  left: 0;
+  top: 229px;
+  width: 1110px;
+  height: 442px;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.wp__bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  pointer-events: none;
+}
+
+.wp__bg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  border-radius: 18px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.wp__bg img.is-active {
+  opacity: 1;
+}
+
+.wp__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.wp__cols {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+  width: 1110px;
+  height: 442px;
+}
+
+.wp-col {
+  position: relative;
+  flex: 1 0 0;
+  min-width: 1px;
+  height: 100%;
+  padding: 28px 26px;
+  border-right: 1px solid var(--text-color);
+  background: rgba(0, 0, 0, 0);
+  text-align: left;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.4s ease;
+}
+
+.wp-col.is-active {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.wp-col__body {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  align-items: flex-start;
+  width: 318px;
+}
+
+.wp-col__num {
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.075;
+  color: #fff;
+  opacity: 0.7;
+  white-space: nowrap;
+  transition: opacity 0.4s ease;
+}
+
+.wp-col.is-active .wp-col__num {
+  opacity: 1;
+}
+
+.wp-col__title {
+  width: 100%;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.075;
+  color: #fff;
+}
+
+.wp-col__text {
+  width: 100%;
+  margin-top: 9px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.4s ease;
+}
+
+.wp-col.is-active .wp-col__text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wp__arrows {
+  position: absolute;
+  left: 954px;
+  bottom: 28px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.wp__arrow {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  transition: background-color 0.25s ease;
+}
+
+.wp__arrow--next {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.wp__arrow:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.wp__arrow img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+}
+
+.wp__arrow--prev img { transform: translate(-50%, -50%) rotate(-90deg); }
+.wp__arrow--next img { transform: translate(-50%, -50%) rotate(90deg); }
+
+/* ===========================================================
+   Staff Augmentation — Hire Extra Force
+   =========================================================== */
+.sa-hire {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 264px;
+  margin-top: 48px;
+  padding: 24px 94px;
+  background: #fff;
+}
+
+.sa-hire__left { display: flex; gap: 18px; align-items: flex-end; width: 435px; }
+
+.sa-hire__title {
+  font-size: 41px;
+  font-weight: 600;
+  line-height: 1.075;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.sa-hire__title span { font-weight: 500; }
+.sa-hire__title em { font-style: normal; color: var(--primary-color); }
+
+.sa-hire__rocket { flex: 0 0 auto; width: 38px; height: 38px; margin-bottom: 8px; }
+
+.sa-hire__right {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px;
+}
+
+.sa-hire__text {
+  width: 537px;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-color);
+}
+
+.sa-hire__btn { width: 200px; }
+
+/* ===========================================================
+   Staff Augmentation — Contact
+   =========================================================== */
+.sa-contact { position: relative; height: 667px; margin-top: 48px; background: #fff; }
+
+.sa-contact__form { position: absolute; left: 67px; top: 48px; width: 594px; height: 571px; }
+
+.sa-contact__head {
+  display: flex; flex-direction: column; gap: 16px; align-items: flex-start;
+}
+
+.sa-contact__title {
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+  font-size: 46px; font-weight: 600; line-height: 1.075; white-space: nowrap;
+}
+
+.sa-contact__title span:first-child { color: var(--text-color); }
+.sa-contact__title span:last-child  { color: var(--primary-color); }
+
+.sa-contact__fields {
+  display: flex; flex-direction: column; gap: 18px; align-items: flex-start;
+  width: 100%; margin-top: 24px;
+}
+
+.sa-row { display: flex; gap: 16px; align-items: flex-start; width: 100%; }
+
+.sa-field { display: flex; flex: 1 0 0; flex-direction: column; gap: 4px; min-width: 1px; }
+
+.sa-field > label {
+  font-size: 14px; font-weight: 600; line-height: 1.075; color: var(--sub-text-color);
+}
+
+.sa-input {
+  display: flex; gap: 10px; align-items: center;
+  height: 46px; padding: 10px 16px;
+  border: 1px solid #ededed; border-radius: 12px; background: #f7f7f7;
+}
+
+.sa-input--area { height: 84px; align-items: flex-start; }
+
+.sa-input input,
+.sa-input textarea {
+  flex: 1 0 0; min-width: 1px; width: 100%;
+  border: 0; background: none; outline: none; resize: none;
+  font-family: var(--font-main); font-size: 12px; font-weight: 400; color: var(--text-color);
+}
+
+.sa-input input::placeholder,
+.sa-input textarea::placeholder { color: #888; }
+
+.sa-input__prefix {
+  flex: 0 0 auto; font-family: var(--font-poppins);
+  font-size: 14px; font-weight: 400; color: var(--sub-text-color);
+}
+
+.sa-input__sep { flex: 0 0 auto; width: 1px; height: 16px; border-radius: 4px; background: #cfcfcf; }
+
+.sa-source { display: flex; flex-direction: column; gap: 11px; align-items: flex-start; width: 100%; }
+
+.sa-source > p {
+  font-family: var(--font-poppins);
+  font-size: 14px; font-weight: 500; line-height: 1.075; color: var(--sub-text-color);
+}
+
+.sa-source__rows { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+
+.sa-source__row { display: flex; align-items: center; justify-content: space-between; width: 440px; }
+
+.sa-source__row--fixed { position: relative; height: 19px; }
+.sa-source__row--fixed .sa-radio { position: absolute; top: 0; }
+.sa-source__row--fixed .sa-radio:nth-child(1) { left: 0; }
+.sa-source__row--fixed .sa-radio:nth-child(2) { left: 176px; }
+.sa-source__row--fixed .sa-radio:nth-child(3) { left: 359px; }
+
+.sa-radio {
+  display: flex; gap: 4px; align-items: flex-start;
+  font-size: 12px; font-weight: 500; color: #888;
+  white-space: nowrap; cursor: pointer;
+}
+
+.sa-radio input { position: absolute; opacity: 0; pointer-events: none; }
+
+.sa-radio i {
+  position: relative; flex: 0 0 auto;
+  width: 19px; height: 19px; border: 1.5px solid #b9b9b9; border-radius: 50%;
+  transition: border-color 0.2s ease;
+}
+
+.sa-radio input:checked + i { border-color: var(--primary-color); }
+
+.sa-radio input:checked + i::after {
+  content: ''; position: absolute; left: 50%; top: 50%;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--primary-color); transform: translate(-50%, -50%);
+}
+
+.sa-contact__ctas {
+  position: absolute; left: 0; top: 522px;
+  display: flex; gap: 18px; align-items: center; justify-content: flex-end;
+  width: 594px; height: 49px;
+}
+
+.sa-contact__btn { width: 159px; }
+
+.sa-learn { display: flex; flex-direction: column; align-items: flex-start; }
+
+.sa-learn__row { display: flex; gap: 8px; align-items: center; }
+
+.sa-learn__row span {
+  font-family: 'Inter', var(--font-main);
+  font-size: 16px; font-weight: 500; color: var(--primary-color); white-space: nowrap;
+}
+
+.sa-learn__dot {
+  position: relative; width: 48px; height: 48px; overflow: hidden;
+}
+
+.sa-learn__dot img { position: absolute; left: 7px; top: 12px; width: 24px; height: 24px; }
+
+.sa-learn__rule { width: 73px; height: 1px; background: var(--primary-color); }
+
+.sa-contact__art {
+  position: absolute; left: 721px; top: 70px; width: 456px; height: 549px;
+}
+
+.sa-contact__art img {
+  position: absolute; left: -19px; top: 41px; width: 494px; height: 440px;
+  max-width: none; object-fit: contain;
+}
+
+
+/* ===========================================================
+   About Us page
+   ===========================================================
+   Figma frame 2812:54883. The wrapper is the usual 1244 panel, and
+   every section keeps its Figma offsets so the stack adds up to the
+   3924 the design asks for:
+     hero 632 | wire 1467 | journey 647 | +23 team 738 | +46 footer 371
+   =========================================================== */
+.ab-page .footer {
+  margin-top: 46px;
+}
+
+/* The grey grid plate that backs the hero and the wire section. Both use
+   the same Figma image, only the fade colour and crop differ. */
+.ab-grid {
+  position: absolute;
+  pointer-events: none;
+}
+
+.ab-grid img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.ab-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.ab-grid--hero {
+  left: -621px;
+  top: 0;
+  width: 1244px;
+  height: 877.272px;
+}
+
+.ab-grid--hero::after {
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+              rgba(244, 244, 244, 0) 0%, rgba(244, 244, 244, 1) 100%);
+}
+
+.ab-grid--wire {
+  right: 0;
+  top: 0;
+  width: 1244px;
+  height: 1326px;
+}
+
+.ab-grid--wire::after {
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+              rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+/* ── Hero ───────────────────────────────────────────────── */
+.ab-hero {
+  position: relative;
+  height: 632px;
+  overflow: hidden;
+  background: #f4f4f4;
+}
+
+.ab-hero__blobs {
+  position: absolute;
+  left: 692.9px;
+  top: 174px;
+  width: 416.1px;
+  height: 371.458px;
+  max-width: none;
+  pointer-events: none;
+}
+
+.ab-hero__art {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 415px;
+  height: 410px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ab-hero__art img {
+  position: absolute;
+  left: 0;
+  top: -0.06%;
+  width: 108.19%;
+  height: 100.06%;
+  max-width: none;
+}
+
+.ab-hero__mantra {
+  position: absolute;
+  left: 1125px;
+  top: 282px;
+  width: 106px;
+  font-size: 10.181px;
+  font-weight: 300;
+  line-height: 11px;
+  text-align: right;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.ab-hero__mantra span {
+  display: block;
+}
+
+.ab-hero__copy {
+  position: absolute;
+  left: 112px;
+  top: 164px;
+  width: 567px;
+  height: 337px;
+}
+
+.ab-hero__bar {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 6px;
+  height: 56px;
+  background: var(--primary-color);
+}
+
+.ab-hero__intro {
+  position: absolute;
+  left: 42px;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 525px;
+}
+
+.ab-hero__title {
+  font-size: 54px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-color);
+}
+
+.ab-hero__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.ab-hero__desc {
+  font-family: var(--font-poppins);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #888;
+}
+
+.ab-hero__stats {
+  position: absolute;
+  left: 42px;
+  top: 187px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 60px;
+  width: 450px;
+  height: 164px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ab-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 120px;
+  line-height: 1.12;
+  white-space: nowrap;
+}
+
+.ab-stat b {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.ab-stat span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sub-text-color);
+}
+
+/* ── Believe in Process: the scroll-drawn wire ───────────── */
+.ab-wire {
+  position: relative;
+  height: 1467px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.ab-wire__art {
+  position: absolute;
+  left: calc(50% + 0.5px);
+  top: 70px;
+  width: 910px;
+  height: 1218px;
+  transform: translateX(-50%);
+}
+
+/* Two dotted copies of the same path: a grey track, and a red copy shown
+   through a mask whose stroke unrolls as the section scrolls — the JS drives
+   #ab-wire-reveal's stroke-dashoffset from 1000 down to 0. */
+.ab-wire__svg {
+  position: absolute;
+  left: 289.77px;
+  top: 359.65px;
+  width: 215.978px;
+  height: 857.71px;
+  overflow: visible;
+}
+
+.ab-wire__star {
+  position: absolute;
+  left: 438px;
+  top: 0;
+  width: 60px;
+  height: 60px;
+}
+
+.ab-wire__where {
+  position: absolute;
+  left: 402px;
+  top: 71px;
+  width: 133px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.ab-wire__stem {
+  position: absolute;
+  left: 468px;
+  top: 110px;
+  width: 1px;
+  height: 63px;
+  border-radius: 100px;
+  background: var(--primary-color);
+}
+
+.ab-wire__lede {
+  position: absolute;
+  left: 199px;
+  top: 183px;
+  width: 539px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.ab-wire__believe {
+  position: absolute;
+  left: 392px;
+  top: 314px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 151.5px;
+}
+
+.ab-wire__believe p {
+  font-size: 18px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.ab-wire__believe img {
+  width: 151.5px;
+  height: 8.166px;
+}
+
+/* numbered stops — each one sits exactly on the wire */
+.ab-point {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+}
+
+.ab-point i {
+  font-size: 18px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--primary-color);
+}
+
+.ab-point img {
+  width: 12px;
+  height: 12px;
+}
+
+.ab-point--1 { left: 445px; top: 405px; }
+.ab-point--2 { left: 285px; top: 575px; }
+.ab-point--3 { left: 481px; top: 796px; }
+.ab-point--4 { left: 360px; top: 971px; }
+
+.ab-note {
+  position: absolute;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.ab-note__bullet {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 22px;
+}
+
+.ab-note__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 348px;
+}
+
+.ab-note__body h3 {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #000;
+}
+
+.ab-note__body p {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+.ab-note--1 { left: 0;     top: 379px; }
+.ab-note--2 { left: 535px; top: 535px; }
+.ab-note--3 { left: 24px;  top: 756px; }
+.ab-note--4 { left: 542px; top: 942px; }
+
+/* every wire element eases up into place as it comes into view */
+.ab-rise {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ab-rise.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* the numbered stops pop rather than slide, so they land on the wire */
+.ab-point.ab-rise {
+  transform: scale(0.4);
+  transform-origin: 50% 50%;
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ab-point.ab-rise.is-in {
+  transform: scale(1);
+}
+
+/* ── Our Story: the journey rail ─────────────────────────── */
+.jr {
+  position: relative;
+  height: 647px;
+  overflow: hidden;
+  background: var(--text-color);
+}
+
+.jr__head {
+  position: absolute;
+  left: 102px;
+  top: 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+
+.jr__headtop {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.jr__badge {
+  background: #fff;
+}
+
+.jr__title {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.jr__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.jr__lede {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.jr__rail {
+  position: absolute;
+  left: 102px;
+  top: 302px;
+  width: 4474px;
+  height: 258px;
+}
+
+.jr__line {
+  position: absolute;
+  left: 0;
+  top: 157px;
+  width: 4474px;
+  height: 2px;
+  border-radius: 100px;
+  background: #fff;
+}
+
+/* the head of the rail: every year is stacked here, only the active one shows */
+.jr__big {
+  position: absolute;
+  left: 7px;
+  top: 0;
+  width: 346px;
+  height: 258px;
+}
+
+.jr__bigcard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  width: 346px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-40px);
+  transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              visibility 0s linear 0.55s;
+}
+
+.jr__bigcard.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition: opacity 0.5s ease 0.08s,
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+              visibility 0s linear 0s;
+}
+
+.jr__bigyear {
+  font-size: 112px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* the active point: a ring on the rail, drawn in the brand red */
+.jr__bigdot {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--primary-color);
+  border-radius: 100px;
+  background: var(--text-color);
+}
+
+.jr__bigcard.is-active .jr__bigdot {
+  animation: jr-ping 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes jr-ping {
+  0%   { transform: scale(0.2); box-shadow: 0 0 0 0 rgba(237, 49, 58, 0.55); }
+  60%  { transform: scale(1.25); }
+  100% { transform: scale(1); box-shadow: 0 0 0 14px rgba(237, 49, 58, 0); }
+}
+
+.jr__bigtext p {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* The upcoming years, one 364px stop apart. The track starts one stop to the
+   left of the first visible position (451 - 364), so at year 0 the transform
+   is a plain 0 and nothing lurches on load. */
+.jr__track {
+  position: absolute;
+  left: 87px;
+  top: 124px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jr__year {
+  flex: 0 0 346px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 346px;
+  padding: 0;
+  text-align: left;
+  transition: opacity 0.5s ease, visibility 0s linear 0s;
+}
+
+.jr__yearlabel {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: normal;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.jr__yeardot {
+  width: 8px;
+  height: 8px;
+  border-radius: 100px;
+  background: #fff;
+  transition: transform 0.35s ease;
+}
+
+.jr__year:hover .jr__yeardot {
+  transform: scale(1.5);
+}
+
+/* Years already told slide out to the left and fade away. visibility follows
+   the fade so they leave the tab order and the accessibility tree instead of
+   sitting invisibly on top of the big year. */
+.jr__year.is-past {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+}
+
+.jr__arrows {
+  position: absolute;
+  left: 1079px;
+  top: 299px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.jr__arrow {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 100px;
+  overflow: hidden;
+  transition: background-color 0.25s ease, opacity 0.25s ease;
+}
+
+.jr__arrow--prev {
+  border: 1px solid #fff;
+}
+
+.jr__arrow--next {
+  background: #fff;
+}
+
+.jr__arrow img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+}
+
+.jr__arrow--prev img { transform: translate(-50%, -50%) rotate(-90deg); }
+.jr__arrow--next img { transform: translate(-50%, -50%) rotate(90deg); }
+
+.jr__arrow--prev:hover { background: rgba(255, 255, 255, 0.16); }
+.jr__arrow--next:hover { background: #f0f0f0; }
+
+.jr__arrow[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ── Meet the Team ───────────────────────────────────────── */
+.mt {
+  position: relative;
+  height: 738px;
+  margin-top: 23px;
+  overflow: hidden;
+}
+
+.mt__bg {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1244px;
+  height: 550px;
+  opacity: 0.3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mt__bg img {
+  position: absolute;
+  left: -4.09%;
+  top: -75.27%;
+  width: 108.17%;
+  height: 223.64%;
+  max-width: none;
+}
+
+.mt__head {
+  position: absolute;
+  left: 211px;
+  top: 20px;
+  width: 787px;
+  height: 145px;
+}
+
+.mt__spark {
+  position: absolute;
+  left: 22.575px;
+  top: 22.947px;
+  width: 45.894px;
+  height: 44.85px;
+  max-width: none;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.mt__title {
+  position: absolute;
+  left: 34px;
+  top: 2px;
+  width: 753px;
+  font-family: 'Comic Roasting', var(--font-main);
+  font-size: 127.627px;
+  font-weight: 400;
+  line-height: 1.12;
+  color: var(--sub-text-color);
+}
+
+.mt__cards {
+  position: absolute;
+  left: 164px;
+  top: 272px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+/* the glass card: a 10px white frame over a frosted, barely-tinted pane */
+.mt-card {
+  position: relative;
+  flex: 0 0 294px;
+  width: 294px;
+  height: 421px;
+  border: 10px solid #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(150deg,
+              rgba(255, 255, 255, 0.42) 0%,
+              rgba(255, 255, 255, 0.12) 42%,
+              rgba(255, 255, 255, 0.3) 100%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+          backdrop-filter: blur(16px) saturate(135%);
+  box-shadow: 0 18px 44px rgba(56, 54, 54, 0.12),
+              inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s ease;
+}
+
+.mt-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 28px 60px rgba(56, 54, 54, 0.18),
+              inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.mt-card__photo {
+  position: absolute;
+  left: 35px;
+  top: 25px;
+  width: 202px;
+  height: 202px;
+}
+
+.mt-card__blob {
+  position: absolute;
+  left: 0.6px;
+  top: 0.6px;
+  width: 200.835px;
+  height: 200.835px;
+  max-width: none;
+}
+
+.mt-card__face {
+  position: absolute;
+  left: 14px;
+  top: 15px;
+  width: 174px;
+  height: 174px;
+  border-radius: 48px;
+  object-fit: cover;
+  background: #d9d9d9;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* the tilted name plate — its own little pane of frosted glass */
+.mt-badge {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px 25px;
+  border: 1px solid #fff;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.14);
+  -webkit-backdrop-filter: blur(7.5px);
+          backdrop-filter: blur(7.5px);
+  font-family: var(--font-poppins);
+  color: #fff;
+  white-space: nowrap;
+  transform: translate(-50%, -50%) rotate(-10deg);
+}
+
+.mt-badge__name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.mt-badge__role {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.mt-badge--1 { left: 176.17px; top: 192.42px; height: 62px; }
+.mt-badge--2 { left: 188.5px;  top: 188.28px; height: 58px; }
+.mt-badge--3 { left: 187px;    top: 188.02px; height: 58px; }
+
+.mt-badge--2 .mt-badge__name,
+.mt-badge--3 .mt-badge__name {
+  margin-bottom: -4px;
+}
+
+.mt-card__rule {
+  position: absolute;
+  left: 76px;
+  top: 248px;
+  width: 122px;
+  height: 10.98px;
+}
+
+.mt-card__bio {
+  position: absolute;
+  left: 19px;
+  top: 269px;
+  width: 235px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--sub-text-color);
+}
+
+.mt-card__social {
+  position: absolute;
+  left: 5px;
+  bottom: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 264px;
+  padding: 16px 17px;
+  border-top: 1px solid var(--hairline);
+  overflow: hidden;
+}
+
+.mt-card__social a {
+  position: relative;
+  flex: 0 0 auto;
+  width: 35px;
+  height: 34px;
+  border-radius: 100px;
+  overflow: hidden;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.mt-card__social a:hover {
+  transform: translateY(-2px);
+  filter: brightness(0.96);
+}
+
+.mt-card__social img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+}
+
+.mt-card--1 .mt-card__social a { background: #edebff; }
+.mt-card--2 .mt-card__social a { background: #dee5ed; }
+.mt-card--3 .mt-card__social a { background: #fff2e8; }
+
+.mt-card__glyph {
+  position: absolute;
+  left: 25px;
+  top: 25px;
+  width: 18px;
+  height: 18px;
+}
+
+.mt-card__glyph--2 {
+  left: 30px;
+  top: 30px;
+  width: 16.661px;
+}
+
+.mt-card__ticks {
+  position: absolute;
+  left: 237px;
+  top: 52px;
+  width: 22px;
+  height: 24px;
+  max-width: none;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-rise,
+  .ab-point.ab-rise {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .jr__bigcard.is-active .jr__bigdot {
+    animation: none;
+  }
 }

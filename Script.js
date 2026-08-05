@@ -71,6 +71,192 @@
     });
   });
 
+  /* ---------- Process steps: carousel drives the layer diagram ----------
+     Each slide carries data-node — the diagram node it corresponds to — so
+     stepping the carousel lights the matching pill, connector and stack layer. */
+  var plTrack = document.getElementById('pl-track');
+  if (plTrack) {
+    var SLIDE_STEP = 382;                       /* 302 slide + 80 gap */
+    var plSlides = plTrack.querySelectorAll('.pl-slide');
+    var plDots = document.querySelectorAll('#pl-dots i');
+    var plNodes = document.querySelectorAll('.pl-node');
+    var plLayers = document.querySelectorAll('.pl-layer');
+    var plIndex = 0;
+
+    var showStep = function (i) {
+      plIndex = (i + plSlides.length) % plSlides.length;
+      plTrack.style.transform = 'translateX(' + (-plIndex * SLIDE_STEP) + 'px)';
+
+      var node = plSlides[plIndex].getAttribute('data-node');
+
+      Array.prototype.forEach.call(plDots, function (d, n) {
+        d.classList.toggle('is-active', n === plIndex);
+      });
+      Array.prototype.forEach.call(plNodes, function (n) {
+        n.classList.toggle('is-active', n.getAttribute('data-node') === node);
+      });
+      Array.prototype.forEach.call(plLayers, function (l) {
+        l.classList.toggle('is-active', l.getAttribute('data-layer') === node);
+      });
+    };
+
+    var prevBtn = document.querySelector('.pl-arrow--prev');
+    var nextBtn = document.querySelector('.pl-arrow--next');
+    if (prevBtn) prevBtn.addEventListener('click', function () { showStep(plIndex - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { showStep(plIndex + 1); });
+
+    /* clicking a diagram node jumps the carousel to it */
+    Array.prototype.forEach.call(plNodes, function (n) {
+      n.addEventListener('click', function () {
+        var want = n.getAttribute('data-node');
+        for (var i = 0; i < plSlides.length; i++) {
+          if (plSlides[i].getAttribute('data-node') === want) { showStep(i); return; }
+        }
+      });
+    });
+
+    showStep(0);
+  }
+
+  /* ---------- Augmented Teams: single-open accordion ---------- */
+  var teamsList = document.getElementById('teams-list');
+  if (teamsList) {
+    var teams = teamsList.querySelectorAll('.tm');
+    Array.prototype.forEach.call(teams, function (row) {
+      row.addEventListener('click', function () {
+        var wasOpen = row.classList.contains('is-open');
+        Array.prototype.forEach.call(teams, function (other) {
+          other.classList.remove('is-open');
+          other.setAttribute('aria-expanded', 'false');
+        });
+        if (!wasOpen) {
+          row.classList.add('is-open');
+          row.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  }
+
+  /* ---------- Benefits: hovering a column swaps the backdrop ---------- */
+  var benCard = document.getElementById('benefits-card');
+  if (benCard) {
+    var benCols = benCard.querySelectorAll('.wp-col');
+    var benBgs = benCard.querySelectorAll('.wp__bg img');
+    var benIndex = 0;
+
+    var showBenefit = function (i) {
+      benIndex = (i + benCols.length) % benCols.length;
+      Array.prototype.forEach.call(benCols, function (c, n) {
+        c.classList.toggle('is-active', n === benIndex);
+      });
+      Array.prototype.forEach.call(benBgs, function (b, n) {
+        b.classList.toggle('is-active', n === benIndex);
+      });
+    };
+
+    Array.prototype.forEach.call(benCols, function (col, n) {
+      col.addEventListener('mouseenter', function () { showBenefit(n); });
+      col.addEventListener('focus', function () { showBenefit(n); });
+      col.addEventListener('click', function () { showBenefit(n); });
+    });
+
+    var benPrev = benCard.querySelector('.wp__arrow--prev');
+    var benNext = benCard.querySelector('.wp__arrow--next');
+    if (benPrev) benPrev.addEventListener('click', function () { showBenefit(benIndex - 1); });
+    if (benNext) benNext.addEventListener('click', function () { showBenefit(benIndex + 1); });
+  }
+
+  /* ---------- About: the process wire draws itself as you scroll ----------
+     The red dotted path is painted through a mask whose stroke unrolls from
+     nothing to its full length, so the wire reads as filling in. Everything
+     hanging off it — headings, numbered stops, copy blocks — eases in on its
+     own as it reaches the viewport, which keeps the two effects independent. */
+  var wireReveal = document.getElementById('ab-wire-reveal');
+  var wireArt = document.getElementById('ab-wire-art');
+
+  if (wireReveal && wireArt) {
+    var wireSvg = wireArt.querySelector('.ab-wire__svg');
+    var wireRisers = wireArt.querySelectorAll('.ab-rise');
+    var wireQueued = false;
+
+    var drawWire = function () {
+      wireQueued = false;
+
+      var box = wireSvg.getBoundingClientRect();
+      var vh = window.innerHeight;
+
+      /* 0 while the head of the wire is still below 70% of the viewport,
+         1 once its tail has climbed past 40% */
+      var head = vh * 0.7;
+      var tail = vh * 0.4;
+      var span = box.height + head - tail;
+      var p = span > 0 ? (head - box.top) / span : 0;
+      p = p < 0 ? 0 : (p > 1 ? 1 : p);
+
+      wireReveal.setAttribute('stroke-dashoffset', String(1000 - 1000 * p));
+
+      Array.prototype.forEach.call(wireRisers, function (el) {
+        if (el.classList.contains('is-in')) return;
+        if (el.getBoundingClientRect().top < vh * 0.88) el.classList.add('is-in');
+      });
+    };
+
+    var queueWire = function () {
+      if (!wireQueued) {
+        wireQueued = true;
+        requestAnimationFrame(drawWire);
+      }
+    };
+
+    window.addEventListener('scroll', queueWire, { passive: true });
+    window.addEventListener('resize', queueWire);
+    drawWire();
+  }
+
+  /* ---------- About: Our Story — one year per arrow click ----------
+     Every year sits on the rail as a small stop; the active one is also drawn
+     big at the head of the rail. Stepping forward slides the rail one stop
+     left, so the next year takes the big slot and the years already told fade
+     out behind it. */
+  var jrTrack = document.getElementById('jr-track');
+  var jrBig = document.getElementById('jr-big');
+
+  if (jrTrack && jrBig) {
+    var JR_STEP = 364;                    /* 346 column + 18 gap */
+    var jrYears = jrTrack.querySelectorAll('.jr__year');
+    var jrCards = jrBig.querySelectorAll('.jr__bigcard');
+    var jrPrev = document.querySelector('.jr__arrow--prev');
+    var jrNext = document.querySelector('.jr__arrow--next');
+    var jrLast = jrCards.length - 1;
+    var jrIndex = 0;
+
+    var showYear = function (i) {
+      jrIndex = i < 0 ? 0 : (i > jrLast ? jrLast : i);
+
+      jrTrack.style.transform = 'translateX(' + (-jrIndex * JR_STEP) + 'px)';
+
+      Array.prototype.forEach.call(jrYears, function (y, n) {
+        y.classList.toggle('is-past', n <= jrIndex);
+      });
+      Array.prototype.forEach.call(jrCards, function (c, n) {
+        c.classList.toggle('is-active', n === jrIndex);
+      });
+
+      if (jrPrev) jrPrev.disabled = jrIndex === 0;
+      if (jrNext) jrNext.disabled = jrIndex === jrLast;
+    };
+
+    if (jrPrev) jrPrev.addEventListener('click', function () { showYear(jrIndex - 1); });
+    if (jrNext) jrNext.addEventListener('click', function () { showYear(jrIndex + 1); });
+
+    /* clicking a stop on the rail jumps straight to that year */
+    Array.prototype.forEach.call(jrYears, function (y, n) {
+      y.addEventListener('click', function () { showYear(n); });
+    });
+
+    showYear(0);
+  }
+
   /* ---------- Navbar backdrop appears once the page moves ---------- */
   var navbar = document.querySelector('.navbar');
   if (navbar) {
