@@ -70,6 +70,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* When the JS eased scroller is driving, it sets the position every frame —
+   native smooth behaviour would fight it and feel rubbery. */
+html.js-smooth,
+html.js-smooth body {
+  scroll-behavior: auto;
+}
+
 body {
   background: #f4f4f4;
   font-family: var(--font-main);
@@ -118,20 +125,100 @@ p {
 /* ===========================================================
    Navbar
    =========================================================== */
+/* Fixed to the viewport. 85px = the 18px page inset + the 67px bar, so the
+   logo keeps its Figma position while the veil can reach the very top edge. */
 .navbar {
-  position: relative;
-  z-index: 30;
-  height: 67px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 60;
+  height: 85px;
+  padding-top: 18px;
+}
+
+/* the home page navbar used to sit in the flow — replace the space it held */
+body:not(.cs-page) .wrap {
+  padding-top: 85px;
 }
 
 .navbar__inner {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: var(--inner);
-  max-width: 100%;
+  max-width: calc(100% - 36px);
   height: 100%;
   margin: 0 auto;
+}
+
+/* ── Scrolled backdrop: white gradient + progressive blur ──
+   Each layer blurs the backdrop a little more than the one below it and is
+   masked to stop a little higher, so the blur accumulates towards the top and
+   reaches zero at the bottom edge. */
+.navbar__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.navbar.is-scrolled .navbar__veil {
+  opacity: 1;
+}
+
+.navbar__veil span {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.navbar__veil span:nth-child(1) {
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 30%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 30%, transparent 100%);
+}
+
+.navbar__veil span:nth-child(2) {
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 20%, transparent 80%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 20%, transparent 80%);
+}
+
+.navbar__veil span:nth-child(3) {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 15%, transparent 60%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 15%, transparent 60%);
+}
+
+.navbar__veil span:nth-child(4) {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 10%, transparent 40%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 10%, transparent 40%);
+}
+
+.navbar__veil span:nth-child(5) {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 5%, transparent 22%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 5%, transparent 22%);
+}
+
+/* white wash, opaque at the top edge, gone at the bottom — painted over the
+   blur stack so it is the last thing in the layer */
+.navbar__veil::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 .logo {
@@ -2255,9 +2342,15 @@ p {
 /* ===========================================================
    Case Study page
    =========================================================== */
+/* This page's hero owns the full 0..639 band of the wrapper — the navbar is
+   fixed to the viewport (see the Navbar block) and never took flow space. */
+.cs-page .footer {
+  margin-top: 48px;
+}
+
 .cs-hero {
   position: relative;
-  height: 572px;
+  height: 639px;
 }
 
 .cs-hero__copy {
@@ -2537,6 +2630,31 @@ p {
   max-width: none;
   object-fit: cover;
   border-radius: 32px;
+}
+
+.cs-card__shot img.blur {
+  backdrop-filter: blur(75px);
+  -webkit-backdrop-filter: blur(75px);
+}
+
+/* Two overlays are not object-fit:cover in Figma — they carry their own crop,
+   which is what lifts the poster headline out of frame on card 4. */
+.cs-card__shot img.crop-x {
+  inset: auto;
+  left: -2.5%;
+  top: 0;
+  width: 105%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.cs-card__shot img.crop-y {
+  inset: auto;
+  left: 0;
+  top: -47.62%;
+  width: 100%;
+  height: 159.15%;
+  object-fit: fill;
 }
 
 .cs-card__body {
