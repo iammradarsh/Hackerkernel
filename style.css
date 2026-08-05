@@ -56,6 +56,11 @@
   /* design frame = 1280, content wrapper = 1244, inner grid = 1040 */
   --wrap: 1244px;
   --inner: 1040px;
+
+  /* the grey panel floats inside a white page frame */
+  --shell-inset: 18px;
+  --shell-radius: 28px;
+  --shell-bg: #f4f4f4;
 }
 
 *,
@@ -78,7 +83,7 @@ html.js-smooth body {
 }
 
 body {
-  background: #f4f4f4;
+  background: #fff;
   font-family: var(--font-main);
   color: var(--text-color);
   -webkit-font-smoothing: antialiased;
@@ -107,11 +112,22 @@ p {
   margin: 0;
 }
 
+/* ===========================================================
+   Page shell — the whole design sits on one grey rounded panel
+   inset from a white page frame. The 18px inset is the same gutter
+   .wrap used to hold, so content keeps its Figma position.
+   =========================================================== */
+.page-shell {
+  position: relative;
+  margin: var(--shell-inset);
+  border-radius: var(--shell-radius);
+  background: var(--shell-bg);
+}
+
 .wrap {
   position: relative;
-  padding-top: 18px;
   width: var(--wrap);
-  max-width: calc(100% - 36px);
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -137,9 +153,10 @@ p {
   padding-top: 18px;
 }
 
-/* the home page navbar used to sit in the flow — replace the space it held */
+/* the home page navbar used to sit in the flow — replace the space it held.
+   67px, not 85px: the shell inset already accounts for the navbar's 18px. */
 body:not(.cs-page) .wrap {
-  padding-top: 85px;
+  padding-top: 67px;
 }
 
 .navbar__inner {
@@ -2213,10 +2230,12 @@ body:not(.cs-page) .wrap {
 /* ===========================================================
    Footer
    =========================================================== */
+/* transparent, not #f4f4f4 — an opaque box here would square off the shell's
+   rounded bottom corners */
 .footer {
   position: relative;
   height: 371px;
-  background: #f4f4f4;
+  background: transparent;
 }
 
 .footer__inner {
