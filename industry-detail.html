@@ -369,18 +369,28 @@
           <p class="id-ben__title">Benefits of Having a Food App Development</p>
         </div>
 
-        <div class="id-ben__body">
+        <div class="id-ben__body" id="id-benefits">
           <div class="id-ben__list">
-            <div class="id-ben__rail"><span class="id-ben__dot"></span></div>
+            <!-- the rail fills down to whichever benefit is being read -->
+            <div class="id-ben__rail" aria-hidden="true">
+              <span class="id-ben__fill"></span>
+              <span class="id-ben__dot"></span>
+            </div>
             <div class="id-ben__labels">
-              <p class="id-ben__label is-active">Strong Presence</p>
-              <p class="id-ben__label">Latest Technology</p>
-              <p class="id-ben__label">Profitable</p>
-              <p class="id-ben__label">Communication</p>
+              <button class="id-ben__label is-active" type="button" data-benefit="0">Strong Presence</button>
+              <button class="id-ben__label" type="button" data-benefit="1">Latest Technology</button>
+              <button class="id-ben__label" type="button" data-benefit="2">Profitable</button>
+              <button class="id-ben__label" type="button" data-benefit="3">Communication</button>
             </div>
           </div>
 
-          <div class="id-ben__art"><img src="assets/ind/benefits.png" alt=""></div>
+          <!-- photos: Unsplash — Sayan Majhi, Fauzan, Irham Setyaki -->
+          <div class="id-ben__art" aria-hidden="true">
+            <img class="is-active" src="assets/ind/benefits.png" alt="" data-bg="0">
+            <img src="assets/ind/ben-tech.jpg" alt="" data-bg="1">
+            <img src="assets/ind/ben-profit.jpg" alt="" data-bg="2">
+            <img src="assets/ind/ben-comm.jpg" alt="" data-bg="3">
+          </div>
         </div>
       </div>
     </section>

@@ -2526,7 +2526,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   background: #d9d9d9;
 }
 
-/* ── Review card marquee ── */
+/* ── Review wall: a slow drift with cards shuffling in place ── */
 .reviews {
   position: absolute;
   left: 0;
@@ -2536,7 +2536,30 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   overflow: hidden;
 }
 
+/* oversized quote marks washed back into the panel, one behind each row */
+.reviews::before,
+.reviews::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: 620px;
+  height: 530px;
+  background: url(assets/quote-bg.svg) center / contain no-repeat;
+  filter: grayscale(1);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.reviews::before { left: -120px; top: -150px; }
+
+.reviews::after {
+  right: -100px;
+  bottom: -170px;
+  transform: scaleX(-1);
+}
+
 .reviews__row {
+  z-index: 1;
   position: absolute;
   left: 0;
   display: flex;
@@ -2582,6 +2605,9 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   .reviews__row { animation: none; }
 }
 
+/* Height is fixed so a card can swap to a longer quote without nudging its
+   neighbours — the body clamps instead. box-shadow rather than drop-shadow
+   because it animates cheaply and leaves z-index free for the lift. */
 .review {
   position: relative;
   flex: 0 0 auto;
@@ -2591,11 +2617,58 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   align-items: flex-start;
   justify-content: center;
   width: 379px;
+  height: 171px;
   padding: 32px 24px;
   border-radius: 16px;
   background: #fff;
-  filter: drop-shadow(-32px 36px 12px rgba(0, 0, 0, 0.04))
-          drop-shadow(0 2px 8px rgba(0, 0, 0, 0.07));
+  box-shadow: -32px 36px 12px rgba(0, 0, 0, 0.04),
+              0 2px 8px rgba(0, 0, 0, 0.07);
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 420ms ease;
+}
+
+/* once Script.js takes over, the card is just the frame and a stacked
+   .review__face carries the content, so two can crossfade in the same box */
+.review.is-live {
+  display: block;
+  padding: 0;
+}
+
+.review__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 24px;
+  transition: opacity 380ms ease;
+}
+
+.review__face--in,
+.review__face--out { opacity: 0; }
+
+/* The outgoing quote clears before the incoming one arrives — crossfading them
+   head-on ghosts two different blocks of text through each other. */
+.review__face--out { transition-duration: 300ms; }
+.review__face--fresh { transition-delay: 200ms; }
+
+/* the card lifts over its neighbours as the new face lands, then settles back */
+.review.is-swapping {
+  z-index: 3;
+  transform: scale(1.03);
+  box-shadow: -34px 42px 22px rgba(0, 0, 0, 0.05),
+              0 12px 30px rgba(0, 0, 0, 0.14);
+  transition-duration: 220ms;
+  transition-delay: 140ms;
+}
+
+.review.is-swapping .review__face { will-change: opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .review,
+  .review__face { transition: none; }
 }
 
 .review__head {
@@ -2637,6 +2710,11 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 }
 
 .review__body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
   width: 100%;
   font-size: 14px;
   font-weight: 400;
@@ -4209,6 +4287,13 @@ body.is-menu-open {
   background: #fff;
   text-align: left;
   cursor: pointer;
+  transition: padding-left 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* hover on a closed row (Figma "Teams 2" variant): the whole row
+   nudges 18px in from the left edge; the plus keeps its dark fill */
+.tm:not(.is-open):hover {
+  padding-left: 18px;
 }
 
 .tm__title {
@@ -4317,10 +4402,6 @@ body.is-menu-open {
   transition: background-color 0.25s ease;
 }
 
-.tm:hover .tm__plus {
-  background: var(--primary-color);
-}
-
 .tm__plus img {
   position: absolute;
   left: 11px;
@@ -4332,7 +4413,7 @@ body.is-menu-open {
 /* ===========================================================
    Staff Augmentation — Technologies We Use
    =========================================================== */
-.sa-tech { position: relative; height: 881px; background: #fff; overflow: hidden; }
+.sa-tech { position: relative; height: 881px; background: var(--shell-bg); overflow: hidden; }
 
 .sa-tech__head { position: absolute; left: 67px; top: 48px; width: 1110px; height: 103px; }
 
@@ -6654,9 +6735,11 @@ body.is-menu-open {
    bleeds through, a bright rim catches light along the top edge, and a
    slow specular sweep travels across the face on hover. The orbit
    artwork behind the cards is what the blur has to chew on, which is
-   why the effect only appears on this page.
+   why the effect lives only on the orbit sections — the AI and
+   staffing tech cards and the Salesforce cloud panels.
    =========================================================== */
-.tk-card--glass {
+.tk-card--glass,
+.sf-cc.sf-cc--glass {
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.6);
   background:
@@ -6680,7 +6763,8 @@ body.is-menu-open {
 }
 
 /* the refracted rim — brightest where the light would enter, top-left */
-.tk-card--glass::before {
+.tk-card--glass::before,
+.sf-cc--glass::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -6713,7 +6797,8 @@ body.is-menu-open {
   transition: left 0.85s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.tk-card--glass:hover {
+.tk-card--glass:hover,
+.sf-cc--glass:hover {
   transform: translateY(-6px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
@@ -6724,23 +6809,29 @@ body.is-menu-open {
     0 3px 10px -4px rgba(24, 24, 24, 0.16);
 }
 
-.tk-card--glass:hover .tk-card__sheen { left: 115%; }
+.tk-card--glass:hover .tk-card__sheen,
+.sf-cc--glass:hover .tk-card__sheen { left: 115%; }
 
 /* the title and chips have to sit above both the rim and the sweep */
 .tk-card--glass .tk-card__title,
 .tk-card--glass .tk-card__icons { z-index: 1; }
 
+.sf-cc--glass .sf-cc__grid { position: relative; z-index: 1; }
+
 @media (prefers-reduced-motion: reduce) {
   .tk-card--glass,
+  .sf-cc--glass,
   .tk-card__sheen { transition: none; }
 
-  .tk-card--glass:hover { transform: none; }
+  .tk-card--glass:hover,
+  .sf-cc--glass:hover { transform: none; }
 }
 
 /* Browsers without backdrop-filter would show the orbit straight
    through an almost-clear pane — thicken the fill instead. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tk-card--glass {
+  .tk-card--glass,
+  .sf-cc.sf-cc--glass {
     background: linear-gradient(155deg,
                 rgba(255, 255, 255, 0.9) 0%,
                 rgba(255, 255, 255, 0.7) 46%,
@@ -7704,6 +7795,18 @@ body.is-menu-open {
   background: #666;
 }
 
+/* the red run of rail behind the dot — it grows as you walk down the list */
+.id-ben__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--primary-color);
+  transition: height .55s cubic-bezier(.65, 0, .35, 1);
+}
+
 .id-ben__dot {
   position: absolute;
   left: 50%;
@@ -7714,6 +7817,7 @@ body.is-menu-open {
   border-radius: 100px;
   background: #fff;
   transform: translateX(-50%);
+  transition: top .55s cubic-bezier(.65, 0, .35, 1);
 }
 
 .id-ben__dot::after {
@@ -7726,28 +7830,74 @@ body.is-menu-open {
   border-radius: 100px;
   background: var(--primary-color);
   transform: translate(-50%, -50%);
+  transition: width .35s ease, height .35s ease;
 }
 
+/* a soft pulse marks the stop the dot just landed on */
+.id-ben__dot::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 100px;
+  background: var(--primary-color);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+
+.id-ben__body.is-moving .id-ben__dot::before {
+  animation: id-ben-pulse .75s ease-out;
+}
+
+@keyframes id-ben-pulse {
+  from { opacity: .35; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0;   transform: translate(-50%, -50%) scale(3.4); }
+}
+
+/* Every stop keeps the same 34px box whether or not it is the active one,
+   so growing the type never nudges the list — the dot can trust a fixed
+   94px pitch (34 + 60) and the four stops still fill the rail's 316px. */
 .id-ben__labels {
   display: flex;
   flex-direction: column;
-  gap: 68px;
+  gap: 60px;
   align-items: flex-start;
   flex: 0 0 auto;
 }
 
 .id-ben__label {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
   font-size: 22px;
   font-weight: 500;
   line-height: 1.2;
   color: #a1a1a1;
   white-space: nowrap;
+  text-align: left;
+  cursor: pointer;
+  transition: font-size .4s cubic-bezier(.65, 0, .35, 1), color .4s ease;
 }
 
-.id-ben__label.is-active {
+.id-ben__label:hover { color: #6f6f6f; }
+
+.id-ben__label.is-active,
+.id-ben__label.is-active:hover {
   font-size: 28px;
   font-weight: 600;
   color: var(--text-color);
+}
+
+.id-ben__label:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 6px;
+  border-radius: 4px;
 }
 
 .id-ben__art {
@@ -7758,14 +7908,36 @@ body.is-menu-open {
   overflow: hidden;
 }
 
+/* the stack is one photo per stop; only the active one is opaque, and it
+   settles out of a slight push-in so the swap reads as a move, not a cut */
 .id-ben__art img {
   position: absolute;
   left: 0;
-  top: -122px;
-  width: 583px;
-  height: 583px;
+  top: 0;
+  width: 100%;
+  height: 100%;
   max-width: none;
   object-fit: cover;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity .55s ease, transform 1.1s cubic-bezier(.22, .61, .36, 1);
+}
+
+.id-ben__art img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .id-ben__fill,
+  .id-ben__dot,
+  .id-ben__dot::after,
+  .id-ben__label,
+  .id-ben__art img { transition: none; }
+
+  .id-ben__art img { transform: none; }
+
+  .id-ben__body.is-moving .id-ben__dot::before { animation: none; }
 }
 
 /* the page's own footer gap — 4761 - 4695 */

@@ -183,6 +183,11 @@
     var cards = Array.prototype.slice.call(row.children);
     if (!cards.length) return;
 
+    /* every copy of a card answers to the same slot number, so when the wall
+       shuffles a slot all of its copies change together and the loop stays
+       seamless */
+    for (var s = 0; s < cards.length; s++) cards[s].setAttribute('data-slot', s);
+
     var gap = parseFloat(getComputedStyle(row).columnGap) || 0;
     var pass = row.getBoundingClientRect().width + gap;
     if (!pass) return;
@@ -200,6 +205,216 @@
 
     row.style.setProperty('--marq-pass', pass + 'px');
   });
+
+  /* ---------- Testimonial wall: drifting shuffle ----------
+     The rows drift on their own (CSS). On top of that, every couple of seconds
+     a visible slot swaps to a different testimonial: the old face fades out
+     while the new one fades in on a card that lifts over its neighbours and
+     settles back. Swaps overlap, so the wall reads as a live shuffle rather
+     than a strip of fixed cards sliding past.
+
+     Placeholder copy — replace with real client quotes. */
+  var REVIEW_POOL = [
+    { who: 'john', name: 'John Doe', role: 'Marketing Manager', avatar: 'assets/avatar-1.png', mark: 'assets/quote-blue.svg',
+      quote: 'This platform is incredibly intuitive and efficient, streamlining our workflow and boosting productivity. A must-have for any team!' },
+    { who: 'john', name: 'John Doe', role: 'Marketing Manager', avatar: 'assets/avatar-1.png', mark: 'assets/quote-blue.svg',
+      quote: 'Onboarding took an afternoon rather than a quarter. The team shipped exactly what we scoped, and then some.' },
+    { who: 'john', name: 'John Doe', role: 'Marketing Manager', avatar: 'assets/avatar-1.png', mark: 'assets/quote-blue.svg',
+      quote: 'Campaign reporting used to cost us three days a month. It now takes about twenty minutes.' },
+
+    { who: 'emily', name: 'Emily Smith', role: 'Project Manager', avatar: 'assets/avatar-2.png', mark: 'assets/quote-green.svg',
+      quote: 'User-friendly and feature-rich, it has transformed our operations, making tasks seamless and efficient. Highly recommended for professionals!' },
+    { who: 'emily', name: 'Emily Smith', role: 'Project Manager', avatar: 'assets/avatar-2.png', mark: 'assets/quote-green.svg',
+      quote: 'Every milestone landed on the date we agreed, which already puts them ahead of the last three vendors we tried.' },
+    { who: 'emily', name: 'Emily Smith', role: 'Project Manager', avatar: 'assets/avatar-2.png', mark: 'assets/quote-green.svg',
+      quote: 'They flagged two problems in our spec before a line was written. That alone saved us a full sprint.' },
+
+    { who: 'michael', name: 'Michael Johnson', role: 'Sales Head', avatar: 'assets/avatar-3.png', mark: 'assets/quote-yellow.svg',
+      quote: 'A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.' },
+    { who: 'michael', name: 'Michael Johnson', role: 'Sales Head', avatar: 'assets/avatar-3.png', mark: 'assets/quote-yellow.svg',
+      quote: 'Pipeline visibility went from guesswork to a single dashboard the whole floor actually trusts.' },
+    { who: 'michael', name: 'Michael Johnson', role: 'Sales Head', avatar: 'assets/avatar-3.png', mark: 'assets/quote-yellow.svg',
+      quote: 'We closed the quarter eighteen percent up, and the handover notes meant nobody had to chase them for help.' }
+  ];
+
+  var REVIEW_SETTLE = 640;      /* old face out, new face in, plus a little slack */
+  var REVIEW_GAP_MIN = 2000;    /* a swap somewhere every 2–4s */
+  var REVIEW_GAP_MAX = 4000;
+
+  function reviewFace(entry) {
+    var face = document.createElement('div');
+    face.className = 'review__face';
+    face.innerHTML =
+      '<div class="review__head">' +
+        '<img src="' + entry.avatar + '" alt="">' +
+        '<div class="review__id">' +
+          '<p class="review__name">' + entry.name + '</p>' +
+          '<p class="review__role">' + entry.role + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<p class="review__body">' + entry.quote + '</p>' +
+      '<img class="review__mark" src="' + entry.mark + '" alt="">';
+    return face;
+  }
+
+  function reviewWall(wall) {
+    var rows = [];
+    var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var held = false;
+
+    Array.prototype.forEach.call(wall.querySelectorAll('[data-marquee]'), function (el) {
+      var copies = {};
+      Array.prototype.forEach.call(el.querySelectorAll('.review'), function (card) {
+        var slot = +card.getAttribute('data-slot');
+        (copies[slot] = copies[slot] || []).push(card);
+      });
+
+      var count = Object.keys(copies).length;
+      if (!count) return;
+
+      rows.push({ el: el, copies: copies, count: count, entry: [], busy: {} });
+    });
+
+    if (!rows.length) return;
+
+    /* Pick an entry for a slot, under three preferences that give way in turn:
+       never the same person as the slot either side (the track wraps, so the
+       last slot neighbours the first), never a quote already showing elsewhere
+       in the row, and ideally a different person from the one leaving. */
+    function choose(row, slot) {
+      var n = row.count;
+      var left = row.entry[(slot + n - 1) % n];
+      var right = row.entry[(slot + 1) % n];
+      var now = row.entry[slot];
+
+      var used = {};
+      for (var s = 0; s < n; s++) {
+        if (s !== slot && row.entry[s] != null) used[row.entry[s]] = true;
+      }
+
+      var best = [], fresh = [], clear = [], any = [];
+
+      for (var i = 0; i < REVIEW_POOL.length; i++) {
+        if (i === now) continue;
+        any.push(i);
+
+        var who = REVIEW_POOL[i].who;
+        if ((left != null && REVIEW_POOL[left].who === who) ||
+            (right != null && REVIEW_POOL[right].who === who)) continue;
+        clear.push(i);
+
+        if (used[i]) continue;
+        fresh.push(i);
+
+        if (now == null || REVIEW_POOL[now].who !== who) best.push(i);
+      }
+
+      var from = best.length ? best
+               : fresh.length ? fresh
+               : clear.length ? clear
+               : any.length ? any : [0];
+
+      return from[Math.floor(Math.random() * from.length)];
+    }
+
+    function paint(row, slot, entry, animate) {
+      row.entry[slot] = entry;
+
+      row.copies[slot].forEach(function (card) {
+        var next = reviewFace(REVIEW_POOL[entry]);
+
+        if (!animate) {
+          card.innerHTML = '';
+          card.appendChild(next);
+          card.classList.add('is-live');
+          return;
+        }
+
+        var prev = card.querySelector('.review__face');
+        next.classList.add('review__face--in', 'review__face--fresh');
+        card.appendChild(next);
+
+        /* commit the hidden start state before releasing it, or the browser
+           collapses both frames into no transition at all */
+        void next.offsetWidth;
+        next.classList.remove('review__face--in');
+        card.classList.add('is-swapping');
+        if (prev) prev.classList.add('review__face--out');
+      });
+
+      if (!animate) return;
+
+      row.busy[slot] = true;
+      window.setTimeout(function () {
+        row.copies[slot].forEach(function (card) {
+          var faces = card.querySelectorAll('.review__face');
+          for (var i = 0; i < faces.length - 1; i++) card.removeChild(faces[i]);
+          /* clear the entry delay, or this face would stall on its way out */
+          faces[faces.length - 1].classList.remove('review__face--fresh');
+          card.classList.remove('is-swapping');
+        });
+        delete row.busy[slot];
+      }, REVIEW_SETTLE);
+    }
+
+    /* only shuffle what someone can actually see */
+    function onScreen(row) {
+      var view = wall.getBoundingClientRect();
+      var out = [];
+
+      Object.keys(row.copies).forEach(function (key) {
+        var slot = +key;
+        if (row.busy[slot]) return;
+        var copies = row.copies[slot];
+        for (var i = 0; i < copies.length; i++) {
+          var box = copies[i].getBoundingClientRect();
+          if (box.right > view.left && box.left < view.right) { out.push(slot); return; }
+        }
+      });
+
+      return out;
+    }
+
+    function swapOne() {
+      var row = rows[Math.floor(Math.random() * rows.length)];
+      var open = onScreen(row);
+      if (!open.length) return;
+      var slot = open[Math.floor(Math.random() * open.length)];
+      paint(row, slot, choose(row, slot), true);
+    }
+
+    function inView() {
+      var box = wall.getBoundingClientRect();
+      return box.bottom > 0 && box.top < (window.innerHeight || 0);
+    }
+
+    function beat() {
+      window.setTimeout(function () {
+        if (!held && !document.hidden && inView()) {
+          /* sometimes two at once, offset from each other, so swaps overlap */
+          var burst = Math.random() < 0.45 ? 2 : 1;
+          for (var i = 0; i < burst; i++) {
+            window.setTimeout(swapOne, i * (120 + Math.random() * 280));
+          }
+        }
+        beat();
+      }, REVIEW_GAP_MIN + Math.random() * (REVIEW_GAP_MAX - REVIEW_GAP_MIN));
+    }
+
+    rows.forEach(function (row) {
+      for (var slot = 0; slot < row.count; slot++) paint(row, slot, choose(row, slot), false);
+    });
+
+    if (still.matches) return;
+
+    /* hovering the wall holds the drift (CSS) — hold the shuffle with it */
+    wall.addEventListener('mouseenter', function () { held = true; });
+    wall.addEventListener('mouseleave', function () { held = false; });
+
+    beat();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.reviews'), reviewWall);
 
   /* ---------- Testimonials: coverflow rail ----------
      The five cards are stamped out three times over, so stepping never reaches
@@ -780,6 +995,66 @@
     var benNext = benCard.querySelector('.wp__arrow--next');
     if (benPrev) benPrev.addEventListener('click', function () { showBenefit(benIndex - 1); });
     if (benNext) benNext.addEventListener('click', function () { showBenefit(benIndex + 1); });
+  }
+
+  /* ---------- Industry benefits: the rail walks to the stop you hover ----------
+     Every stop is a fixed-height box, so the dot's landing spot is just the
+     midpoint of that box measured against the rail — reading it from the DOM
+     keeps the two in step even if the spacing is retuned in CSS. The design
+     rests the dot 7px above the first label's centre, so that same offset is
+     carried down the rail rather than re-centring on the way. */
+  var idBen = document.getElementById('id-benefits');
+  if (idBen) {
+    var idBenRail = idBen.querySelector('.id-ben__rail');
+    var idBenFill = idBen.querySelector('.id-ben__fill');
+    var idBenDot = idBen.querySelector('.id-ben__dot');
+    var idBenLabels = idBen.querySelectorAll('.id-ben__label');
+    var idBenShots = idBen.querySelectorAll('.id-ben__art img');
+    var idBenAt = 0;
+    var idBenPulse = null;
+
+    var idBenStop = function (i) {
+      var rail = idBenRail.getBoundingClientRect();
+      var box = idBenLabels[i].getBoundingClientRect();
+      return box.top + box.height / 2 - rail.top - 7;
+    };
+
+    var idBenMove = function (i, animate) {
+      idBenAt = (i + idBenLabels.length) % idBenLabels.length;
+
+      Array.prototype.forEach.call(idBenLabels, function (label, n) {
+        var on = n === idBenAt;
+        label.classList.toggle('is-active', on);
+        label.setAttribute('aria-current', on ? 'true' : 'false');
+      });
+      Array.prototype.forEach.call(idBenShots, function (shot, n) {
+        shot.classList.toggle('is-active', n === idBenAt);
+      });
+
+      var centre = idBenStop(idBenAt);
+      idBenDot.style.top = (centre - 7) + 'px';
+      idBenFill.style.height = centre + 'px';
+
+      if (!animate) return;
+
+      /* the ring only replays if the class goes away first */
+      idBen.classList.remove('is-moving');
+      void idBen.offsetWidth;
+      idBen.classList.add('is-moving');
+      window.clearTimeout(idBenPulse);
+      idBenPulse = window.setTimeout(function () {
+        idBen.classList.remove('is-moving');
+      }, 750);
+    };
+
+    Array.prototype.forEach.call(idBenLabels, function (label, n) {
+      label.addEventListener('mouseenter', function () { idBenMove(n, true); });
+      label.addEventListener('focus', function () { idBenMove(n, true); });
+      label.addEventListener('click', function () { idBenMove(n, true); });
+    });
+
+    idBenMove(0, false);
+    window.addEventListener('resize', function () { idBenMove(idBenAt, false); });
   }
 
   /* ---------- About: the process wire draws itself as you scroll ----------
