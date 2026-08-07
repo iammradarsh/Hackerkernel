@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Humble Cows &mdash; Dairy ERP Case Study | HackerKernel</title>
+  <meta name="description" content="How HackerKernel built a custom dairy ERP for Humble Cows — linking fat-testing machines, farmer payouts and monthly profit reports into one system.">
+
+  <link rel="icon" type="image/png" href="assets/hk-logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="cs-page csd-page">
+
+  <!-- Fixed side tab -->
+  <a class="talk-tab" href="#contact"><span>Let's Talk Business</span></a>
+
+<div class="page-shell">
+  <div class="wrap">
+
+    <!-- ================= Navbar ================= -->
+    <header class="navbar">
+      <div class="navbar__veil" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="navbar__inner">
+        <a class="logo" href="index.html">
+          <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+          <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+        </a>
+
+        <button class="burger" type="button" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu-overlay">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= Hero — image treatment ================= -->
+    <!-- Add csd-hero--video to the section below to switch this same markup
+         to the video treatment (see case-study-detail-video.html). -->
+    <section class="csd-top">
+      <div class="csd-top__grid" aria-hidden="true">
+        <img src="assets/box-line.png" alt="">
+      </div>
+
+      <div class="csd-hero">
+        <img class="csd-hero__bg" src="assets/csd/hero-bg.png" alt="Humble Cows dairy products beside the ERP dashboard">
+
+        <div class="csd-hero__head">
+          <span class="csd-hero__logo">
+            <img src="assets/csd/client-logo.png" alt="Humble Cows">
+          </span>
+
+          <div class="csd-hero__copy">
+            <div class="csd-hero__titles">
+              <p class="csd-hero__eyebrow">Case Study Of</p>
+              <h1 class="csd-hero__name">Humble Cows- Dairy ERP</h1>
+            </div>
+
+            <p class="csd-hero__lede">Humble Cow is an ERP system that helps the firm manage various records of sale and purchase of milk products. Farmers can know the details of their products and their price as per the market rate, from the app. It has made easy the entire process of procuring milk from different farmers on a daily basis.</p>
+          </div>
+        </div>
+
+        <div class="csd-hero__foot">
+          <div class="csd-hero__tech">
+            <p class="csd-hero__label">Technology Used</p>
+            <div class="csd-hero__stack">
+              <span class="csd-chip"><img class="csd-chip__glyph--lg" src="assets/csd/tech-react.svg" alt="React Native"></span>
+              <span class="csd-chip"><img src="assets/csd/tech-flutter.svg" alt="Flutter"></span>
+            </div>
+          </div>
+
+          <div class="csd-hero__built">
+            <p class="csd-hero__label">Built with</p>
+            <div class="csd-hero__pills">
+              <span class="csd-pill"><img src="assets/csd/plat-android.svg" alt="">Android App</span>
+              <span class="csd-pill"><img src="assets/csd/plat-apple.svg" alt="">IOS App</span>
+              <span class="csd-pill"><img src="assets/csd/plat-web.svg" alt="">Website</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Project Overview ================= -->
+    <section class="csd-overview">
+      <div class="csd-row">
+        <img class="csd-overview__art" src="assets/csd/ill-overview.png" alt="">
+
+        <div class="csd-sec__body">
+          <div class="csd-sec__head">
+            <span class="csd-sec__icon"><img src="assets/csd/ic-overview.svg" alt=""></span>
+            <p class="csd-sec__title">Project <em>Overview</em></p>
+          </div>
+
+          <div class="csd-overview__copy">
+            <p class="csd-overview__text" id="csd-overview-text">Humble Cows is a commendable initiative to bring forth the , a firm that serves the Food, FMCG, Agriculture industry was established in 2018. The firm provides services in dairy products such as Dairy feeds, Ghee,a and Milk which is a major product. To deal with the bulk demand of the Dairy Industry in a market such as India where resources are fragmented among various owners and farmers, Humble Cows procures milk from a variety of sources and sells the same in bulk to Dairy corporations. The firm began its work in the physical space and soon turned towards digital solutions in the hope of automating complex and lengthy procedures.<br><br>It joined hands with Hackerkernel to create a custom ERP (Enterprise Resource Planning) system that could fit into the company&rsquo;s workspace and make their job convenient. We set our goal to develop a web portal and an app that could link various processes, from the reports generated by the Milk Fat testing machines, the database of the milk purchased from the farmers to the reports of the monthly profits and gains made by the firm. The app should also have been easy and simple to use for the farmer, who would regularly be updated with the price of his product and its quality based on the machine&rsquo;s results, through the Humble Cow app.</p>
+
+            <button class="csd-more" type="button" data-more aria-expanded="false" aria-controls="csd-overview-text">
+              <span class="csd-more__label">View More</span>
+              <img class="csd-more__icon" src="assets/csd/ic-plus.svg" alt="">
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Planning & Execution ================= -->
+    <section class="csd-planning">
+      <div class="csd-row">
+        <div class="csd-sec__body">
+          <div class="csd-sec__head">
+            <span class="csd-sec__icon"><img src="assets/csd/ic-planning.svg" alt=""></span>
+            <p class="csd-sec__title">Planning &amp; <em>Execution</em></p>
+          </div>
+
+          <p class="csd-planning__sub">UI/UX Design</p>
+
+          <div class="csd-planning__list">
+            <p>Design is an important part of every project, the interface for an app to be used for numerous purposes and people should be simple:</p>
+            <ul>
+              <li>Since the app was to be used for business process automation, the design was made user-friendly and straight-forward.</li>
+              <li>The software had several user roles and multiple navigation buttons, organized for the effortless functioning of the system.</li>
+              <li>Wireframes were designed first and all unnecessary details were eliminated one by one before moving on with final templates, font styles, etc.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="csd-planning__art">
+          <img src="assets/csd/planning-shot.png" alt="Humble Cows dashboard and reports screens">
+
+          <span class="csd-badge" aria-hidden="true">
+            <svg class="csd-badge__ring" viewBox="0 0 100 100" role="presentation" focusable="false">
+              <defs>
+                <path id="csd-badge-arc" fill="none"
+                      d="M50 5.5a44.5 44.5 0 1 1 0 89 44.5 44.5 0 1 1 0-89"></path>
+              </defs>
+              <text>
+                <textPath href="#csd-badge-arc" textLength="279.6" lengthAdjust="spacing">Showcase - Showcase - Showcase - Showcase - Showcase - Showcase - Showcase - </textPath>
+              </text>
+            </svg>
+
+            <span class="csd-badge__disc"><img src="assets/csd/badge-arrow.svg" alt=""></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="csd-planning__project">
+        <div class="csd-planning__intro">
+          <h2 class="csd-planning__introtitle">Project</h2>
+          <p class="csd-planning__introtext">Humble Cow is an ERP system that helps the firm manage various records of sale and purchase of milk products. Farmers can know the details of their products and their price as per the market rate, from the app. It has made easy the entire process of procuring milk from different farmers on a daily basis.</p>
+        </div>
+
+        <div class="csd-shots">
+          <div class="csd-shot">
+            <img class="csd-shot__bg" src="assets/csd/phone-card-bg.png" alt="" aria-hidden="true">
+            <span class="csd-shot__ph csd-shot__ph--1"><img src="assets/csd/phone-1.png" alt="Farmer login screen"></span>
+          </div>
+
+          <div class="csd-shot">
+            <img class="csd-shot__bg" src="assets/csd/phone-card-bg.png" alt="" aria-hidden="true">
+            <span class="csd-shot__ph csd-shot__ph--2"><img src="assets/csd/phone-2.png" alt="Dashboard screen"></span>
+          </div>
+
+          <div class="csd-shot">
+            <img class="csd-shot__bg" src="assets/csd/phone-card-bg.png" alt="" aria-hidden="true">
+            <span class="csd-shot__ph csd-shot__ph--3"><img src="assets/csd/phone-3.png" alt="Machines list screen"></span>
+          </div>
+
+          <div class="csd-shot">
+            <img class="csd-shot__bg" src="assets/csd/phone-card-bg.png" alt="" aria-hidden="true">
+            <span class="csd-shot__ph csd-shot__ph--4"><img src="assets/csd/phone-4.png" alt="Transactions screen"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Techs Used ================= -->
+    <section class="csd-techs">
+      <div class="csd-row">
+        <img class="csd-techs__art" src="assets/csd/ill-techs.svg" alt="">
+
+        <div class="csd-techs__body">
+          <div class="csd-techs__clip" id="csd-techs-copy">
+            <div class="csd-sec__head">
+              <span class="csd-sec__icon csd-sec__icon--lift"><img class="csd-sec__glyph--dev" src="assets/csd/ic-techs.svg" alt=""></span>
+              <p class="csd-sec__title">Techs <em>Used</em></p>
+            </div>
+
+            <p class="csd-sec__copy">The Android app for Humble Cows is written in Java with its backend created in PHP. Another technological tool used in the app owing to the large size of data it manages is PostgreSQL. Android App/ Web portal Our client needed a system that could deliver better efficiency and assist them to make precise data-driven decisions in the future based on the reports that were all combined in the single ERP system:</p>
+
+            <ul class="csd-sec__list csd-techs__list">
+              <li>The app has a systematic dashboard that consisted of all essential information viz. a total number of fat testing machines, total farmers logged in to the system, the total quantity of milk obtained, etc.</li>
+              <li>The entire process of calculating total profits gained or losses incurred from different places is automated and integrated through the system.</li>
+              <li>The client can survey various reports of milk produces with fat and SNF content and filter the reports as per their convenience.</li>
+              <li>The portal did not only give access to information on various sellers of milk in different regions and testing machines but it also combined the list of buyers at a single place.</li>
+              <li>Adding machines, sellers, and buyers to the database of the system is an easy process, the app is deployed in a <a href="https://hackerkernel.com/private-cloud" target="_blank" rel="noopener">private cloud</a> provider for storing data.</li>
+              <li>The app was made so, to result most convenient for the farmer, who just had to present his sample for the milk. The system is linked to the machines, and after accessing the report about the fat content of the milk, the ERP system analyzes the report and consults the current rate of milk, to deliver the report and the appropriate price of the milk to the farmer&rsquo;s account in the app.</li>
+            </ul>
+          </div>
+
+          <button class="csd-more" type="button" data-more aria-expanded="false" aria-controls="csd-techs-copy">
+            <span class="csd-more__label">View More</span>
+            <img class="csd-more__icon" src="assets/csd/ic-plus.svg" alt="">
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Obstacles Discovered ================= -->
+    <section class="csd-obstacles">
+      <div class="csd-row">
+        <div class="csd-sec__body">
+          <div class="csd-sec__head">
+            <span class="csd-sec__icon csd-sec__icon--soft"><img src="assets/csd/ic-search.svg" alt=""></span>
+            <p class="csd-sec__title">Obstacles <em>Discovered</em></p>
+          </div>
+
+          <p class="csd-sec__sub">We faced following challenges:</p>
+
+          <ul class="csd-sec__list">
+            <li>The system was not only to be used for internal company processes as an effective database but was also to be linked with third-party machines, and it was a challenging task to make it efficient for obtaining different sample data, converting them into proper reports after assessing the product value based on the current rate of the product which also is a variable figure.</li>
+            <li>The connection at places where testing machines are installed was often poor since they are in rural areas.</li>
+          </ul>
+        </div>
+
+        <img class="csd-obstacles__art csd-sec__art" src="assets/csd/ill-obstacles.svg" alt="">
+      </div>
+    </section>
+
+    <!-- ================= Solutions ================= -->
+    <section class="csd-solutions">
+      <div class="csd-row">
+        <img class="csd-solutions__art csd-sec__art" src="assets/csd/ill-solutions.svg" alt="">
+
+        <div class="csd-sec__body">
+          <div class="csd-sec__head">
+            <span class="csd-sec__icon"><img src="assets/csd/ic-search.svg" alt=""></span>
+            <p class="csd-sec__title">Solutions</p>
+          </div>
+
+          <p class="csd-sec__sub">We overcame the challenges by:</p>
+
+          <ul class="csd-sec__list">
+            <li>We created the ERP such that it automated the procedure, from analyzing sample information to delivering reports, it made buying and selling much faster work than before.</li>
+            <li>The server was enabled not only to carry heavy and huge amounts of data but also loads of data uploaded and received in a small amount of time whenever it could establish a connection with the third-party machines in order for the server to not hang in any case.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Final Product ================= -->
+    <section class="csd-final">
+      <div class="csd-row">
+        <div class="csd-sec__body">
+          <div class="csd-sec__head">
+            <span class="csd-sec__icon csd-sec__icon--soft csd-sec__icon--lift"><img src="assets/csd/ic-final.svg" alt=""></span>
+            <p class="csd-sec__title">Final <em>Product</em></p>
+          </div>
+
+          <p class="csd-sec__copy">The work that began with schematic wireframes ended with a full-fledged ERP system, that was capable of tracking the full-revenue cycle for our client, from individual buying and selling details to overall profits and losses of the firm. The first version of the app was developed in 60 days and the overall project took 150 days in its complete.</p>
+
+          <p class="csd-sec__copy">The work continued as and when changes and updates were required for its better functioning.ERP also improved collaboration between employees, farmers, and buyers alike. Our collaboration with Humble Cows, made us understand the significance of an integrated workspace to deal with all the suppliers in the on-demand food delivery sector.</p>
+        </div>
+
+        <span class="csd-final__art csd-sec__art"><img src="assets/csd/ill-final.svg" alt=""></span>
+      </div>
+    </section>
+
+    <!-- ================= Testimonials ================= -->
+    <section class="csd-tests" id="testimonials">
+      <img class="csd-tests__quote" src="assets/quote-bg.svg" alt="">
+
+      <div class="csd-tests__head">
+        <div class="csd-tests__top">
+          <p class="csd-tests__badge"><b>#</b>Clients</p>
+          <h2 class="csd-tests__title">Our <em>Testimonials</em></h2>
+        </div>
+        <p class="csd-tests__lede">Hear what our clients have to say about working with us.</p>
+      </div>
+
+      <div class="reviews">
+        <div class="reviews__row reviews__row--1" data-marquee>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-1.png" alt="">
+              <div class="review__id"><p class="review__name">John Doe</p><p class="review__role">Marketing Manager</p></div>
+            </div>
+            <p class="review__body">This platform is incredibly intuitive and efficient, streamlining our workflow and boosting productivity. A must-have for any team!</p>
+            <img class="review__mark" src="assets/quote-blue.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-2.png" alt="">
+              <div class="review__id"><p class="review__name">Emily Smith</p><p class="review__role">Project Manager</p></div>
+            </div>
+            <p class="review__body">User-friendly and feature-rich, it has transformed our operations, making tasks seamless and efficient. Highly recommended for professionals!</p>
+            <img class="review__mark" src="assets/quote-green.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+        </div>
+
+        <div class="reviews__row reviews__row--2" data-marquee>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-1.png" alt="">
+              <div class="review__id"><p class="review__name">John Doe</p><p class="review__role">Marketing Manager</p></div>
+            </div>
+            <p class="review__body">This platform is incredibly intuitive and efficient, streamlining our workflow and boosting productivity. A must-have for any team!</p>
+            <img class="review__mark" src="assets/quote-blue.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-2.png" alt="">
+              <div class="review__id"><p class="review__name">Emily Smith</p><p class="review__role">Project Manager</p></div>
+            </div>
+            <p class="review__body">User-friendly and feature-rich, it has transformed our operations, making tasks seamless and efficient. Highly recommended for professionals!</p>
+            <img class="review__mark" src="assets/quote-green.svg" alt="">
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Footer ================= -->
+    <footer class="footer" id="contact">
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <a class="logo" href="index.html">
+              <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+              <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+            </a>
+            <p class="footer__tagline">Discover the power of our secure Services</p>
+          </div>
+
+          <div class="footer__cols">
+            <div class="footer__col">
+              <h4>About us</h4>
+              <ul>
+                <li><a href="index.html#services">Features</a></li>
+                <li><a href="#contact">Let&rsquo;s Talk</a></li>
+              </ul>
+            </div>
+
+            <div class="footer__col footer__col--wide">
+              <h4>Services</h4>
+              <ul>
+                <li><a href="ai-solution.html">Ai Solutions</a></li>
+                <li><a href="index.html#salesforce">Salesforce</a></li>
+                <li><a href="staff-augmentation.html">Staff Augumentation</a></li>
+                <li><a href="index.html#services">Mobile Development</a></li>
+                <li><a href="index.html#services">Web Development</a></li>
+              </ul>
+            </div>
+
+            <div class="footer__col">
+              <h4>Social</h4>
+              <ul>
+                <li><a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a></li>
+                <li><a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a></li>
+                <li><a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer__bar">
+          <p>copyright 2025 Hackerkernel All Rights Reserved</p>
+          <p class="footer__cookies">This page uses cookies. See cookies details here
+            <img src="assets/footer-underline.svg" alt="">
+          </p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  </div>
+
+  <!-- ================= Slide-in menu ================= -->
+  <div class="menu-overlay" id="menu-overlay" role="dialog" aria-modal="true" aria-label="Main menu" aria-hidden="true">
+
+    <div class="menu-overlay__left">
+      <img class="menu-overlay__bg" src="assets/menu-bg.png" alt="" aria-hidden="true">
+
+      <nav class="menu-links" aria-label="Main menu">
+        <div class="menu-links__primary">
+          <a href="index.html">Home</a>
+          <a href="index.html#services">Services</a>
+          <a href="case-study.html">Portfolio</a>
+          <a href="index.html#industries">Industries</a>
+          <a href="index.html#about">About Us</a>
+        </div>
+
+        <div class="menu-links__secondary">
+          <div class="menu-links__col">
+            <a href="industry-detail.html">Foodtech</a>
+            <a href="travel-tech.html">Traveltech</a>
+            <a href="index.html#industries">Fintech</a>
+            <a href="index.html#industries">RealEstate</a>
+            <a href="index.html#industries">Education</a>
+            <a href="index.html#industries">Healthcare</a>
+            <a href="index.html#industries">E-Commerce</a>
+            <a href="index.html#industries">Media &amp; Social</a>
+          </div>
+
+          <div class="menu-links__col menu-links__col--pages">
+            <a href="index.html">Home</a>
+            <a href="index.html#services">Services</a>
+            <a href="case-study.html">Portfolio</a>
+            <a href="index.html#industries">Industries</a>
+            <a href="index.html#about">About Us</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="menu-socials">
+        <a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a>
+        <a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://twitter.com/hackerkernel" target="_blank" rel="noopener">Twitter</a>
+      </div>
+    </div>
+
+    <div class="menu-overlay__right">
+      <div class="menu-cta">
+        <div class="menu-cta__copy">
+          <p class="menu-cta__eyebrow">Got An Idea?</p>
+          <h2 class="menu-cta__title">Let&rsquo;s Craft<br>Brilliance Together!</h2>
+        </div>
+
+        <button class="pill-btn" type="button">
+          <span class="pill-btn__label">Get In Touch</span>
+          <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+        </button>
+      </div>
+
+      <div class="menu-locations">
+        <a href="#india">India</a>
+        <a href="#usa">USA</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="Script.js"></script>
+</body>
+</html>

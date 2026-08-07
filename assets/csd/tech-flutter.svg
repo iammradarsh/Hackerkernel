@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="devicon:flutter" clip-path="url(#clip0_4056_36583)">
+<path id="Vector" d="M2.30664 12.0375L14.3066 0H21.6941L6.01914 15.675L2.30664 12.0375ZM14.3066 24H21.6941L15.3004 17.6063L21.6941 11.0812H14.3066L7.91289 17.5312L14.3066 24Z" fill="white"/>
+<path id="Vector_2" d="M15.2996 17.6064L11.5496 13.8564L7.91211 17.5314L11.5496 21.2064L15.2996 17.6064Z" fill="white"/>
+<path id="Vector_3" d="M21.6945 24.0002L15.3008 17.6064L11.5508 21.2064L14.307 24.0002H21.6945Z" fill="#DADADA"/>
+<path id="Vector_4" d="M11.5508 21.2064L17.3258 19.6314L15.3008 17.6064L11.5508 21.2064Z" fill="#666666"/>
+</g>
+<defs>
+<clipPath id="clip0_4056_36583">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg>

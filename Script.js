@@ -27,13 +27,398 @@
     });
   }
 
-  slider('services-track', '.services__arrows .arrow-btn--prev', '.services__arrows .arrow-btn--next', 346, 3);
   slider('ind-track', '#ind-prev', '#ind-next', 244, 4);
+
+  /* ---------- Services: fold-left rail ----------
+     The row never translates. Next folds the leftmost open card down to a third
+     of its width and leaves it parked on the left; the cards after it are carried
+     along by the flex row as that one width interpolates, so the following card
+     arrives from the right without anything being moved by hand. Prev unfolds the
+     last strip again.
+
+     Three folded strips measure one card, so six folds plus one open card come to
+     1038 — the rail's own three-card width — and the final step lands flush. That
+     also caps the travel: svcN runs 0..cards-1 and needs no other clamp.
+
+     Hover is independent and moves nothing, so a highlight cannot slide off the
+     card the pointer is on. The arrows are the only thing that changes layout. */
+  var svcSlider = document.querySelector('.services__slider');
+  var svcTrack = document.getElementById('services-track');
+  var svcView = svcSlider && svcSlider.querySelector('.services__viewport');
+
+  if (svcSlider && svcTrack && svcView) {
+    var SVC_PITCH = 346;                    /* open card width — the row has no gaps */
+    var SVC_FOLD = SVC_PITCH / 3;           /* folded strip; three make one card */
+
+    var svcCards = Array.prototype.slice.call(svcTrack.children);
+    var svcPrev = svcSlider.querySelector('.arrow-btn--prev');
+    var svcNext = svcSlider.querySelector('.arrow-btn--next');
+    var svcTouch = window.matchMedia('(hover: none) and (pointer: coarse)');
+
+    var svcLast = svcCards.length - 1;       /* one card always stays open */
+    var svcN = 0;                            /* how many are folded onto the left */
+    var svcAt = -1;                          /* highlighted card, -1 for none */
+
+    /* the design gives the arrow that has somewhere to go the primary red and
+       the other the body grey, so availability is a visual state, not a guess */
+    var svcArrows = function (at, span) {
+      if (svcPrev) {
+        svcPrev.classList.toggle('is-live', at > 0.5);
+        svcPrev.setAttribute('aria-disabled', at > 0.5 ? 'false' : 'true');
+      }
+      if (svcNext) {
+        svcNext.classList.toggle('is-live', at < span - 0.5);
+        svcNext.setAttribute('aria-disabled', at < span - 0.5 ? 'false' : 'true');
+      }
+    };
+
+    var svcRender = function () {
+      /* one class per card and nothing else — the width and the grey are both the
+         stylesheet's business, so a click writes no geometry at all */
+      for (var i = 0; i < svcCards.length; i++) {
+        svcCards[i].classList.toggle('is-collapsed', i < svcN);
+      }
+
+      /* on touch the platform owns the scroll, so read the arrows off it */
+      if (svcTouch.matches) svcArrows(svcView.scrollLeft, svcView.scrollWidth - svcView.clientWidth);
+      else svcArrows(svcN, svcLast);
+    };
+
+    var svcFocus = function (i) {
+      if (i === svcAt) return;
+      if (svcAt >= 0 && svcCards[svcAt]) svcCards[svcAt].classList.remove('is-active');
+      svcAt = i;
+      if (i >= 0) svcCards[i].classList.add('is-active');
+    };
+
+    var svcStep = function (delta) {
+      /* touch keeps the native scroll below, where folding a card to 115px would
+         only make an already narrow rail harder to read */
+      if (svcTouch.matches) {
+        if (svcView.scrollBy) svcView.scrollBy({ left: delta * SVC_PITCH, behavior: 'smooth' });
+        else svcView.scrollLeft += delta * SVC_PITCH;
+        return;
+      }
+
+      svcN = Math.min(Math.max(svcN + delta, 0), svcLast);
+      svcRender();
+    };
+
+    if (svcPrev) svcPrev.addEventListener('click', function () { svcStep(-1); });
+    if (svcNext) svcNext.addEventListener('click', function () { svcStep(1); });
+
+    /* one delegated pair rather than a listener per card; pointerover also
+       fires for the card's own children, and re-focusing the same index is a
+       no-op, so the extra events cost nothing */
+    svcTrack.addEventListener('pointerover', function (e) {
+      if (e.pointerType === 'touch') return;
+      var card = e.target.closest && e.target.closest('.svc-card');
+      if (card) svcFocus(svcCards.indexOf(card));
+    });
+
+    svcView.addEventListener('pointerleave', function (e) {
+      if (e.pointerType === 'touch') return;
+      svcFocus(-1);
+    });
+
+    /* keyboard: tabbing to a card brings it fully into the rail first — unfolding
+       it if it is one of the strips, or folding whatever it takes if it sits off
+       the right-hand edge */
+    svcTrack.addEventListener('focusin', function (e) {
+      var card = e.target.closest && e.target.closest('.svc-card');
+      if (!card) return;
+
+      var i = svcCards.indexOf(card);
+      if (i < svcN) svcN = i;
+      while (svcN < svcLast &&
+             svcN * SVC_FOLD + (i - svcN + 1) * SVC_PITCH > svcView.clientWidth + 1) svcN++;
+
+      svcFocus(i);
+      svcRender();
+    });
+
+    svcTrack.addEventListener('focusout', function (e) {
+      if (!svcTrack.contains(e.relatedTarget)) svcFocus(-1);
+    });
+
+    /* Touch has no hover, so the first tap focuses a card and only the second
+       follows its link — otherwise the highlight would never be seen at all. */
+    svcTrack.addEventListener('click', function (e) {
+      if (!svcTouch.matches) return;
+
+      var card = e.target.closest && e.target.closest('.svc-card');
+      if (!card) return;
+
+      var i = svcCards.indexOf(card);
+      if (i === svcAt) return;
+
+      if (card.tagName === 'A') e.preventDefault();
+      svcFocus(i);
+    });
+
+    svcView.addEventListener('scroll', function () {
+      if (svcTouch.matches) svcArrows(svcView.scrollLeft, svcView.scrollWidth - svcView.clientWidth);
+    });
+
+    /* the rail is gutter-relative, so how many cards fit changes with the window */
+    window.addEventListener('resize', svcRender);
+
+    svcRender();
+  }
 
   /* ---------- Marquee rows: duplicate content for a seamless loop ---------- */
   Array.prototype.forEach.call(document.querySelectorAll('[data-marquee]'), function (row) {
     row.innerHTML += row.innerHTML;
   });
+
+  /* ---------- Testimonials: coverflow rail ----------
+     The five cards are stamped out three times over, so stepping never reaches
+     an end: when the active index wanders out of the middle copy we shift it
+     back by one copy with the transition switched off — the copies are
+     identical, so the jump lands on the same picture and is invisible.
+
+     Everything visual keys off distance-from-centre, which is written onto
+     each card as data-pos: CSS reads it for the height ramp, the quote reveal
+     and the fade. Cards declare data-kind="video" (plays its clip in place)
+     or "quote" (a still whose written review expands). */
+  var tvView = document.getElementById('test-vids');
+  var tvTrack = document.getElementById('tvid-track');
+
+  if (tvView && tvTrack) {
+    var TV_STEP = 236;          /* 204 card + 32 gap */
+    var TV_HALF = 102;          /* half a card */
+    var TV_COPIES = 3;
+    var TV_HOLD = 5200;         /* dwell before the rail advances itself */
+    var TV_GRAB = 5;            /* px of travel before a press counts as a drag */
+    var TV_LEAD = 2;            /* the card that opens centred — the third one,
+                                   so the rail starts video / quote / VIDEO /
+                                   quote / video, as the design has it */
+
+    var tvSet = tvTrack.children.length;
+    var tvSeed = tvTrack.innerHTML;
+    for (var tvC = 1; tvC < TV_COPIES; tvC++) tvTrack.innerHTML += tvSeed;
+
+    var tvCards = tvTrack.children;         /* live — index maps straight to position */
+    var tvAt = tvSet + TV_LEAD;             /* inside the middle copy */
+
+    /* The active index never leaves the middle copy, so that copy always holds
+       one of every testimonial — it is the one screen readers get. The outer
+       two are scenery: hidden from the accessibility tree, and their buttons
+       taken out of the tab order so nothing focusable hides inside them. */
+    for (var tvI = 0; tvI < tvCards.length; tvI++) {
+      if (tvI >= tvSet && tvI < tvSet * 2) continue;
+      tvCards[tvI].setAttribute('aria-hidden', 'true');
+      Array.prototype.forEach.call(tvCards[tvI].querySelectorAll('button'), function (b) {
+        b.setAttribute('tabindex', '-1');
+      });
+    }
+
+    var tvShift = 0;                        /* live drag offset, px */
+    var tvHeld = false;
+    var tvFrom = 0;
+    var tvDragged = false;
+    var tvHover = false;
+    var tvTimer = null;
+    var tvIdle = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var tvRender = function (animate) {
+      tvTrack.style.transition = animate ? '' : 'none';
+      tvTrack.style.transform = 'translateX(' +
+        (tvView.clientWidth / 2 - (tvAt * TV_STEP + TV_HALF) + tvShift) + 'px)';
+
+      for (var i = 0; i < tvCards.length; i++) {
+        var away = Math.abs(i - tvAt);
+        tvCards[i].setAttribute('data-pos', away > 3 ? 3 : away);
+      }
+    };
+
+    var tvHalt = function (card) {
+      card.classList.remove('is-playing');
+
+      var clip = card.querySelector('.tvid__video');
+      if (clip) {
+        clip.pause();
+        clip.currentTime = 0;
+      }
+
+      var btn = card.querySelector('.tvid__play');
+      var who = card.querySelector('.tvid__name');
+      if (btn && who) btn.setAttribute('aria-label', 'Play ' + who.textContent + '’s video testimonial');
+    };
+
+    var tvHush = function () {
+      Array.prototype.forEach.call(tvTrack.querySelectorAll('.tvid.is-playing'), tvHalt);
+    };
+
+    var tvStart = function (card) {
+      var src = card.getAttribute('data-video');
+      if (!src) return;
+
+      var clip = card.querySelector('.tvid__video');
+      if (!clip) {
+        clip = document.createElement('video');
+        clip.className = 'tvid__video';
+        clip.src = src;
+        clip.preload = 'auto';
+        clip.setAttribute('playsinline', '');       /* iOS: stay in the card */
+        clip.playsInline = true;
+        clip.addEventListener('ended', function () { tvHalt(card); tvQueue(); });
+        /* no file dropped in yet, or a codec the browser won't take — drop
+           back to the poster rather than leaving a dead black rectangle */
+        clip.addEventListener('error', function () { tvHalt(card); });
+        card.insertBefore(clip, card.querySelector('.tvid__shade'));
+      }
+
+      card.classList.add('is-playing');
+
+      var btn = card.querySelector('.tvid__play');
+      var who = card.querySelector('.tvid__name');
+      if (btn && who) btn.setAttribute('aria-label', 'Pause ' + who.textContent + '’s video testimonial');
+
+      var kick = clip.play();
+      if (kick && kick.catch) kick.catch(function () { tvHalt(card); });
+
+      tvSleep();
+    };
+
+    var tvToggle = function (card) {
+      if (card.classList.contains('is-playing')) {
+        tvHalt(card);
+        tvQueue();
+      } else {
+        tvHush();
+        tvStart(card);
+      }
+    };
+
+    var tvSleep = function () {
+      if (tvTimer) {
+        clearTimeout(tvTimer);
+        tvTimer = null;
+      }
+    };
+
+    var tvQueue = function () {
+      tvSleep();
+      if (tvIdle || tvHover || tvHeld) return;
+      if (tvTrack.querySelector('.tvid.is-playing')) return;
+      tvTimer = setTimeout(function () { tvGo(1); }, TV_HOLD);
+    };
+
+    var tvGo = function (delta) {
+      var next = tvAt + delta;
+
+      /* stepped out of the middle copy — rebase onto the identical card one
+         copy over, unanimated, then run the real step from there */
+      if (next < tvSet || next >= tvSet * 2) {
+        var jump = next < tvSet ? tvSet : -tvSet;
+        tvAt += jump;
+        next += jump;
+        tvRender(false);                          /* still carrying tvShift, so the
+                                                     picture does not move */
+        void tvTrack.offsetWidth;                 /* commit before re-arming */
+      }
+
+      tvAt = next;
+      tvShift = 0;                                /* the rail settles on the card,
+                                                     absorbing any drag left over */
+      tvHush();
+      tvRender(true);
+      tvQueue();
+    };
+
+    tvTrack.addEventListener('click', function (e) {
+      if (tvDragged) return;                      /* that was a drag, not a click */
+
+      var card = e.target.closest && e.target.closest('.tvid');
+      if (!card) return;
+
+      var idx = Array.prototype.indexOf.call(tvCards, card);
+
+      if (e.target.closest('.tvid__more')) {
+        var open = !card.classList.contains('is-expanded');
+        card.classList.toggle('is-expanded', open);
+        e.target.closest('.tvid__more').setAttribute('aria-expanded', open ? 'true' : 'false');
+        return;
+      }
+
+      if (e.target.closest('.tvid__play')) {
+        if (idx === tvAt) tvToggle(card);
+        else { tvGo(idx - tvAt); tvStart(tvCards[tvAt]); }
+        return;
+      }
+
+      /* clicking any off-centre card brings it to the middle */
+      if (idx !== tvAt) tvGo(idx - tvAt);
+      else if (card.getAttribute('data-kind') === 'video') tvToggle(card);
+    });
+
+    tvTrack.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+    tvView.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      tvHeld = true;
+      tvDragged = false;
+      tvFrom = e.clientX;
+      tvShift = 0;
+      tvView.classList.add('is-dragging');
+      tvSleep();
+    });
+
+    window.addEventListener('pointermove', function (e) {
+      if (!tvHeld) return;
+      tvShift = e.clientX - tvFrom;
+      if (Math.abs(tvShift) > TV_GRAB) tvDragged = true;
+      tvRender(false);
+    });
+
+    var tvRelease = function () {
+      if (!tvHeld) return;
+      tvHeld = false;
+      tvView.classList.remove('is-dragging');
+
+      /* round the travel to whole cards, but let a short flick still count */
+      var steps = Math.round(-tvShift / TV_STEP);
+      if (!steps && Math.abs(tvShift) > 45) steps = tvShift < 0 ? 1 : -1;
+
+      /* tvGo clears tvShift itself, after its rebase has used it */
+      if (steps) tvGo(steps);
+      else { tvShift = 0; tvRender(true); tvQueue(); }
+
+      /* the click born of this release has been and gone by the next tick, so
+         the flag can drop and leave keyboard activation working again */
+      setTimeout(function () { tvDragged = false; }, 0);
+    };
+
+    window.addEventListener('pointerup', tvRelease);
+    window.addEventListener('pointercancel', tvRelease);
+
+    tvView.addEventListener('mouseenter', function () { tvHover = true; tvSleep(); });
+    tvView.addEventListener('mouseleave', function () { tvHover = false; tvQueue(); });
+
+    tvView.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); tvGo(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); tvGo(1); }
+    });
+
+    var tvPrev = document.querySelector('.test-sec__arrows .arrow-btn--prev');
+    var tvNext = document.querySelector('.test-sec__arrows .arrow-btn--next');
+    if (tvPrev) tvPrev.addEventListener('click', function () { tvGo(-1); });
+    if (tvNext) tvNext.addEventListener('click', function () { tvGo(1); });
+
+    window.addEventListener('resize', function () { tvRender(false); });
+
+    /* off-screen the rail neither advances nor keeps a clip running */
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) tvQueue();
+        else { tvSleep(); tvHush(); }
+      }, { threshold: 0.2 }).observe(tvView);
+    }
+
+    tvRender(false);
+    tvQueue();
+  }
 
   /* ---------- Slide-in menu: burger morphs into the cross ---------- */
   var burger = document.getElementById('menu-toggle');
@@ -70,6 +455,71 @@
       btn.classList.add('is-active');
     });
   });
+
+  /* ---------- Case study detail: View More ----------
+     The button names the block it uncollapses through aria-controls, so the
+     clamp lives entirely in CSS and this only has to flip a class. */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-more]'), function (btn) {
+    var block = document.getElementById(btn.getAttribute('aria-controls'));
+    if (!block) return;
+
+    btn.addEventListener('click', function () {
+      var open = !block.classList.contains('is-open');
+
+      block.classList.toggle('is-open', open);
+      btn.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+      var label = btn.querySelector('.csd-more__label');
+      if (label) label.textContent = open ? 'View Less' : 'View More';
+    });
+  });
+
+  /* ---------- Case study detail: the hero clip ----------
+     The card already shows the thumbnail behind a blurred veil; pressing play
+     drops a <video> over it. The element is built on first press so the file
+     is never fetched for visitors who don't ask for it, and a missing file or
+     an unplayable codec falls back to the veil rather than a black hole. */
+  var csdHero = document.querySelector('.csd-hero--video');
+
+  if (csdHero) {
+    var csdPlay = csdHero.querySelector('.csd-hero__play');
+    var csdClip = null;
+
+    var csdStop = function () {
+      csdHero.classList.remove('is-playing');
+      if (csdClip) csdClip.pause();
+      if (csdPlay) csdPlay.setAttribute('aria-label', 'Play the case study video');
+    };
+
+    if (csdPlay) csdPlay.addEventListener('click', function () {
+      var src = csdHero.getAttribute('data-video');
+      if (!src) return;
+
+      if (!csdClip) {
+        csdClip = document.createElement('video');
+        csdClip.className = 'csd-hero__video';
+        csdClip.src = src;
+        csdClip.poster = csdHero.querySelector('.csd-hero__bg').getAttribute('src');
+        csdClip.controls = true;
+        csdClip.preload = 'auto';
+        csdClip.setAttribute('playsinline', '');       /* iOS: stay in the card */
+        csdClip.playsInline = true;
+        csdClip.addEventListener('ended', csdStop);
+        csdClip.addEventListener('error', csdStop);
+        csdHero.appendChild(csdClip);
+      }
+
+      csdHero.classList.add('is-playing');
+
+      var kick = csdClip.play();
+      if (kick && kick.catch) kick.catch(csdStop);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && csdHero.classList.contains('is-playing')) csdStop();
+    });
+  }
 
   /* ---------- Process steps: carousel drives the layer diagram ----------
      Each slide carries data-node — the diagram node it corresponds to — so
@@ -126,6 +576,27 @@
       row.addEventListener('click', function () {
         var wasOpen = row.classList.contains('is-open');
         Array.prototype.forEach.call(teams, function (other) {
+          other.classList.remove('is-open');
+          other.setAttribute('aria-expanded', 'false');
+        });
+        if (!wasOpen) {
+          row.classList.add('is-open');
+          row.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  }
+
+  /* ---------- FAQ: single-open accordion ----------
+     The design keeps exactly one row expanded, so re-clicking the open
+     row collapses it and leaves the list closed. */
+  var faqList = document.getElementById('tv-faq-list');
+  if (faqList) {
+    var faqRows = faqList.querySelectorAll('.tv-q');
+    Array.prototype.forEach.call(faqRows, function (row) {
+      row.addEventListener('click', function () {
+        var wasOpen = row.classList.contains('is-open');
+        Array.prototype.forEach.call(faqRows, function (other) {
           other.classList.remove('is-open');
           other.setAttribute('aria-expanded', 'false');
         });

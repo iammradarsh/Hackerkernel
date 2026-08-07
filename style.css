@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Suwannaphum:wght@400&display=swap');
+/* the AI page's automation cards set their 01..04 in condensed Open Sans
+   (wdth 75, ExtraBold) — outlined, so the width axis is clearly visible */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wdth,wght@75,800&display=swap');
 
 /* ===========================================================
    Gilroy — the Figma file uses Gilroy Regular / Medium / SemiBold.
@@ -52,6 +55,8 @@
   --font-main: 'Gilroy', 'Poppins', sans-serif;
   --font-poppins: 'Poppins', sans-serif;
   --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  /* the job-details billboard sets its title and meta line in this serif */
+  --font-board: 'Suwannaphum', serif;
 
   /* design frame = 1280, content wrapper = 1244, inner grid = 1040 */
   --wrap: 1244px;
@@ -153,6 +158,38 @@ p {
 }
 
 /* ===========================================================
+   Design frame.
+
+   Figma measures every coordinate from a 1244 panel, but the real
+   panel is only that wide at exactly 1280 with no scrollbar — a
+   1280 window actually leaves ~1213. Pinning children with a bare
+   `left:` therefore parks them against the left edge and the whole
+   composition drifts right as the viewport grows.
+
+   The frame keeps the 1244 measuring stick and centres itself, so
+   the Figma numbers stay literal AND the content stays centred at
+   any width. Sections whose children are absolutely positioned use
+   the --fill variant, which also supplies the containing block.
+   =========================================================== */
+/* left/transform rather than `margin-inline: auto`: auto margins collapse
+   to zero once the frame is wider than the panel — which it is at any
+   window under ~1295 — and the frame would silently left-align again. */
+.design-frame {
+  position: relative;
+  left: 50%;
+  width: var(--wrap);
+  transform: translateX(-50%);
+}
+
+.design-frame--fill {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+/* ===========================================================
    Navbar
    =========================================================== */
 /* Fixed to the viewport. 85px = the 18px page inset + the 67px bar, so the
@@ -168,8 +205,10 @@ p {
 }
 
 /* the home page navbar used to sit in the flow — replace the space it held.
-   67px, not 85px: the shell inset already accounts for the navbar's 18px. */
-body:not(.cs-page) .wrap {
+   67px, not 85px: the shell inset already accounts for the navbar's 18px.
+   .cs-page, .cr-page and .jd-page opt out: each opens on a full-bleed hero
+   that starts at the panel's top edge, with the navbar floating over it. */
+body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   padding-top: 67px;
 }
 
@@ -289,10 +328,11 @@ body:not(.cs-page) .wrap {
   align-items: center;
   gap: 24px;
   margin-right: 62px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
-  color: var(--text-color);
+  color: var(--sub-text-color);
   white-space: nowrap;
+  font-family: "poppins";
 }
 
 .nav-links a {
@@ -825,6 +865,22 @@ body:not(.cs-page) .wrap {
   right: var(--shell-gutter);
   top: 338px;
   height: 352px;
+
+  /* ── Fold-left rail ──
+     The row never translates. Next folds the leftmost open card down to a third
+     of its width and parks it on the left; the cards after it are carried along
+     by the flex row as that width interpolates, so the next one arrives from the
+     right. Three folded strips measure one card, which is why six folds plus one
+     open card come to 1038 — the rail's own three-card width — and the last step
+     lands flush instead of overshooting into empty space.
+
+     Hover is independent of all this and never moves anything, so the highlight
+     cannot slide off the card the pointer is on. Only the arrows change layout. */
+  --svc-pitch: 346px;
+  --svc-fold: calc(var(--svc-pitch) / 3);
+  --svc-fold-bg: #e0e0e0;
+  --svc-dur: 640ms;
+  --svc-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .services__arrows {
@@ -834,6 +890,7 @@ body:not(.cs-page) .wrap {
   display: flex;
   align-items: center;
   gap: 8px;
+  z-index: 3;
 }
 
 .arrow-btn {
@@ -861,12 +918,27 @@ body:not(.cs-page) .wrap {
   background: #f6f6f6;
 }
 
+/* The design draws the arrow that has somewhere to go in the primary red and
+   the one that does not in the body grey — so each button carries both icons
+   and cross-fades between them as the rail reaches an end. */
+.services__arrows .arrow-btn img {
+  transition: opacity var(--svc-dur) var(--svc-ease);
+}
+
+.services__arrows .arrow-btn__live { opacity: 0; }
+.services__arrows .arrow-btn.is-live .arrow-btn__idle { opacity: 0; }
+.services__arrows .arrow-btn.is-live .arrow-btn__live { opacity: 1; }
+.services__arrows .arrow-btn[aria-disabled='true'] { cursor: default; }
+
 .services__viewport {
   position: absolute;
   left: 0;
   right: 0;
   top: 108px;
-  height: 244px;
+  /* 244 of card plus room underneath for the focused card's glow, so the
+     clip that hides the off-rail cards does not slice the shadow off */
+  height: 284px;
+  padding-bottom: 40px;
   overflow: hidden;
 }
 
@@ -874,26 +946,79 @@ body:not(.cs-page) .wrap {
   display: flex;
   align-items: flex-start;
   width: max-content;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ── Service card ── */
+/* ── Service card ──
+   The divider is drawn by ::after rather than a border so the card's padding box
+   stays a true 346px: the right-anchored tag and everything sized off the card
+   (the wave, the blob's 50%) then land on the Figma number instead of 1px inside
+   it. The resting shadow carries a fully transparent outer layer so the two
+   lists have matching lengths and the glow can interpolate rather than snap. */
 .svc-card {
   position: relative;
   flex: 0 0 auto;
-  width: 346px;
+  width: var(--svc-w, var(--svc-pitch));
   height: 244px;
-  border-right: 1px solid var(--hairline);
-  background: #fff;
+  background: var(--svc-bg, #fff);
   overflow: hidden;
+  box-shadow: 0 30px 60px -32px rgba(237, 49, 58, 0);
+  transition: width var(--svc-dur) var(--svc-ease),
+              background-color var(--svc-dur) var(--svc-ease),
+              box-shadow var(--svc-dur) var(--svc-ease);
 }
 
+/* Folded: a third of a card, contents simply clipped where the design's own
+   left-anchored offsets put them — icon whole, heading and chips cut off. The
+   tag is the one exception: right-anchored, it would land on top of the icon, so
+   it fades out. Every strip settles on the same grey; folding several in quick
+   succession is what makes the newest ones look lighter, since each is still
+   interpolating out of white. */
+.svc-card.is-collapsed {
+  --svc-w: var(--svc-fold);
+  --svc-bg: var(--svc-fold-bg);
+}
+
+.svc-card.is-collapsed::after { background: #fff; }
+
+.svc-card.is-collapsed .svc-card__tag { opacity: 0; }
+
+.svc-card::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: var(--hairline);
+  transition: background-color var(--svc-dur) var(--svc-ease);
+}
+
+.svc-card.is-active {
+  box-shadow: 0 30px 60px -32px rgba(237, 49, 58, 0.35);
+  z-index: 2;
+}
+
+.svc-card.is-active::after { background: rgba(237, 49, 58, 0.28); }
+
+/* Parked one card-height below the fold in the design, ready to rise: a radial
+   wash of primary red through amber into white. Stretches with the card so the
+   glow keeps filling the full width as it opens. */
 .svc-card__wave {
   position: absolute;
   left: 0;
   top: 242px;
-  width: 346px;
+  width: 100%;
   height: 132px;
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--svc-dur) var(--svc-ease),
+              opacity var(--svc-dur) var(--svc-ease);
+}
+
+/* 242 + 132 - 130 = 244, so it settles flush with the card's bottom edge */
+.svc-card.is-active .svc-card__wave {
+  opacity: 1;
+  transform: translate3d(0, -130px, 0);
 }
 
 .svc-card__blob {
@@ -905,8 +1030,18 @@ body:not(.cs-page) .wrap {
   justify-content: center;
   width: 527.039px;
   height: 451.048px;
-  transform: translateX(-50%);
+  opacity: 0;
+  transform: translate3d(-50%, 0, 0);
+  transition: transform var(--svc-dur) var(--svc-ease),
+              opacity var(--svc-dur) var(--svc-ease);
   pointer-events: none;
+}
+
+/* the blob is a solid warm gradient, so it only ever reads as a faint bloom
+   behind the icon and heading — the wave carries the colour */
+.svc-card.is-active .svc-card__blob {
+  opacity: 0.14;
+  transform: translate3d(-50%, -104px, 0);
 }
 
 .svc-card__blob img {
@@ -925,6 +1060,16 @@ body:not(.cs-page) .wrap {
   border-radius: 100px;
   background: #f8f8f8;
   overflow: hidden;
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--svc-dur) var(--svc-ease),
+              background-color var(--svc-dur) var(--svc-ease),
+              box-shadow var(--svc-dur) var(--svc-ease);
+}
+
+.svc-card.is-active .svc-card__icon {
+  background: #fff;
+  box-shadow: 0 12px 26px -12px rgba(237, 49, 58, 0.45);
+  transform: translate3d(0, -3px, 0) scale(1.05);
 }
 
 .svc-card__icon img {
@@ -940,6 +1085,7 @@ body:not(.cs-page) .wrap {
   width: 45px;
 }
 
+/* right-anchored, so it drifts outward with the card as the card opens */
 .svc-card__tag {
   position: absolute;
   right: 17px;
@@ -950,7 +1096,11 @@ body:not(.cs-page) .wrap {
   color: var(--sub-text-color);
   text-align: right;
   white-space: nowrap;
+  transition: color var(--svc-dur) var(--svc-ease),
+              opacity var(--svc-dur) var(--svc-ease);
 }
+
+.svc-card.is-active .svc-card__tag { color: var(--text-color); }
 
 .svc-card__heading {
   position: absolute;
@@ -964,6 +1114,12 @@ body:not(.cs-page) .wrap {
   line-height: 1.2;
   color: var(--text-color);
   white-space: nowrap;
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--svc-dur) var(--svc-ease);
+}
+
+.svc-card.is-active .svc-card__heading {
+  transform: translate3d(0, -4px, 0);
 }
 
 .svc-card__chips {
@@ -991,6 +1147,56 @@ body:not(.cs-page) .wrap {
   line-height: 1.075;
   color: var(--sub-text-color);
   white-space: nowrap;
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--svc-dur) var(--svc-ease),
+              border-color var(--svc-dur) var(--svc-ease),
+              color var(--svc-dur) var(--svc-ease);
+}
+
+/* the delays live on the active rule only, so the chips lift in sequence and
+   drop back together — a stagger on the way out reads as lag, not polish */
+.svc-card.is-active .svc-card__chips span {
+  border-color: var(--text-color);
+  color: var(--text-color);
+  transform: translate3d(0, -3px, 0);
+}
+
+.svc-card.is-active .svc-card__chips span:nth-child(2) { transition-delay: 55ms; }
+.svc-card.is-active .svc-card__chips span:nth-child(3) { transition-delay: 110ms; }
+
+/* Touch: hand the rail to the platform. Native momentum plus scroll-snap beats
+   any hand-rolled drag, so the track's transform steps aside and the viewport
+   itself scrolls; the script switches to tap-to-focus. */
+@media (hover: none) and (pointer: coarse) {
+  .services__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .services__viewport::-webkit-scrollbar { display: none; }
+
+  .services__track { transform: none; }
+
+  .svc-card { scroll-snap-align: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .services__track,
+  .svc-card,
+  .svc-card__wave,
+  .svc-card__blob,
+  .svc-card__icon,
+  .svc-card__heading,
+  .svc-card::after,
+  .svc-card__tag,
+  .svc-card__chips span,
+  .services__arrows .arrow-btn img { transition-duration: 0.01ms; }
+
+  .svc-card.is-active .svc-card__chips span:nth-child(2),
+  .svc-card.is-active .svc-card__chips span:nth-child(3) { transition-delay: 0s; }
 }
 
 /* ===========================================================
@@ -1817,7 +2023,12 @@ body:not(.cs-page) .wrap {
   color: var(--sub-text-color);
 }
 
-/* ── Video testimonial strip ── */
+/* ── Video testimonial strip ──
+   A coverflow rail: the card sitting over the centre line is the tallest and
+   the one that plays, its neighbours step down, and everything further out
+   dissolves into the edge gradients. JS writes the distance-from-centre onto
+   each card as data-pos, so the whole ramp below is position-driven — no card
+   carries a size of its own. */
 .test-vids {
   position: absolute;
   left: 86px;
@@ -1825,24 +2036,42 @@ body:not(.cs-page) .wrap {
   top: 240px;
   height: 366px;
   overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;              /* horizontal belongs to the rail, vertical to the page */
+  user-select: none;
+  -webkit-user-select: none;
 }
+
+.test-vids:focus { outline: none; }
+
+.test-vids:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.test-vids.is-dragging { cursor: grabbing; }
 
 .test-vids__track {
   position: absolute;
-  left: -37.92px;
+  left: 0;
   top: 0;
   display: flex;
   gap: 32px;
   align-items: flex-end;
   height: 366.382px;
+  will-change: transform;
+  transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* Above every card and everything inside one, so a card sliding out really
+   does dissolve — name, quote and play button included. */
 .test-vids::before,
 .test-vids::after {
   content: '';
   position: absolute;
   top: 0;
-  z-index: 3;
+  z-index: 5;
   width: 200px;
   height: 366px;
   pointer-events: none;
@@ -1860,17 +2089,33 @@ body:not(.cs-page) .wrap {
 
 .tvid {
   position: relative;
+  z-index: 0;                       /* keeps each card's layers to itself */
   flex: 0 0 auto;
   width: 204px;
+  height: 288px;
   border-radius: 12.901px;
   overflow: hidden;
+  cursor: pointer;
+  transition: height 0.62s cubic-bezier(0.22, 0.61, 0.36, 1),
+              filter 0.62s ease,
+              box-shadow 0.4s ease;
 }
 
-.tvid--sm { height: 288px; }
-.tvid--md { height: 328px; }
-.tvid--lg { height: 366.382px; }
+.tvid[data-pos='1'] { height: 328px; }
 
-.tvid > img {
+.tvid[data-pos='0'] {
+  z-index: 1;                       /* so its shadow falls on its neighbours */
+  height: 366.382px;
+  cursor: default;
+  box-shadow: 0 18px 44px rgba(27, 25, 68, 0.18);
+}
+
+/* the far pair reads as context, not content */
+.tvid[data-pos='2'],
+.tvid[data-pos='3'] { filter: saturate(0.75) brightness(0.97); }
+
+.tvid__poster,
+.tvid__video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1878,24 +2123,35 @@ body:not(.cs-page) .wrap {
   max-width: none;
   object-fit: cover;
   border-radius: 12.901px;
+  -webkit-user-drag: none;
 }
+
+.tvid__video {
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.tvid.is-playing .tvid__video { opacity: 1; }
 
 .tvid__shade {
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: 203.832px;
+  z-index: 2;
   height: 143.844px;
   border-radius: 0 0 12.901px 12.901px;
   background: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0) 100%);
   opacity: 0.8;
+  pointer-events: none;
 }
 
 .tvid__meta {
   position: absolute;
   left: 20.64px;
   bottom: 18px;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -1924,29 +2180,59 @@ body:not(.cs-page) .wrap {
   font-weight: 500;
 }
 
-.tvid__quote {
+/* the written review only has room once its card has grown */
+.tvid__quote,
+.tvid__more {
   overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity 0.4s ease;
+}
+
+.tvid[data-pos='0'] .tvid__quote,
+.tvid[data-pos='1'] .tvid__quote {
+  max-height: 16px;
+  opacity: 1;
+}
+
+.tvid[data-pos='0'] .tvid__more,
+.tvid[data-pos='1'] .tvid__more {
+  max-height: 16px;
+  opacity: 1;
+}
+
+.tvid__quote {
   width: 174px;
   font-size: 10px;
   font-weight: 400;
-  line-height: normal;
+  line-height: 16px;
   color: #fff;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.tvid.is-expanded[data-pos='0'] .tvid__quote,
+.tvid.is-expanded[data-pos='1'] .tvid__quote {
+  max-height: 80px;
+  white-space: normal;
+}
+
 .tvid__more {
   font-size: 10px;
   font-weight: 600;
-  line-height: normal;
+  line-height: 16px;
   color: #fff;
+  cursor: pointer;
 }
+
+.tvid__more:hover { text-decoration: underline; }
 
 .tvid__play {
   position: absolute;
   right: 19.5px;
   bottom: 15.4px;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1958,23 +2244,25 @@ body:not(.cs-page) .wrap {
   backdrop-filter: blur(8.385px);
   -webkit-backdrop-filter: blur(8.385px);
   box-shadow: 0 9.676px 48.378px 0 rgba(27, 25, 68, 0.3);
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease;
 }
 
-.tvid__play img {
+.tvid__play:hover {
+  background: rgba(237, 49, 58, 0.22);
+  transform: scale(1.07);
+}
+
+.tvid__ico {
   flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
+  color: var(--primary-color);
 }
 
-.tvid__play img.pause {
-  width: 7.096px;
-  height: 10.966px;
-}
-
-.tvid__play img.play-sm {
-  width: 12.923px;
-  height: 15.094px;
-}
+.tvid__ico--pause { display: none; }
+.tvid.is-playing .tvid__ico--play { display: none; }
+.tvid.is-playing .tvid__ico--pause { display: block; }
 
 /* ── Carousel arrows + rule ── */
 .test-sec__arrows {
@@ -1982,13 +2270,31 @@ body:not(.cs-page) .wrap {
   left: 48px;
   right: 48px;
   top: 403px;
+  z-index: 6;                       /* clear of the edge fades */
   display: flex;
   justify-content: space-between;
   height: 80px;
+  pointer-events: none;             /* only the buttons swallow the drag */
 }
 
 .test-sec__arrows .arrow-btn {
+  pointer-events: auto;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.test-sec__arrows .arrow-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
+.test-sec__arrows .arrow-btn:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  .test-vids__track,
+  .tvid,
+  .tvid__quote,
+  .tvid__more { transition-duration: 0.01ms; }
 }
 
 .test-sec__rule {
@@ -2260,10 +2566,14 @@ body:not(.cs-page) .wrap {
   background: transparent;
 }
 
+/* Figma insets this block 88.89 left and 52.888 right — 36px out of
+   true, and 13px shy of the navbar's gutter, so the footer logo sat
+   slightly left of the navbar logo directly above it. Both edges now
+   use the shared content gutter: symmetric, and the two logos line up. */
 .footer__inner {
   position: absolute;
-  left: 88.89px;
-  right: 52.888px;
+  left: var(--shell-gutter);
+  right: var(--shell-gutter);
   top: 60px;
   display: flex;
   flex-direction: column;
@@ -2296,11 +2606,16 @@ body:not(.cs-page) .wrap {
   color: var(--text-color);
 }
 
+/* fills the row rather than sitting at a fixed 816: Figma runs the
+   columns to within 20px of the panel edge, so a fixed width left a
+   growing pocket of dead space on the right as the panel widened.
+   The Services column absorbs the slack, keeping Social flush right. */
 .footer__cols {
   display: flex;
   gap: 32px;
   align-items: flex-start;
-  width: 816px;
+  flex: 1 1 auto;
+  min-width: 0;
   font-family: var(--font-jakarta);
   font-size: 16px;
   line-height: 24px;
@@ -4052,14 +4367,21 @@ body.is-menu-open {
 /* ===========================================================
    Staff Augmentation — Hire Extra Force
    =========================================================== */
+/* the white band stays full-bleed; the 1244 frame inside carries the
+   94px gutters, so the two blocks keep the design's gap instead of
+   being pushed apart by space-between as the panel widens */
 .sa-hire {
+  height: 264px;
+  margin-top: 48px;
+  background: #fff;
+}
+
+.sa-hire__frame {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  height: 264px;
-  margin-top: 48px;
+  height: 100%;
   padding: 24px 94px;
-  background: #fff;
 }
 
 .sa-hire__left { display: flex; gap: 18px; align-items: flex-end; width: 435px; }
@@ -4217,13 +4539,20 @@ body.is-menu-open {
 
 .sa-learn__rule { width: 73px; height: 1px; background: var(--primary-color); }
 
+/* Figma's Image box clips, which is what turns the artwork's boxed
+   ground path into a horizontal line running off both edges */
 .sa-contact__art {
   position: absolute; left: 721px; top: 70px; width: 456px; height: 549px;
+  overflow: hidden;
 }
 
+/* the artwork overruns its Rocket frame — 8.04% above, 17.5% below —
+   so it is placed at its own 493.878 x 482.395 rather than being
+   squeezed into the 494 x 440 frame box */
 .sa-contact__art img {
-  position: absolute; left: -19px; top: 41px; width: 494px; height: 440px;
-  max-width: none; object-fit: contain;
+  position: absolute; left: -19.2px; top: 76.4px;
+  width: 493.878px; height: 482.395px;
+  max-width: none;
 }
 
 
@@ -5106,4 +5435,4115 @@ body.is-menu-open {
   .jr__bigcard.is-active .jr__bigdot {
     animation: none;
   }
+}
+
+/* ===========================================================
+   CAREER PAGE  —  Figma "Career Page" 1951:9723
+   Wrapper 1244 wide; hero 558 tall, job band 868, footer 371.
+   Everything measures off the 1244 panel, matching the rest of
+   the site — the design is fixed-width desktop, no breakpoints.
+   =========================================================== */
+
+/* visually hidden, still read out — the job band's heading lives
+   only in the signboard artwork, so the section needs a real one */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Hero ---------- */
+.cr-hero {
+  position: relative;
+  width: 100%;
+  height: 558px;
+}
+
+/* Grid paper. Sits at left:-620 so only its right half reaches the
+   panel — that is why the ruling reads on the left of the hero and
+   nowhere else. 877.272 tall; the band below paints over the overhang,
+   exactly as the frame stacks in Figma. The Career and Job Details
+   heroes specify identical geometry, so they share one rule. */
+.cr-hero__paper,
+.jd-hero__paper {
+  position: absolute;
+  left: -620px;
+  top: 0;
+  width: 1244px;
+  height: 877.272px;
+  background-image: url('assets/career/box-line-2.png');
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+
+/* the Figma radial is an ellipse whose radii equal the box's half
+   width/height, so closest-side reproduces it exactly */
+.cr-hero__paper::after,
+.jd-hero__paper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(closest-side ellipse at 50% 50%,
+              rgba(244, 244, 244, 0) 0%, #f4f4f4 100%);
+}
+
+/* Warm blur behind the board. Figma expresses this frame in percentages
+   of the hero, but the board it sits behind is pinned in px — so the
+   percentages are resolved here to keep the two locked together at any
+   panel width. The artwork overflows its frame; that bleed is the blur. */
+.cr-hero__glow,
+.jd-hero__glow {
+  position: absolute;
+  top: 122px;
+  width: 422.006px;
+  height: 413.6px;
+  pointer-events: none;
+}
+
+.cr-hero__glow { left: 601px; }
+/* the billboard is wider than the signboard, so its glow sits 60px right */
+.jd-hero__glow { left: 661px; }
+
+.cr-hero__glow img,
+.jd-hero__glow img {
+  position: absolute;
+  left: -147.58px;
+  top: -149.6px;
+  width: 769.6px;
+  height: 763.2px;
+  max-width: none;
+}
+
+/* the signboard carries all the hero copy as vector artwork */
+.cr-hero__board {
+  position: absolute;
+  left: 307px;
+  top: 0;
+  width: 639.228px;
+  height: 410.464px;
+}
+
+.cr-hero__board img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Open positions ---------- */
+/* z-index lifts the white band over the hero paper's overhang.
+   The gutter is the design's 75px whenever the panel can afford it, and
+   gives way below that. A hard 75px would be wrong in a real browser: at
+   a 1280 window the scrollbar leaves ~1229px of panel, 15px short of the
+   1244 the design assumes, and the grid would drop to two columns. */
+.cr-jobs {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  padding: 40px clamp(0px, calc((100% - 1094px) / 2), 75px);
+}
+
+/* 3 x 346 + 2 x 28 = 1094, which is 1244 less the 75px gutters.
+   Explicit tracks, not wrapping — the row count is part of the design,
+   not something that should follow the viewport. */
+.cr-jobs__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 346px);
+  justify-content: center;
+  gap: 28px;
+}
+
+.job-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 346px;
+  height: 244px;
+  overflow: hidden;
+  background: #fff;
+  border-left: 1px solid var(--hairline);
+}
+
+.job-card__paper {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 346px;
+  height: 244px;
+  background-image: url('assets/career/box-line-2.png');
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+
+.job-card__paper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(closest-side ellipse at 50% 50%,
+              rgba(255, 255, 255, 0) 0%, #fff 100%);
+}
+
+/* the blob's centre sits well below the card — only its top edge
+   shows, as the faint wash under the tags */
+.job-card__blob {
+  position: absolute;
+  left: calc(50% - 14.07px);
+  top: 402.554px;
+  width: 454.355px;
+  height: 348.582px;
+  max-width: none;
+  transform: translate(-50%, -50%) rotate(14.47deg);
+  pointer-events: none;
+}
+
+/* 17px, not the design's 18px: border-left makes the padding box the
+   containing block, so every absolute child gains the border's 1px.
+   Same reason .job-card__body is 17 and .job-card__go is 285. */
+.job-card__icon {
+  position: absolute;
+  left: 17px;
+  top: 18px;
+  width: 76px;
+  height: 76px;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.job-card__icon img {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 68px;
+  height: 68px;
+  max-width: none;
+}
+
+/* MERN ships as a wide lockup rather than a square glyph */
+.job-card__icon--wide img {
+  left: 12px;
+  top: 28.207px;
+  width: 51.974px;
+  height: 20.008px;
+}
+
+.job-card__dept {
+  position: absolute;
+  right: 18px;
+  top: 48px;
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: normal;
+  color: var(--sub-text-color);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.job-card__body {
+  position: absolute;
+  left: 17px;
+  top: 127.335px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 23px;
+  width: 211.258px;
+}
+
+/* two spans, one per line — the design breaks the role name at a
+   fixed point rather than wrapping to the box */
+.job-card__title {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-family: var(--font-main);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.job-card__tags {
+  display: flex;
+  align-items: center;
+  gap: 5.629px;
+  height: 28px;
+}
+
+/* Figma strokes the pill on the inside, so the outline must not add to
+   the box — an inset ring keeps the run at exactly 68 / 61 / 71 x 28,
+   which is what makes the three of them total the body's 211.258px. */
+.job-card__tags span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding: 0 14px;
+  box-shadow: inset 0 0 0 0.704px var(--primary-color);
+  border-radius: 70.361px;
+  background: #fff;
+  -webkit-backdrop-filter: blur(7.036px);
+  backdrop-filter: blur(7.036px);
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 9.851px;
+  line-height: normal;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.job-card__go {
+  position: absolute;
+  left: 285px;
+  top: 200px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 24px;
+  background: var(--text-color);
+  -webkit-backdrop-filter: blur(7.036px);
+  backdrop-filter: blur(7.036px);
+  overflow: hidden;
+  transition: transform .25s ease, background-color .25s ease;
+}
+
+/* the source glyph points up; the design shows it pointing right */
+.job-card__go img {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
+}
+
+.job-card__go:hover {
+  background: var(--primary-color);
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .job-card__go {
+    transition: none;
+  }
+
+  .job-card__go:hover {
+    transform: none;
+  }
+}
+
+/* ===========================================================
+   JOB DETAILS PAGE  —  Figma "Job Details" 1959:12323
+   Wrapper 1244 wide; hero 648, body 1410, footer 371 = 2429.
+   Hero paper and glow are shared with the Career page above.
+   =========================================================== */
+
+.jd-hero {
+  position: relative;
+  width: 100%;
+  height: 648px;
+}
+
+/* ---------- the hanging billboard ---------- */
+/* everything inside is pinned to the board's own 971 x 647.755 box,
+   so the whole assembly moves as one if the board is repositioned */
+.jd-board {
+  position: absolute;
+  left: 136px;
+  top: 0;
+  width: 971px;
+  height: 647.755px;
+}
+
+/* the plate, its poles and the white Apply Now panel are all baked
+   into this artwork — only the type and icons sit on top */
+.jd-board__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+  pointer-events: none;
+}
+
+/* the -0.32px is Figma's own centring offset, kept so the badge,
+   the meta bar and the title all share one optical centre */
+.jd-board__badge {
+  position: absolute;
+  left: calc(50% - 0.32px);
+  top: 140.432px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-start;
+  gap: 5.061px;
+  margin: 0;
+}
+
+.jd-board__badgeicon {
+  position: relative;
+  display: block;
+  width: 37.954px;
+  height: 37.954px;
+  border-radius: 3.795px;
+  background: #f2c539;
+  overflow: hidden;
+}
+
+.jd-board__badgeicon img {
+  position: absolute;
+  left: 2.85px;
+  top: 2.85px;
+  width: 32.261px;
+  height: 32.261px;
+}
+
+.jd-board__badgetext {
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 1.2;
+  color: #fff;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.jd-board__meta {
+  position: absolute;
+  left: 161.939px;
+  top: 192.936px;
+  width: 649.02px;
+  height: 48.708px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #262929 0%, #201f22 100%);
+}
+
+.jd-board__metarow {
+  position: absolute;
+  left: calc(50% - 0.32px);
+  top: 13.916px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 15.182px;
+}
+
+.jd-board__metarow span {
+  font-family: var(--font-board);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: normal;
+  color: #fff;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.jd-board__metarow i {
+  display: block;
+  width: 8.856px;
+  height: 8.856px;
+  border-radius: 63.257px;
+  background: #fff;
+}
+
+.jd-board__title {
+  position: absolute;
+  left: calc(50% - 227.5px);
+  top: calc(50% - 40.48px);
+  margin: 0;
+  font-family: var(--font-board);
+  font-weight: 400;
+  font-size: 42px;
+  line-height: normal;
+  color: #fff;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Apply Now / Share Job — same plate, different fill and offsets.
+   Apply Now takes its white from the board artwork underneath. */
+.jd-board__act {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+}
+
+.jd-board__act--apply {
+  left: 247.336px;
+  top: 470.002px;
+  width: 482.021px;
+  height: 43.015px;
+}
+
+.jd-board__act--share {
+  left: 248px;
+  top: 521px;
+  width: 481px;
+  height: 53px;
+  background: #e8e9e8;
+}
+
+.jd-board__actlabel {
+  position: absolute;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--text-color);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.jd-board__act--apply .jd-board__actlabel {
+  left: 20.242px;
+  top: 10.121px;
+}
+
+.jd-board__act--share .jd-board__actlabel {
+  left: 19.578px;
+  top: 13.524px;
+}
+
+.jd-board__acticon {
+  position: absolute;
+  width: 43.015px;
+  height: 43.015px;
+}
+
+.jd-board__act--apply .jd-board__acticon {
+  right: 15.815px;
+  top: 0;
+}
+
+.jd-board__act--share .jd-board__acticon {
+  right: 12.294px;
+  top: 5.934px;
+}
+
+/* ---------- body ---------- */
+/* 26px tail pads the 1384 of content out to the frame's 1410 */
+.jd-body {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 26px;
+}
+
+/* Figma leaves 108 left and 101 right — a 7px lean that reads as a
+   slip rather than intent, so the 1035 block is simply centred. */
+.jd-body__inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 1035px;
+  margin-inline: auto;
+}
+
+.jd-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 661px;
+}
+
+.jd-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.jd-card__title {
+  margin: 0;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.212;
+  color: #383838;
+}
+
+.jd-card__text {
+  margin: 0;
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--sub-text-color);
+}
+
+/* block list, not flex — flex items lose their ::marker, and the
+   discs are part of the design */
+.jd-card__list {
+  margin: 0;
+  padding-left: 27px;
+  list-style: disc;
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  color: var(--sub-text-color);
+}
+
+.jd-card__list li + li {
+  margin-top: 17px;
+}
+
+/* ---------- More Jobs rail ---------- */
+.jd-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 354px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.jd-aside__head {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.jd-aside__title {
+  margin: 0;
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.212;
+  color: var(--text-color);
+}
+
+.jd-aside__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mini-job {
+  position: relative;
+  width: 330px;
+  height: 148px;
+  border-radius: 12px;
+  background: var(--shell-bg);
+  overflow: hidden;
+}
+
+.mini-job__body {
+  position: absolute;
+  left: 26px;
+  top: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mini-job__title {
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: normal;
+  color: #383838;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mini-job__tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mini-job__tagrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* the duration pill sizes to its text; the other two are pinned to
+   the widths the design gives them */
+.mini-job__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0 14px;
+  border-radius: 24px;
+  background: #fff;
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: normal;
+  color: #383838;
+  white-space: nowrap;
+}
+
+.mini-job__tag--type { width: 83px; padding: 0; }
+.mini-job__tag--place { width: 77px; padding: 0; }
+
+.mini-job__age {
+  position: absolute;
+  left: 237px;
+  top: 27px;
+  font-family: var(--font-main);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: normal;
+  color: #888;
+  white-space: nowrap;
+}
+
+.mini-job__go {
+  position: absolute;
+  left: 262px;
+  top: 88px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 24px;
+  background: var(--text-color);
+  -webkit-backdrop-filter: blur(7.036px);
+  backdrop-filter: blur(7.036px);
+  overflow: hidden;
+  transition: transform .25s ease, background-color .25s ease;
+}
+
+.mini-job__go img {
+  width: 12px;
+  height: 12px;
+  transform: rotate(90deg);
+}
+
+.mini-job__go:hover {
+  background: var(--primary-color);
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mini-job__go {
+    transition: none;
+  }
+
+  .mini-job__go:hover {
+    transform: none;
+  }
+}
+
+/* ===========================================================
+   AI Solution page — Figma frame 2294:17765
+
+   The wrapper is the usual 1244 panel and every section keeps its
+   Figma offsets, so the stack adds up to the 7922 the design asks for:
+     hero 816 | process 736 | tech 890 | solutions 1164 | automation 621
+     | case files 1444 | benefits 831 | +48 cta 238 | +48 contact 667
+     | +48 footer 371
+
+   Most of the page is the Staff Augmentation kit reused as-is — the
+   process carousel (.pl-*), the accordion rows (.tm), the capability
+   cards (.tk-card) and the benefits panel (.wp) are the same components
+   with different copy. Only the blocks below are new to this page.
+   =========================================================== */
+
+/* ── hero ─────────────────────────────────────────────────── */
+.ai-hero {
+  position: relative;
+  height: 816px;
+  background: var(--shell-bg);
+  overflow: hidden;
+}
+
+/* the photograph overruns the frame slightly on every side — those are
+   the design's numbers, not a crop of convenience */
+.ai-hero__photo {
+  position: absolute;
+  left: 6.43%;
+  top: -0.85%;
+  width: 100%;
+  height: 101.7%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* the hero dissolves into the white process section below it */
+.ai-hero__fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 68.937%, #fff 100%);
+  pointer-events: none;
+}
+
+/* same trick as the Staff Augmentation hero: the grid sits mostly off
+   the left edge and a radial wash eats its middle, so only the sliver
+   beside the copy column survives */
+.ai-hero__grid {
+  position: absolute;
+  left: -621px;
+  top: 0;
+  width: 1244px;
+  height: 816px;
+  pointer-events: none;
+}
+
+.ai-hero__grid img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* the grid stacks above the photograph, so it carries the hero's
+   fade-to-white as well as the radial wash — without it the opaque
+   #f4f4f4 of the wash would sit as a grey block on the white base */
+.ai-hero__grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 68.937%, #fff 100%),
+    radial-gradient(ellipse 50% 50% at 50% 50%,
+              rgba(244, 244, 244, 0) 0%, rgba(244, 244, 244, 1) 100%);
+}
+
+.ai-hero__copy {
+  position: absolute;
+  left: 121px;
+  top: 142px;
+  width: 603px;
+  height: 482px;
+}
+
+.ai-hero__eyebrow {
+  position: absolute;
+  left: -11px;
+  top: -4px;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 18px;
+  border-left: 2px solid var(--primary-color);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 0.9;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.ai-hero__title {
+  position: absolute;
+  left: 0;
+  top: 34px;
+  font-size: 54px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.ai-hero__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.ai-hero__lede {
+  position: absolute;
+  left: 0;
+  top: 168px;
+  width: 603px;
+  font-family: var(--font-poppins);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #888;
+  transform: translateY(-50%);
+}
+
+.ai-hero__btn {
+  position: absolute;
+  left: 0;
+  top: 218px;
+  width: 159px;
+}
+
+.ai-hero__cards {
+  position: absolute;
+  left: 0;
+  top: 290px;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  height: 192px;
+}
+
+/* ── the two frosted hero cards ── */
+.gl-card {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 24px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  overflow: hidden;
+}
+
+/* Figma sizes the second card off its nowrap title; pinning both widths
+   keeps the pair from growing when the fallback face is wider */
+.gl-card { width: 244px; }
+.gl-card--blue { width: 240px; }
+
+.gl-card__icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.gl-card__icon--red  { background: rgba(237, 49, 58, 0.1); }
+.gl-card__icon--blue { background: rgba(45, 77, 241, 0.1); }
+
+.gl-card__icon img { width: 30px; height: 30px; }
+
+.gl-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.gl-card__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.gl-card__head p {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-color);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.gl-card__rule {
+  width: 24px;
+  height: 2px;
+  border-radius: 6px;
+  background: var(--primary-color);
+}
+
+.gl-card--blue .gl-card__rule { background: #2d4df1; }
+
+.gl-card__text {
+  width: 100%;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text-color);
+}
+
+/* ── process: this page has five steps, not six, so the left column
+   carries the design's wider 33px rhythm ── */
+.ai-page .pl-col--left { gap: 33px; }
+
+/* ── technologies ─────────────────────────────────────────── */
+.ai-tech {
+  height: 890px;
+  background: var(--shell-bg);
+}
+
+/* the lede is set two sizes larger here than on the staffing page */
+.ai-tech .sa-tech__lede {
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+.ai-tech .sa-tech__lede u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* the orbit frame is 1132 wide inside a 1110 content column, so it is
+   centred on the panel rather than pinned to the content gutter */
+.ai-tech .sa-skills {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ── liquid glass capability cards ──────────────────────────
+   A single translucent pane will not read as glass: what sells it is
+   the layering — the backdrop is blurred AND over-saturated so colour
+   bleeds through, a bright rim catches light along the top edge, and a
+   slow specular sweep travels across the face on hover. The orbit
+   artwork behind the cards is what the blur has to chew on, which is
+   why the effect only appears on this page.
+   =========================================================== */
+.tk-card--glass {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background:
+    linear-gradient(155deg,
+      rgba(255, 255, 255, 0.62) 0%,
+      rgba(255, 255, 255, 0.18) 46%,
+      rgba(255, 255, 255, 0.42) 100%);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    inset 1px 0 0 rgba(255, 255, 255, 0.45),
+    inset -1px 0 0 rgba(255, 255, 255, 0.45),
+    0 18px 40px -20px rgba(24, 24, 24, 0.3),
+    0 2px 8px -4px rgba(24, 24, 24, 0.14);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.5s ease;
+}
+
+/* the refracted rim — brightest where the light would enter, top-left */
+.tk-card--glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg,
+              rgba(255, 255, 255, 0.95),
+              rgba(255, 255, 255, 0.1) 40%,
+              rgba(255, 255, 255, 0.55));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* the specular sweep, parked off the left edge until hover */
+.tk-card__sheen {
+  position: absolute;
+  left: -60%;
+  top: -30%;
+  width: 55%;
+  height: 160%;
+  background: linear-gradient(100deg,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.55) 50%,
+              rgba(255, 255, 255, 0) 100%);
+  transform: rotate(8deg);
+  pointer-events: none;
+  transition: left 0.85s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tk-card--glass:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.4),
+    inset 1px 0 0 rgba(255, 255, 255, 0.5),
+    inset -1px 0 0 rgba(255, 255, 255, 0.5),
+    0 28px 56px -22px rgba(24, 24, 24, 0.36),
+    0 3px 10px -4px rgba(24, 24, 24, 0.16);
+}
+
+.tk-card--glass:hover .tk-card__sheen { left: 115%; }
+
+/* the title and chips have to sit above both the rim and the sweep */
+.tk-card--glass .tk-card__title,
+.tk-card--glass .tk-card__icons { z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tk-card--glass,
+  .tk-card__sheen { transition: none; }
+
+  .tk-card--glass:hover { transform: none; }
+}
+
+/* Browsers without backdrop-filter would show the orbit straight
+   through an almost-clear pane — thicken the fill instead. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tk-card--glass {
+    background: linear-gradient(155deg,
+                rgba(255, 255, 255, 0.9) 0%,
+                rgba(255, 255, 255, 0.7) 46%,
+                rgba(255, 255, 255, 0.85) 100%);
+  }
+}
+
+/* ── AI Solutions We Provide ──────────────────────────────── */
+/* seven rows rather than the staffing page's six */
+.ai-solutions { height: 1164px; }
+
+/* per-icon boxes, straight from the component */
+.tm__glyph.g-fit img { left: 3.1px; top: 3.1px; width: 41.8px; height: 41.8px; }
+.tm__glyph.g-nlp img { left: 3.15px; top: 2.6px; width: 41.7px; height: 42.8px; }
+.tm__glyph.g-custom img { left: 3px; top: 3.03px; width: 42px; height: 42.1px; }
+
+.tm__glyph.g-flow img { width: auto; height: auto; }
+.tm__glyph.g-flow .f-a { inset: 41.58% 47.045% 6.96% 1.375%; }
+.tm__glyph.g-flow .f-b { inset: 55.33% 60.81% 20.67% 15.19%; }
+.tm__glyph.g-flow .f-c { inset: 6.96% 1.52% 41.58% 47.1%; }
+.tm__glyph.g-flow .f-d { inset: 20.67% 15.19% 55.33% 60.81%; }
+
+/* ── AI Automation & Workflow Solutions ───────────────────── */
+.ai-auto {
+  position: relative;
+  height: 620.847px;
+  background: var(--shell-bg);
+}
+
+.ai-auto__head {
+  position: absolute;
+  left: 67px;
+  top: 48px;
+  width: 1110px;
+  height: 152px;
+}
+
+.ai-auto__headcol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.ai-auto__title {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.225;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+/* bottom-aligned with the heading column, as the design's flex row asks */
+.ai-auto__lede {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 521px;
+  font-family: var(--font-jakarta);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+.ai-auto__cards {
+  position: absolute;
+  left: 67px;
+  top: 245px;
+  display: flex;
+  align-items: center;
+  width: 1110px;
+}
+
+/* the cards butt up against each other with no gap — the notched corner
+   and the leftward drop shadow are what separate them */
+.au-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 277.5px;
+  height: 327.847px;
+  overflow: hidden;
+  filter: drop-shadow(-15.313px 0 10px rgba(0, 0, 0, 0.08));
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.au-card:hover { transform: translateY(-6px); }
+
+.au-card__shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.au-card__num {
+  position: absolute;
+  left: 18px;
+  top: 18.56px;
+  font-family: 'Open Sans', var(--font-jakarta), sans-serif;
+  font-size: 47.472px;
+  font-weight: 800;
+  font-stretch: 75%;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.4px var(--text-color);
+  white-space: nowrap;
+}
+
+.au-card__title {
+  position: absolute;
+  left: 18px;
+  top: 80.41px;
+  font-family: var(--font-jakarta);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text-color);
+}
+
+.au-card__text {
+  position: absolute;
+  left: 18px;
+  top: 254px;
+  font-family: var(--font-jakarta);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-color);
+}
+
+.au-card--dark .au-card__num { -webkit-text-stroke-color: #fff; }
+.au-card--dark .au-card__title,
+.au-card--dark .au-card__text { color: #fff; }
+
+/* ── Case Files ───────────────────────────────────────────── */
+.ai-cases { position: relative; }
+
+.ai-cases__frame {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: center;
+  padding: 0 67px 30px;
+}
+
+.ai-cases__head {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.sec-badge--white { background: #fff; }
+
+.ai-cases__title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.ai-cases__title span:first-child { color: var(--text-color); }
+.ai-cases__title span:last-child  { color: var(--sub-text-color); }
+
+.ai-cases__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px;
+  width: 100%;
+}
+
+.cf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: center;
+  justify-content: center;
+  height: 565px;
+  padding: 24px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+}
+
+.cf-card__media {
+  position: relative;
+  flex: 1 0 0;
+  min-height: 1px;
+  width: 100%;
+  border-radius: 32px;
+  background: rgba(245, 245, 245, 0.6);
+  overflow: hidden;
+}
+
+.cf-card__shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cf-card:hover .cf-card__shot { transform: scale(1.04); }
+
+.cf-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.cf-card__title {
+  width: 100%;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.0168px;
+  color: var(--text-color);
+}
+
+.cf-card__text {
+  width: 100%;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0.0731px;
+  color: var(--sub-text-color);
+}
+
+.cf-card__tags { display: flex; gap: 8px; align-items: flex-start; }
+
+.cf-card__tags span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(245, 245, 245, 0.8);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.ai-cases__more { width: 139px; }
+
+.ai-cases__more .pill-btn__circle img {
+  left: 13px;
+  top: 13px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Benefits: the line art sits further right than the staffing page ── */
+.ai-ben__art {
+  left: 807px;
+  top: 81.19px;
+  width: 370px;
+  height: 246.36px;
+}
+
+/* ── Ready to Automate ────────────────────────────────────── */
+.ai-cta { height: 238px; }
+
+.ai-cta .sa-hire__left { width: auto; }
+
+.ai-cta .sa-hire__text { width: 436px; }
+
+.ai-cta__btn { width: 146px; }
+
+/* ===========================================================
+   Industry Detail page  (industry-detail.html)
+
+   Figma: "Industry Details Page" — 1280 frame, 1244 content
+   wrapper. Every section keeps its Figma height and its children
+   measure from the centred .design-frame, so the numbers below are
+   literal Figma coordinates.
+
+   Wrapper y-bands:
+     hero        0    .. 632
+     know        632  .. 1286
+     expertise   1286 .. 2004
+     work        2004 .. 2524
+     services    2524 .. 3233   (+55 gap)
+     why choose  3288 .. 3958   (+67 gap)
+     benefits    4025 .. 4695   (+66 gap)
+     footer      4761 .. 5132
+   =========================================================== */
+
+/* the hero's script word is set in Gabriola, a Windows system face —
+   there is no web build, so the stack falls back to the nearest
+   calligraphic scripts elsewhere */
+.id-page {
+  --font-script: 'Gabriola', 'Segoe Script', 'Lucida Handwriting', 'Brush Script MT', cursive;
+}
+
+/* shared 32px section title (Our Expertise) */
+.id-sec-title {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.id-sec-title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+.id-hero {
+  position: relative;
+  height: 632px;
+}
+
+/* the grid plate is wider than the frame and hangs off the left edge,
+   with a radial vignette that fades it into the panel */
+.id-hero__grid {
+  position: absolute;
+  left: -621px;
+  top: 0;
+  width: 1244px;
+  height: 877.272px;
+  pointer-events: none;
+}
+
+.id-hero__grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.id-hero__grid-fade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    622px 438.636px at 622px 438.636px,
+    rgba(244, 244, 244, 0) 0%,
+    rgba(244, 244, 244, 1) 100%
+  );
+}
+
+.id-hero__art {
+  position: absolute;
+  left: 658px;
+  top: 145px;
+  width: 496px;
+  height: 415px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.id-hero__copy {
+  position: absolute;
+  left: 111px;
+  top: 214.5px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.id-hero__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.id-hero__eyebrow {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.id-hero__title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  font-weight: 500;
+}
+
+.id-hero__line1 {
+  font-size: 54px;
+  line-height: 1;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.id-hero__line2 {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.id-hero__line2 em {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 84px;
+  line-height: 1.2;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.id-hero__line2 > span {
+  font-size: 54px;
+  line-height: 1.2;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.id-hero__lede {
+  width: 469px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+.id-hero__btn {
+  width: 159px;
+}
+
+/* ── Shared note card (icon + heading + copy, hairline rule) ── */
+.id-note {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 25px 32px;
+  overflow: hidden;
+  border-left: 1.986px solid var(--hairline);
+}
+
+.id-note--boxed {
+  background: #fff;
+}
+
+.id-note--right {
+  border-left: 0;
+  border-right: 1.986px solid var(--hairline);
+}
+
+.id-note__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.id-note--right .id-note__body {
+  align-items: flex-end;
+}
+
+.id-note__head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.id-note__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background: var(--text-color);
+}
+
+.id-note__icon img {
+  width: 28px;
+  height: 28px;
+}
+
+.id-note__title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.id-note__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.id-note__text {
+  width: 478px;
+  font-size: 18.74px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--sub-text-color);
+}
+
+.id-note--right .id-note__text {
+  text-align: right;
+}
+
+/* ── Let's Know About ─────────────────────────────────────── */
+.id-know {
+  position: relative;
+  height: 654px;
+  background: #fff;
+}
+
+.id-know__art {
+  position: absolute;
+  left: -367px;
+  top: 19px;
+  width: 905px;
+  height: 617px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.id-know__col {
+  position: absolute;
+  left: 597px;
+  top: 45px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+  width: 520px;
+}
+
+.id-know__title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.id-know__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.id-know__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ── Our Expertise ────────────────────────────────────────── */
+.id-exp {
+  position: relative;
+  height: 718px;
+}
+
+.id-exp__head {
+  position: absolute;
+  left: 102px;
+  top: 53px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+
+.id-exp__grid {
+  position: absolute;
+  left: 102px;
+  top: 214px;
+  width: 1040px;
+  height: 456px;
+}
+
+.id-exp__row {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  gap: 48px;
+  align-items: center;
+}
+
+/* the second row hangs off the right edge instead of the left */
+.id-exp__row--rev {
+  left: auto;
+  right: -0.25px;
+  top: 252px;
+}
+
+.id-exp__art {
+  flex: 0 0 auto;
+  height: 204px;
+}
+
+.id-exp__art--1 { width: 216px; }
+.id-exp__art--2 { width: 242.25px; }
+
+/* ── Explore The Work Has Done by Us ──────────────────────── */
+.id-work {
+  position: relative;
+  height: 520px;
+  background: #fff;
+}
+
+.id-work__inner,
+.id-serv__inner {
+  position: absolute;
+  left: 50%;
+  top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: flex-start;
+  transform: translateX(-50%);
+}
+
+.id-sec-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+
+.id-work__title {
+  font-family: var(--font-jakarta);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: #383636;
+  white-space: nowrap;
+}
+
+.id-work__cards {
+  display: flex;
+  gap: 43.56px;
+  align-items: center;
+  width: 1040px;
+}
+
+/* portfolio card — the artwork ships pre-masked with the corner notch,
+   so the badge just sits in the cut-out */
+.id-pf {
+  position: relative;
+  flex: 0 0 auto;
+  width: 317px;
+  height: 252px;
+}
+
+.id-pf__img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 317.392px;
+  height: 252.286px;
+  max-width: none;
+}
+
+.id-pf__badge {
+  position: absolute;
+  left: -12.21px;
+  top: 217.7px;
+  width: 43.743px;
+  height: 44.76px;
+}
+
+.id-pf__body {
+  position: absolute;
+  left: 18.31px;
+  top: 18.31px;
+  display: flex;
+  flex-direction: column;
+  gap: 18.311px;
+  align-items: flex-start;
+  width: 256.355px;
+}
+
+.id-pf__body > img {
+  width: 17.056px;
+  height: 14.214px;
+}
+
+.id-pf__body p {
+  width: 100%;
+  font-size: 20.35px;
+  font-weight: 500;
+  line-height: 1.12;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* ── Service cards grid ───────────────────────────────────── */
+.id-serv {
+  position: relative;
+  height: 709px;
+}
+
+.id-serv__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.id-serv__row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.id-svc {
+  position: relative;
+  flex: 0 0 auto;
+  width: 346px;
+  height: 244px;
+  overflow: hidden;
+  border-left: 1px solid var(--hairline);
+}
+
+.id-svc__body {
+  position: absolute;
+  left: 27px;
+  top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 31px;
+  align-items: flex-start;
+}
+
+/* the two blob cards nudge their stack in and down */
+.id-svc--blob .id-svc__body {
+  left: 48px;
+  top: 40px;
+}
+
+.id-svc__icon {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: 80px;
+  height: 80px;
+}
+
+.id-svc__icon img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+  max-width: none;
+}
+
+/* these three export at their trimmed size and are placed by inset */
+.id-svc__icon .id-ic-truck { left: 9px;      top: 15.665px; width: 62.001px; height: 48.666px; }
+.id-svc__icon .id-ic-app   { left: 9.001px;  top: 7.337px;  width: 63.667px; height: 63.667px; }
+.id-svc__icon .id-ic-menu  { left: 12.334px; top: 5.664px;  width: 55.334px; height: 68.665px; }
+
+.id-svc__title {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: #383636;
+}
+
+.id-svc__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+/* decorative wash — mostly clipped by the card, exactly as in Figma */
+.id-svc__blob {
+  position: absolute;
+  left: calc(50% - 14.07px);
+  top: 177.03px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 527.039px;
+  height: 451.048px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.id-svc__blob img {
+  flex: 0 0 auto;
+  width: 454.355px;
+  height: 348.582px;
+  max-width: none;
+  transform: rotate(14.47deg);
+}
+
+/* ── Why Choose Hackerkernel ──────────────────────────────── */
+.id-why {
+  position: relative;
+  height: 670px;
+  margin-top: 55px;
+  background: #1a1a1a;
+}
+
+.id-why__head {
+  position: absolute;
+  left: 70px;
+  top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.id-why__title {
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.id-why__cards {
+  position: absolute;
+  left: 72px;
+  top: 252px;
+  display: flex;
+  gap: 13px;
+  align-items: center;
+}
+
+.id-why__card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 358px;
+  height: 322px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.id-why__text {
+  position: absolute;
+  top: 33px;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: #fff;
+}
+
+.id-why__text em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.id-why__text--1 { left: 16px; white-space: nowrap; }
+.id-why__text--2 { left: 23px; width: 312px; }
+.id-why__text--3 { left: 22px; width: 313px; }
+
+.id-why__shot {
+  position: absolute;
+  left: 50%;
+  top: 168px;
+  display: block;
+  width: 290px;
+  height: 290px;
+  overflow: hidden;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.id-why__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* this shot is framed taller than its box and pulled up */
+.id-why__shot--2 img {
+  position: absolute;
+  left: 0;
+  top: -10.29%;
+  width: 100%;
+  height: 134.38%;
+  max-width: none;
+}
+
+.id-why__shot--3 { height: 188px; }
+
+/* ── Benefits ─────────────────────────────────────────────── */
+.id-ben {
+  position: relative;
+  height: 670px;
+  margin-top: 67px;
+}
+
+.id-ben__head {
+  position: absolute;
+  left: 70px;
+  top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.id-ben__title {
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.id-ben__body {
+  position: absolute;
+  left: 88px;
+  top: 218px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 1068px;
+}
+
+.id-ben__list {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.id-ben__rail {
+  position: relative;
+  flex: 0 0 auto;
+  width: 2px;
+  height: 368px;
+  border-radius: 12px;
+  background: #666;
+}
+
+.id-ben__dot {
+  position: absolute;
+  left: 50%;
+  top: 29px;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--primary-color);
+  border-radius: 100px;
+  background: #fff;
+  transform: translateX(-50%);
+}
+
+.id-ben__dot::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 100px;
+  background: var(--primary-color);
+  transform: translate(-50%, -50%);
+}
+
+.id-ben__labels {
+  display: flex;
+  flex-direction: column;
+  gap: 68px;
+  align-items: flex-start;
+  flex: 0 0 auto;
+}
+
+.id-ben__label {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #a1a1a1;
+  white-space: nowrap;
+}
+
+.id-ben__label.is-active {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.id-ben__art {
+  position: relative;
+  flex: 0 0 auto;
+  width: 584px;
+  height: 338px;
+  overflow: hidden;
+}
+
+.id-ben__art img {
+  position: absolute;
+  left: 0;
+  top: -122px;
+  width: 583px;
+  height: 583px;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* the page's own footer gap — 4761 - 4695 */
+.id-page .footer {
+  margin-top: 66px;
+}
+
+/* ===========================================================
+   CASE STUDY DETAIL PAGE
+   Figma "Case Study Detail" 1888:3203 (image hero)
+                        and 2819:57034 (video hero).
+
+   Wrapper 1244 wide. Vertical budget, straight off the frame:
+   hero band 678, overview 383, planning 898, techs 453,
+   obstacles 386, solutions 362, final 410, testimonials 658,
+   footer 371 = 4599.
+
+   WIDTH: every Figma section here is auto-layout — `size-full` with a
+   100px horizontal padding — and the hero card is inset a symmetric 43
+   from the 1244 wrapper. So the sections are FLUID: they take the panel's
+   full width and hold their gutters, exactly like .cs-work__body and
+   .footer__inner do. Pinning them inside a fixed 1244 .design-frame
+   reproduces the Figma numbers at 1280 but shrinks the hero into a small
+   floating card on any real screen, which is not the design.
+   .design-frame stays only where a composition needs literal Figma
+   coordinates — here, nothing does.
+
+   The two heroes are ONE component. .csd-hero renders the image
+   treatment; adding .csd-hero--video drops the blurred veil, the
+   play control and the small caption over the very same markup,
+   which is exactly how the two Figma frames differ.
+   =========================================================== */
+
+/* ---------- shared section furniture ---------- */
+/* Each section keeps its Figma height as a floor and centres its row in it,
+   so a row that runs shorter than the design (wider panel = fewer text
+   lines) stays optically centred instead of riding the top edge. */
+.csd-overview,
+.csd-techs,
+.csd-obstacles,
+.csd-solutions,
+.csd-final {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* the 100px gutter every Figma section shares, so the icon column lines
+   up all the way down the page at any panel width */
+.csd-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 40px 100px;
+}
+
+.csd-sec__body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.csd-sec__head {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.csd-sec__icon {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background: #383636;
+}
+
+/* Obstacles and Final Product carry the softer 16px corner */
+.csd-sec__icon--soft {
+  border-radius: 16px;
+}
+
+/* Techs and Final Product sit on a small drop shadow */
+.csd-sec__icon--lift {
+  filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.12));
+}
+
+.csd-sec__icon img {
+  width: 24px;
+  height: 24px;
+}
+
+/* the developer glyph exports as its own inner group rather than a
+   full 24 square, so it is placed off the icon box instead of stretched */
+.csd-sec__icon img.csd-sec__glyph--dev {
+  position: absolute;
+  left: 2.25px;
+  top: 1.25px;
+  width: 19.5px;
+  height: 21.5px;
+}
+
+.csd-sec__title {
+  font-family: var(--font-main);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.212;
+  color: #383636;
+  white-space: nowrap;
+}
+
+.csd-sec__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.csd-sec__sub {
+  width: 100%;
+  font-family: var(--font-main);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--text-color);
+}
+
+.csd-sec__copy {
+  width: 100%;
+  font-family: var(--font-main);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--sub-text-color);
+}
+
+/* Figma indents the marker 30px and leaves no air between bullets */
+.csd-sec__list {
+  width: 100%;
+  margin-left: 30px;
+  font-family: var(--font-main);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--sub-text-color);
+  list-style: disc outside;
+}
+
+.csd-sec__art {
+  flex: 0 0 auto;
+}
+
+/* ---------- View More ---------- */
+.csd-more {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  font-family: var(--font-jakarta);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.csd-more__icon {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.25s ease;
+}
+
+/* open turns the plus into a cross — the only cue the design needs */
+.csd-more.is-open .csd-more__icon {
+  transform: rotate(45deg);
+}
+
+/* ===========================================================
+   Hero band — 678 of the wrapper, box-line grid behind the card
+   =========================================================== */
+.csd-top {
+  position: relative;
+  height: 678px;
+}
+
+/* 52.113 either side — Figma's x of 52.113 on a 1244 wrapper leaves exactly
+   the same inset on the right, so it is a gutter, not a position */
+.csd-top__grid {
+  position: absolute;
+  left: 52.113px;
+  right: 52.113px;
+  top: 0;
+  height: 678px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.csd-top__grid img {
+  position: absolute;
+  left: 0;
+  top: 0.04%;
+  width: 100.02%;
+  height: 112.12%;
+  max-width: none;
+}
+
+/* the grid fades out to the panel colour at its edges */
+.csd-top__grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+              rgba(244, 244, 244, 0) 0%, rgba(244, 244, 244, 1) 100%);
+}
+
+/* ---------- the hero card ---------- */
+/* isolation keeps the veil's backdrop-filter reading the card's own
+   layers and nothing of the page behind it */
+/* 43 either side: Figma's x=43 w=1158 on the 1244 wrapper is a symmetric
+   inset, so the card hugs the panel and grows with it */
+.csd-hero {
+  position: absolute;
+  left: 43px;
+  right: 43px;
+  top: 97px;
+  height: 573px;
+  border-radius: 16px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* the video frame seats its card 20px higher in its own Figma screen */
+.csd-hero--video {
+  top: 77px;
+}
+
+/* The still. Swap this src to change the thumbnail — the <video> below
+   carries the same file as its poster, so the two stay in step. */
+.csd-hero__bg {
+  position: absolute;
+  left: 0;
+  top: -3.38%;
+  width: 100%;
+  height: 113.74%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.csd-hero__video {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: none;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+  object-fit: cover;
+}
+
+.csd-hero.is-playing .csd-hero__video {
+  display: block;
+}
+
+.csd-hero__head {
+  position: absolute;
+  left: 69px;
+  top: 47.5px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.csd-hero__logo {
+  position: relative;
+  flex: 0 0 auto;
+  display: block;
+  width: 83px;
+  height: 83px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* the mark is cropped out of a wider lockup, so it is placed rather than
+   fitted — these are Figma's own crop percentages */
+.csd-hero__logo img {
+  position: absolute;
+  left: -33.73%;
+  top: -14.78%;
+  width: 167.47%;
+  height: 128.76%;
+  max-width: none;
+}
+
+.csd-hero__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: center;
+  color: #fff;
+}
+
+.csd-hero__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.csd-hero__eyebrow {
+  font-family: var(--font-jakarta);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.csd-hero__name {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 52px;
+  font-weight: 500;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.csd-hero__lede {
+  width: 561px;
+  font-family: var(--font-jakarta);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.212;
+}
+
+/* ---------- hero footer: technology + platforms ---------- */
+/* 69 / 54 are the insets Figma's 1035-wide row leaves in the 1158 card;
+   space-between then keeps the platform column flush right as it grows */
+.csd-hero__foot {
+  position: absolute;
+  left: 69px;
+  right: 54px;
+  top: 441px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 104px;
+}
+
+.csd-hero__tech {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  width: 337px;
+}
+
+/* the platform column pins "Built with" to the top and the pills to the
+   bottom of the same 104 box the technology column fills */
+.csd-hero__built {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.csd-hero__label {
+  font-family: var(--font-jakarta);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.212;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.csd-hero__stack {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.csd-chip {
+  position: relative;
+  flex: 0 0 auto;
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.csd-chip img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+}
+
+/* React's glyph is drawn to 28 and seated top-left, not centred */
+.csd-chip img.csd-chip__glyph--lg {
+  left: 8px;
+  top: 8px;
+  transform: none;
+  width: 28px;
+  height: 28px;
+}
+
+/* 209 is the Figma wrap measure — it puts Android + iOS on the first
+   line and Website on the second */
+.csd-hero__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  align-content: center;
+  width: 209px;
+}
+
+.csd-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  height: 32px;
+  padding: 6px 20px 6px 12px;
+  border-radius: 40px;
+  background: #fff;
+  font-family: var(--font-jakarta);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.csd-pill img {
+  flex: 0 0 auto;
+  height: 14px;
+}
+
+/* ---------- video treatment ---------- */
+/* the image frame owns none of the video furniture */
+.csd-hero__veil,
+.csd-hero__caption {
+  display: none;
+}
+
+/* The veil blurs and darkens everything already in the card, so the 52px
+   title reads as a ghost behind the play control. The mark and the caption
+   are then re-drawn on top of it, crisp — Figma builds it the same way. */
+.csd-hero--video .csd-hero__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  transition: opacity 0.35s ease;
+}
+
+.csd-hero__play {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 0.5px);
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 148px;
+  height: 148px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+.csd-hero__play img {
+  width: 100%;
+  height: 100%;
+}
+
+.csd-hero__logo--front {
+  position: absolute;
+  left: 68px;
+  top: 50px;
+}
+
+.csd-hero--video .csd-hero__caption {
+  position: absolute;
+  left: 69px;
+  top: 446px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: center;
+  color: #fff;
+  white-space: nowrap;
+  transition: opacity 0.35s ease;
+}
+
+.csd-hero__caption .csd-hero__eyebrow {
+  font-size: 18px;
+}
+
+.csd-hero__caption .csd-hero__name {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* the video frame drops the standfirst and lets the title wrap in 326 */
+.csd-hero--video .csd-hero__copy {
+  gap: 0;
+}
+
+.csd-hero--video .csd-hero__lede {
+  display: none;
+}
+
+/* scoped to the head: only the 52px ghost wraps in 326. The caption's own
+   32px title stays on one line, as the design has it. */
+.csd-hero--video .csd-hero__head .csd-hero__name {
+  width: 326px;
+  white-space: normal;
+}
+
+/* pressing play hands the card over to the player */
+.csd-hero.is-playing .csd-hero__veil,
+.csd-hero.is-playing .csd-hero__caption {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===========================================================
+   Project Overview — 383
+   =========================================================== */
+.csd-overview {
+  position: relative;
+  min-height: 383px;
+}
+
+.csd-overview .csd-row {
+  gap: 60px;
+  padding: 60px 100px;
+}
+
+.csd-overview__art {
+  width: 263px;
+  height: 263px;
+  object-fit: cover;
+}
+
+.csd-overview__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* collapsed to the four lines the design shows, ellipsis and all */
+.csd-overview__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  width: 100%;
+  font-family: var(--font-jakarta);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+  text-overflow: ellipsis;
+}
+
+.csd-overview__text.is-open {
+  display: block;
+  -webkit-line-clamp: unset;
+}
+
+/* ===========================================================
+   Planning & Execution — 898, the one white section
+   =========================================================== */
+/* items-center, straight off the Figma auto-layout: the row stretches to
+   the panel, the 1063 project block below it stays centred */
+.csd-planning {
+  position: relative;
+  min-height: 898px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  padding: 40px 0;
+  background: #fff;
+}
+
+.csd-planning .csd-row {
+  gap: 40px;
+  padding: 0 100px;
+}
+
+.csd-planning__sub {
+  width: 100%;
+  font-family: var(--font-main);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: normal;
+  color: #444;
+}
+
+/* the copy holds its 559 measure while the column itself keeps growing */
+.csd-planning__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  font-family: var(--font-main);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--sub-text-color);
+}
+
+.csd-planning__list > p,
+.csd-planning__list > ul {
+  width: 559px;
+}
+
+.csd-planning__list ul {
+  margin-left: 30px;
+  list-style: disc outside;
+}
+
+.csd-planning__list li + li {
+  margin-top: 8px;
+}
+
+.csd-planning__art {
+  position: relative;
+  flex: 0 0 auto;
+  width: 370px;
+  height: 381px;
+}
+
+.csd-planning__art > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* ---------- the Showcase seal ---------- */
+.csd-badge {
+  position: absolute;
+  right: 14px;
+  bottom: -10px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #383636;
+}
+
+.csd-badge__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* textLength spreads the words over the whole circumference, which is how
+   the design sets the ring rather than by tracking each glyph */
+.csd-badge__ring text {
+  font-family: var(--font-jakarta);
+  font-size: 3.922px;
+  font-weight: 500;
+  fill: #fff;
+}
+
+.csd-badge__disc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38.095px;
+  height: 38.095px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1.681px 7.003px rgba(0, 0, 0, 0.08);
+}
+
+.csd-badge__disc img {
+  width: 22.969px;
+  height: 22.969px;
+  transform: rotate(45deg);
+}
+
+/* ---------- the app screens ---------- */
+/* 1063 centred by the section's items-center, which resolves to Figma's
+   x=90.5 at the 1244 design width */
+.csd-planning__project {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  width: 1063px;
+  max-width: calc(100% - 181px);   /* 181 = the 90.5 Figma leaves either side */
+}
+
+.csd-planning__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.csd-planning__introtitle {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: #000;
+}
+
+.csd-planning__introtext {
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.212;
+  color: var(--sub-text-color);
+}
+
+.csd-shots {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+.csd-shot {
+  position: relative;
+  flex: 0 0 auto;
+  width: 242px;
+  height: 246px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #e0e0e0;
+}
+
+.csd-shot__bg {
+  position: absolute;
+  left: -17.84%;
+  top: 17.46%;
+  width: 135.69%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.csd-shot__ph {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: block;
+  overflow: hidden;
+}
+
+.csd-shot__ph img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* each screen is cropped and seated differently in the design */
+.csd-shot__ph--1 {
+  top: 36px;
+  width: 136px;
+  height: 211px;
+  filter: drop-shadow(0 0 20px rgba(183, 130, 158, 0.25));
+}
+
+.csd-shot__ph--1 img {
+  inset: auto;
+  left: 0;
+  top: -4.43%;
+  height: 104.45%;
+}
+
+.csd-shot__ph--2 {
+  left: calc(50% + 0.06px);
+  bottom: 0;
+  width: 126.116px;
+  height: 205px;
+}
+
+.csd-shot__ph--3 {
+  left: calc(50% + 4px);
+  bottom: 0;
+  width: 120px;
+  height: 205px;
+}
+
+.csd-shot__ph--4 {
+  left: calc(50% + 1.5px);
+  bottom: -1px;
+  width: 127px;
+  height: 204px;
+}
+
+/* ===========================================================
+   Techs Used — 453, copy clipped to 335 until View More
+   =========================================================== */
+.csd-techs {
+  position: relative;
+  min-height: 453px;
+}
+
+.csd-techs .csd-row {
+  gap: 63px;
+}
+
+.csd-techs__art {
+  width: 332.813px;
+  height: 240px;
+}
+
+.csd-techs__body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.csd-techs__clip {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  max-height: 335px;
+  overflow: hidden;
+}
+
+.csd-techs__clip.is-open {
+  max-height: none;
+}
+
+.csd-techs__clip .csd-sec__head {
+  height: 50px;
+}
+
+/* Figma spaces the bullets a line apart; the collapsed card therefore
+   shows the lead paragraph and the first of them */
+.csd-techs__list {
+  margin-top: 6px;
+}
+
+.csd-techs__list li + li {
+  margin-top: 22px;
+}
+
+.csd-techs__list a {
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.csd-techs__list a:hover {
+  color: var(--primary-color);
+}
+
+/* ===========================================================
+   Obstacles Discovered — 386
+   =========================================================== */
+.csd-obstacles {
+  position: relative;
+  min-height: 386px;
+}
+
+.csd-obstacles .csd-row {
+  gap: 63px;
+}
+
+.csd-obstacles__art {
+  width: 306.394px;
+  height: 210.852px;
+}
+
+/* ===========================================================
+   Solutions — 362, artwork leads
+   =========================================================== */
+.csd-solutions {
+  position: relative;
+  min-height: 362px;
+}
+
+.csd-solutions .csd-row {
+  gap: 63px;
+}
+
+.csd-solutions__art {
+  width: 235.469px;
+  height: 220px;
+}
+
+/* ===========================================================
+   Final Product — 410
+   =========================================================== */
+.csd-final {
+  position: relative;
+  min-height: 410px;
+}
+
+.csd-final .csd-row {
+  gap: 63px;
+}
+
+/* the export runs 1px over its 220 slot and hangs a fraction high */
+.csd-final__art {
+  position: relative;
+  width: 236px;
+  height: 220px;
+}
+
+.csd-final__art img {
+  position: absolute;
+  left: 0;
+  top: -0.26px;
+  width: 236px;
+  height: 221.2px;
+  max-width: none;
+}
+
+/* ===========================================================
+   Testimonials — 658. The head is this page's own (white chip,
+   32px title); the card marquee is the home page's, reused whole.
+   =========================================================== */
+.csd-tests {
+  position: relative;
+  height: 658px;
+  overflow: hidden;
+}
+
+/* Deliberately NOT inside .design-frame--fill: that frame is transformed,
+   which opens a stacking context and isolates the blend — the watermark then
+   paints its raw #666 instead of hard-lighting to grey against the panel.
+   So it hangs off the section and measures from the frame's centre instead:
+   -297px = its Figma x of 325 less the 1244 frame's 622 midpoint. */
+.csd-tests__quote {
+  position: absolute;
+  left: calc(50% - 297px);
+  top: 166px;
+  width: 593px;
+  height: 507px;
+  max-width: none;
+  mix-blend-mode: hard-light;
+  pointer-events: none;
+}
+
+.csd-tests__head {
+  position: absolute;
+  left: 102px;
+  top: 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 516px;
+  padding: 10px 0;
+}
+
+.csd-tests__top {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* white here, not the shared chip's #f4f4f4 — it sits on the grey panel */
+.csd-tests__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #fff;
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 600;
+  font-style: italic;
+  line-height: normal;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.csd-tests__badge b {
+  font-weight: inherit;
+  color: var(--primary-color);
+}
+
+.csd-tests__title {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.csd-tests__title em {
+  font-style: normal;
+  color: var(--primary-color);
+}
+
+.csd-tests__lede {
+  font-family: var(--font-main);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+/* the shared marquee, re-seated for this section's shorter band */
+.csd-tests .reviews {
+  top: 211px;
+}
+
+/* The page borrows .cs-page to opt out of the navbar's flow spacer — its hero
+   band already carries that room. It does not want .cs-page's 48px footer gap
+   though: the section budget above already lands the footer on 4228. */
+.csd-page .footer {
+  margin-top: 0;
+}
+
+/* ===========================================================
+   Industry Details Page 2 — Travel Tech (travel-tech.html)
+
+   Figma stacks the wrapper like this (y within the 1244 panel):
+     hero          0 .. 632
+     why choose  632 .. 1469
+     industries 1469 .. 2461   (white, full bleed)
+     work       2461 .. 2981
+     numbers    2981 .. 3494   (white, full bleed)
+     testimonial 3494 .. 4170
+     faq        4170 .. 4876   (translucent white, full bleed)
+     contact    4869 .. 5589   (white, full bleed)
+     footer     5623 .. 5994   (+34 gap)
+
+   The white bands are painted on the section itself so they reach the
+   panel's edges at any viewport, while the content inside rides the
+   centred .design-frame and keeps Figma's literal offsets.
+   =========================================================== */
+
+/* the hero's script word is Gabriola, a Windows system face with no web
+   build — the same fallback chain the FoodTech page uses */
+.tv-page {
+  --font-script: 'Gabriola', 'Segoe Script', 'Lucida Handwriting', 'Brush Script MT', cursive;
+}
+
+/* Figma sets these line boxes to the font's natural leading, while the
+   shared chip, section title and field label carry the site's tighter
+   1.075. Left alone the heads come out ~9px short and every band below
+   drifts up, so the page restores the design's leading on its own
+   instances only. */
+.tv-why__head .sec-badge,
+.tv-ind__head .sec-badge,
+.tv-test__head .sec-badge,
+.tv-work .sec-badge,
+.tv-faq__head .sec-badge,
+.tv-ct__head .sec-badge,
+.tv-why__head .sec-title,
+.tv-ind__head .sec-title,
+.tv-ct__fields .sa-field > label,
+.tv-ct__fields .sa-source > p {
+  line-height: normal;
+}
+
+/* the page's own footer gap — 5623 - 5589 */
+.tv-page .footer {
+  margin-top: 34px;
+}
+
+/* ── Hero ─────────────────────────────────────────────────── */
+.tv-hero {
+  position: relative;
+  height: 632px;
+  overflow: hidden;
+}
+
+/* the grid plate hangs off the left edge and is taller than the band;
+   the radial vignette fades it back into the panel */
+.tv-hero__grid {
+  position: absolute;
+  left: -621px;
+  top: 0;
+  width: 1244px;
+  height: 877.272px;
+  pointer-events: none;
+}
+
+.tv-hero__grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tv-hero__grid-fade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    622px 438.636px at 622px 438.636px,
+    rgba(244, 244, 244, 0) 0%,
+    rgba(244, 244, 244, 1) 100%
+  );
+}
+
+/* the mockup is cropped by its frame — the bitmap overhangs on every side */
+.tv-hero__art {
+  position: absolute;
+  left: 701px;
+  top: 187px;
+  width: 475px;
+  height: 390px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tv-hero__art img {
+  position: absolute;
+  left: -6.7%;
+  top: -5.01%;
+  width: 106.73%;
+  height: 104.9%;
+  max-width: none;
+}
+
+.tv-hero__copy {
+  position: absolute;
+  left: 111px;
+  top: 222px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.tv-hero__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.tv-hero__eyebrow {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.tv-hero__title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  font-weight: 500;
+}
+
+.tv-hero__line1 {
+  font-size: 64px;
+  line-height: 1;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.tv-hero__line2 {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.tv-hero__line2 em {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 94px;
+  line-height: 0.8;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.tv-hero__line2 > span {
+  font-size: 64px;
+  line-height: 1.2;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.tv-hero__lede {
+  width: 627px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+.tv-hero__btn {
+  width: 159px;
+}
+
+/* ── Why Choose Us ────────────────────────────────────────── */
+/* 48 + head 103 + 48 + grid 590 + 48 = the 837 band, so the section
+   sizes itself rather than carrying a magic height */
+.tv-why {
+  position: relative;
+}
+
+.tv-why__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: flex-start;
+  padding: 48px 102px;
+}
+
+.tv-why__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tv-why__lede {
+  width: 473px;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--sub-text-color);
+}
+
+/* 3 x 348 = 1044, four pixels wider than the 1040 grid — Figma lets the
+   right column bleed, and the last cell has no rule to bleed with */
+.tv-why__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 348px);
+}
+
+.tv-wc {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 348px;
+  height: 295px;
+  padding: 20px;
+  border-right: 1px solid var(--sub-text-color);
+  border-bottom: 1px solid var(--sub-text-color);
+}
+
+.tv-wc:nth-child(3n) { border-right: 0; }
+.tv-wc:nth-child(n + 4) { border-bottom: 0; }
+
+.tv-wc__icon {
+  position: relative;
+  flex: 0 0 auto;
+  display: block;
+  width: 82px;
+  height: 82px;
+  overflow: hidden;
+}
+
+/* the handshake glyph is the one wide-and-short icon in the set */
+.tv-wc__icon--short { height: 52.48px; }
+
+.tv-wc__icon img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 82px;
+  height: 82px;
+  max-width: none;
+}
+
+/* three of the six export at their own intrinsic size rather than
+   filling the 82 box, so they are seated by hand */
+.tv-wc__icon .tv-ic-1 { left: 0.706px; top: 4.125px; width: 77.167px; height: 77.167px; }
+.tv-wc__icon .tv-ic-3 { left: 0.589px; top: 0.863px; width: 80.826px; height: 80.27px; }
+.tv-wc__icon .tv-ic-4 {
+  left: calc(50% - 0.66px);
+  top: calc(50% - 1.3px);
+  width: 80.68px;
+  height: 49.883px;
+  transform: translate(-50%, -50%);
+}
+
+.tv-wc__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tv-wc__num {
+  width: 100%;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.212;
+  color: var(--sub-text-color);
+}
+
+.tv-wc__text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tv-wc__title {
+  width: 100%;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: var(--text-color);
+}
+
+.tv-wc__desc {
+  width: 100%;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--sub-text-color);
+}
+
+/* ── Industries Served By ─────────────────────────────────── */
+.tv-ind {
+  position: relative;
+  height: 992px;
+  background: #fff;
+}
+
+.tv-ind__head {
+  position: absolute;
+  left: 85px;
+  top: 80px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 1074px;
+}
+
+.tv-ind__lede {
+  width: 521px;
+  font-family: var(--font-jakarta);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--sub-text-color);
+}
+
+.tv-ind__grid {
+  position: absolute;
+  left: 85px;
+  top: 228px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 1110px;
+}
+
+.tv-ind__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Industries card — the resting state is the grey plate with a ghosted
+   photo; hovering is the dark state Figma ships as a second variant, so
+   both sets of artwork live in the card and cross-fade */
+.tv-ic {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: 260px;
+  height: 330px;
+  overflow: hidden;
+  background: #eee;
+  transition: background-color 0.35s ease;
+}
+
+.tv-ic:hover { background: var(--text-color); }
+
+.tv-ic__shot {
+  position: absolute;
+  left: 34.67px;
+  top: 134px;
+  width: 300px;
+  height: 208px;
+  max-width: none;
+  object-fit: cover;
+  opacity: 0.2;
+  transition: opacity 0.35s ease;
+}
+
+.tv-ic:hover .tv-ic__shot { opacity: 1; }
+
+.tv-ic__blob {
+  position: absolute;
+  left: -19px;
+  top: 260px;
+  width: 100px;
+  height: 99px;
+  transition: opacity 0.35s ease;
+}
+
+.tv-ic__blob--on {
+  left: -7px;
+  top: 242px;
+  width: 132px;
+  height: 129px;
+  opacity: 0;
+}
+
+.tv-ic:hover .tv-ic__blob { opacity: 0; }
+.tv-ic:hover .tv-ic__blob--on { opacity: 1; }
+
+.tv-ic__copy {
+  position: absolute;
+  left: 28.67px;
+  top: 37px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  width: 200px;
+}
+
+.tv-ic__title {
+  font-family: var(--font-jakarta);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+  color: var(--text-color);
+  transition: color 0.35s ease;
+}
+
+.tv-ic:hover .tv-ic__title { color: #fff; }
+
+.tv-ic__desc {
+  font-family: var(--font-jakarta);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  color: #eee;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.tv-ic:hover .tv-ic__desc { opacity: 1; }
+
+.tv-ic__more {
+  position: absolute;
+  left: 28px;
+  top: 276px;
+  font-family: var(--font-poppins);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--text-color);
+  white-space: nowrap;
+  transition: color 0.35s ease;
+}
+
+.tv-ic:hover .tv-ic__more { color: #fff; }
+
+.tv-ic__dot {
+  position: absolute;
+  right: 19.02px;
+  top: 264.32px;
+  width: 44px;
+  height: 44px;
+  border-radius: 136px;
+  background: #fff;
+  transition: background-color 0.35s ease;
+}
+
+.tv-ic:hover .tv-ic__dot { background: var(--primary-color); }
+
+.tv-ic__arrow {
+  position: absolute;
+  left: calc(50% - 0.48px);
+  top: calc(50% + 0.19px);
+  width: 15px;
+  height: 15px;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.35s ease;
+}
+
+.tv-ic__arrow--on {
+  left: calc(50% - 0.09px);
+  top: calc(50% - 0.34px);
+  width: 25px;
+  height: 25px;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-32deg);
+}
+
+.tv-ic:hover .tv-ic__arrow { opacity: 0; }
+.tv-ic:hover .tv-ic__arrow--on { opacity: 1; }
+
+/* ── Explore The Work Has Done by Us ──────────────────────── */
+/* the head, card row and portfolio card are the FoodTech page's, reused
+   whole — only the band differs, and here it sits on the grey panel */
+.tv-work {
+  position: relative;
+  height: 520px;
+}
+
+/* ── Numbers ──────────────────────────────────────────────── */
+.tv-stats {
+  position: relative;
+  background: #fff;
+}
+
+/* Figma measures this band off the 1280 page frame with a 100 pad, which
+   lands 82 in from the 1244 panel */
+.tv-stats__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+  align-items: center;
+  padding: 100px 82px;
+}
+
+.tv-stats__top {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tv-stats__count {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: center;
+  width: 274px;
+}
+
+.tv-stats__num {
+  font-family: var(--font-jakarta);
+  font-size: 58px;
+  font-weight: 700;
+  line-height: 1.212;
+  color: var(--text-color);
+}
+
+.tv-stats__label {
+  font-family: var(--font-jakarta);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: var(--sub-text-color);
+}
+
+.tv-stats__copy {
+  flex: 1 0 0;
+  min-width: 1px;
+  font-family: var(--font-jakarta);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+  color: var(--text-color);
+}
+
+.tv-stats__faces {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 304px;
+}
+
+.tv-stats__faces > span {
+  position: relative;
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+}
+
+.tv-stats__faces > span:not(:last-child) { margin-right: -33.943px; }
+
+.tv-stats__faces img {
+  width: 72px;
+  height: 72px;
+}
+
+.tv-stats__faces .tv-stats__plus {
+  position: absolute;
+  left: 21.6px;
+  top: 21.6px;
+  width: 28.8px;
+  height: 28.8px;
+}
+
+.tv-stats__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* gap 4 inside the caption, 9.718 from the glyph — the extra sits on the
+   icon so the caption can stay a flat pair of paragraphs */
+.tv-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  padding: 19.436px 0;
+  border-radius: 15.549px;
+}
+
+.tv-stat img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5.718px;
+}
+
+.tv-stat__num,
+.tv-stat__label {
+  font-family: var(--font-poppins);
+  line-height: normal;
+  color: #444;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tv-stat__num { font-size: 32px; font-weight: 500; }
+.tv-stat__label { font-size: 15.549px; font-weight: 400; }
+
+/* ── Testimonials ─────────────────────────────────────────── */
+/* the head is this page's own (white chip, 32px title); the card marquee
+   is the home page's, reused whole and re-seated to the 211 band */
+.tv-test {
+  position: relative;
+  height: 676px;
+  overflow: hidden;
+}
+
+/* the design frame's transform opens a stacking context, so a blended
+   child has nothing to blend against unless the panel colour is painted
+   inside the frame — without it the #666 artwork lands at full strength
+   instead of the soft grey the design shows */
+.tv-test .design-frame--fill {
+  background: var(--shell-bg);
+}
+
+.tv-test__quote {
+  position: absolute;
+  left: 326px;
+  top: 166px;
+  width: 593px;
+  height: 507px;
+  max-width: none;
+  mix-blend-mode: hard-light;
+  pointer-events: none;
+}
+
+.tv-test__head {
+  position: absolute;
+  left: 102px;
+  top: 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 516px;
+  padding: 10px 0;
+}
+
+.tv-test__lede {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+.tv-test__reviews { top: 211px; }
+
+/* ── FAQ ──────────────────────────────────────────────────── */
+/* a 20% white wash over the panel rather than a solid card */
+.tv-faq {
+  position: relative;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.tv-faq__inner {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  padding: 48px 100px;
+}
+
+/* 1044 content - 578 list - 40 gap = the 426 Figma gives this column */
+.tv-faq__col {
+  flex: 1 0 0;
+  min-width: 1px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tv-faq__head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 12px 0;
+}
+
+.tv-faq__headtext {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tv-faq__title {
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: var(--text-color);
+}
+
+.tv-faq__lede {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.212;
+  color: var(--sub-text-color);
+}
+
+.tv-faq__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 24px 0;
+}
+
+.tv-faq__still {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tv-faq__stilltitle {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.212;
+  color: var(--text-color);
+}
+
+.tv-faq__stilltext {
+  font-size: 14.74px;
+  font-weight: 500;
+  line-height: normal;
+  color: #888;
+}
+
+/* the same shape as the Staff Augmentation "Learn More" link, but the
+   mark here is a ring and dot rather than an arrow */
+.tv-chat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tv-chat__row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tv-chat__label {
+  font-family: 'Inter', var(--font-main);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--primary-color);
+  white-space: nowrap;
+}
+
+.tv-chat__mark {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+}
+
+.tv-chat__mark img {
+  position: absolute;
+  left: 2.8px;
+  top: calc(50% - 4.2px);
+  width: 8.4px;
+  height: 8.4px;
+}
+
+.tv-chat__mark i {
+  position: absolute;
+  left: 5px;
+  top: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  border-radius: 136px;
+  background: var(--text-color);
+}
+
+.tv-chat__rule {
+  width: 73px;
+  height: 1px;
+  background: var(--text-color);
+}
+
+.tv-faq__list {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 578px;
+}
+
+/* Figma pins the closed rows at 84 — taller than one line of copy needs,
+   so it is a floor rather than a fixed height (row two wraps to 92) */
+.tv-q {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  width: 100%;
+  min-height: 84px;
+  padding: 24px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fff;
+  text-align: left;
+}
+
+.tv-q.is-open {
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.tv-q__body {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.tv-q.is-open .tv-q__body { padding: 12px 0; }
+
+.tv-q__title {
+  width: 100%;
+  font-size: 17.74px;
+  font-weight: 500;
+  line-height: 1.212;
+  color: var(--text-color);
+}
+
+.tv-q.is-open .tv-q__title { font-size: 18px; }
+
+.tv-q__answer {
+  display: none;
+  width: 100%;
+  font-size: 14.74px;
+  font-weight: 400;
+  line-height: normal;
+  color: #888;
+}
+
+.tv-q.is-open .tv-q__answer { display: block; }
+
+.tv-q__toggle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 26px;
+  background: #eee;
+}
+
+/* the caret ships upright at 12x24 and is laid on its side */
+.tv-q__toggle img {
+  width: 12px;
+  height: 24px;
+  transform: rotate(90deg);
+  transition: transform 0.25s ease;
+}
+
+.tv-q.is-open .tv-q__toggle img { transform: rotate(-90deg); }
+
+/* ── Contact ──────────────────────────────────────────────── */
+.tv-ct {
+  position: relative;
+  background: #fff;
+}
+
+.tv-ct__inner {
+  display: flex;
+  gap: 60px;
+  align-items: flex-end;
+  padding: 80px 100px;
+}
+
+.tv-ct__form {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.tv-ct__block {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tv-ct__head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.tv-ct__title {
+  width: 524px;
+  font-size: 46px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-color);
+}
+
+.tv-ct__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tv-ct__ctas {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+}
+
+.tv-ct__btn { width: 159px; }
+
+/* the illustration overhangs its card on the left, so the card crops it */
+.tv-ct__box {
+  position: relative;
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 392px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #fff;
+}
+
+.tv-ct__art {
+  position: absolute;
+  left: -44px;
+  top: 124px;
+  width: 480px;
+  height: 320px;
+}
+
+/* every layer is placed as a percentage of the 480x320 stage, so the
+   scene holds together as one piece */
+.tv-ct__art img {
+  position: absolute;
+  max-width: none;
+}
+
+/* Figma wraps these two figures in a clip-path group, but the artwork
+   already sits inside the clip — nothing is cut — so they are drawn
+   straight rather than through a CSS mask */
+.tv-ct__art .tv-ct__mask-a,
+.tv-ct__art .tv-ct__mask-b {
+  overflow: visible;
 }
