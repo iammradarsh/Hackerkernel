@@ -1958,12 +1958,24 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* top-down black scrim the hover variant lays over the artwork */
+/* top-down black scrim the hover variant lays over the artwork. the falloff
+   isn't a straight ramp — it sags below the line through the middle — so the
+   stops trace the measured curve off the Figma hover export rather than
+   interpolating 0.96 → 0 in one step */
 .case-card__img::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.96) 0%,
+    rgba(0, 0, 0, 0.67) 20%,
+    rgba(0, 0, 0, 0.43) 40%,
+    rgba(0, 0, 0, 0.24) 60%,
+    rgba(0, 0, 0, 0.11) 80%,
+    rgba(0, 0, 0, 0.03) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
   opacity: 0;
   transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -1984,7 +1996,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   top: 214px;
   width: 43px;
   height: 44px;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* the hover badge inverts the disc (white fill, dark arrow) and carries a
@@ -2006,6 +2018,12 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 .case-card:hover .case-card__badge--hover,
 .case-card:focus-visible .case-card__badge--hover {
   opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-card__img::before,
+  .case-card__img::after,
+  .case-card__badge { transition-duration: 0.01ms; }
 }
 
 .case-card__body {
@@ -2525,21 +2543,43 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   gap: 32px;
   align-items: center;
   width: max-content;
+  /* one pass = the authored cards plus the gap that follows the last one.
+     Script.js measures it and stamps out enough copies to cover the row. */
+  --marq-pass: 100%;
+  will-change: transform;
 }
 
-.reviews__row--1 { top: 0; animation: review-left 46s linear infinite; }
-.reviews__row--2 { top: 198px; animation: review-right 52s linear infinite; }
+/* The two rows are seeded at the offsets the Figma component uses (-185 / -390).
+   Neither is a whole number of card pitches, so the rows never line up into a
+   grid — and because they travel opposite ways over passes of different length
+   (4 cards vs 5), the pairing keeps drifting: cards slide in half-cut at one
+   edge and out at the other, which is the randomised feel of the design. */
+.reviews__row--1 {
+  left: -185px;
+  top: 0;
+  animation: review-left 46s linear infinite;
+}
+
+.reviews__row--2 {
+  left: -390px;
+  top: 198px;
+  animation: review-right 52s linear infinite;
+}
 
 .reviews:hover .reviews__row { animation-play-state: paused; }
 
 @keyframes review-left {
   from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  to   { transform: translateX(calc(var(--marq-pass) * -1)); }
 }
 
 @keyframes review-right {
-  from { transform: translateX(-50%); }
+  from { transform: translateX(calc(var(--marq-pass) * -1)); }
   to   { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reviews__row { animation: none; }
 }
 
 .review {

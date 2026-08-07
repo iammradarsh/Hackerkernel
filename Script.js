@@ -173,9 +173,32 @@
     svcRender();
   }
 
-  /* ---------- Marquee rows: duplicate content for a seamless loop ---------- */
+  /* ---------- Marquee rows: stamp out copies for a seamless loop ----------
+     A pass is one authored set of cards plus the gap that trails the last one
+     — translate by exactly that and the copy behind lands where the original
+     started, so the seam never shows. The rows are seeded at different offsets
+     and hold different numbers of cards, so the two passes are different
+     lengths and the rows drift out of step instead of marching as a grid. */
   Array.prototype.forEach.call(document.querySelectorAll('[data-marquee]'), function (row) {
-    row.innerHTML += row.innerHTML;
+    var cards = Array.prototype.slice.call(row.children);
+    if (!cards.length) return;
+
+    var gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+    var pass = row.getBoundingClientRect().width + gap;
+    if (!pass) return;
+
+    /* enough width to stay covered at either end of the travel, whatever the
+       row's seeded offset — the widest seed in the design is 390px */
+    var view = row.parentNode.getBoundingClientRect().width;
+    var need = view + pass + 400;
+
+    while (row.getBoundingClientRect().width < need) {
+      var copy = document.createDocumentFragment();
+      for (var i = 0; i < cards.length; i++) copy.appendChild(cards[i].cloneNode(true));
+      row.appendChild(copy);
+    }
+
+    row.style.setProperty('--marq-pass', pass + 'px');
   });
 
   /* ---------- Testimonials: coverflow rail ----------
