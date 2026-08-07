@@ -462,12 +462,12 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 65px;
-  height: 145px;
+  width: 44px;
+  height: 180px;
   border-radius: 6px 0 0 6px;
   background: var(--primary-color);
   color: #fff;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.02em;
 }
@@ -476,6 +476,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   white-space: nowrap;
+  font-family: "Plus Jakarta Sans";
 }
 
 /* ===========================================================
@@ -4856,8 +4857,8 @@ body.is-menu-open {
 
 .ab-hero__mantra {
   position: absolute;
-  left: 1125px;
-  top: 282px;
+  left: 1195px;
+  top: 272px;
   width: 106px;
   font-size: 10.181px;
   font-weight: 300;
