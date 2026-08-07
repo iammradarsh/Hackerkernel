@@ -59,6 +59,9 @@
     var svcN = 0;                            /* how many are folded onto the left */
     var svcAt = -1;                          /* highlighted card, -1 for none */
 
+    /* the deepest a strip can get, which is the shade the stylesheet ramps to */
+    svcTrack.style.setProperty('--svc-max', Math.max(svcLast, 1));
+
     /* the design gives the arrow that has somewhere to go the primary red and
        the other the body grey, so availability is a visual state, not a guess */
     var svcArrows = function (at, span) {
@@ -73,8 +76,12 @@
     };
 
     var svcRender = function () {
-      /* one class per card and nothing else — the width and the grey are both the
-         stylesheet's business, so a click writes no geometry at all */
+      /* one class per card plus the fold count, and nothing else — the width and
+         the shade are both the stylesheet's business, so a click writes no
+         geometry at all. --svc-n is what lets each strip work out how deep in
+         the stack it sits, and so which grey the design gives it. */
+      svcTrack.style.setProperty('--svc-n', svcN);
+
       for (var i = 0; i < svcCards.length; i++) {
         svcCards[i].classList.toggle('is-collapsed', i < svcN);
       }
@@ -447,6 +454,121 @@
     });
   }
 
+  /* ---------- Let's Talk Business: the side tab is the drawer handle ----------
+     The tab travels left with the card, so the open state lives on <body>
+     as well as on the panel — that is what the tab's transform keys off. */
+  var talkTab = document.getElementById('talk-toggle');
+  var talkForm = document.getElementById('talk-form');
+
+  if (talkTab && talkForm) {
+    var setTalk = function (open) {
+      document.body.classList.toggle('is-talk-open', open);
+      talkForm.classList.toggle('is-open', open);
+      talkForm.setAttribute('aria-hidden', open ? 'false' : 'true');
+      talkTab.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        var first = talkForm.querySelector('input, select, textarea');
+        if (first) first.focus({ preventScroll: true });
+      }
+    };
+
+    talkTab.addEventListener('click', function () {
+      setTalk(!talkForm.classList.contains('is-open'));
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && talkForm.classList.contains('is-open')) setTalk(false);
+    });
+
+    /* the drawer has no scrim, so closing on an outside click is what
+       stops it hanging over the page once attention moves on */
+    document.addEventListener('click', function (e) {
+      if (!talkForm.classList.contains('is-open')) return;
+      if (talkForm.contains(e.target) || talkTab.contains(e.target)) return;
+      setTalk(false);
+    });
+
+    /* the burger and the drawer both own the right-hand edge — never both */
+    if (burger) burger.addEventListener('click', function () { setTalk(false); });
+  }
+
+  /* ---------- Job details: "Apply For This Position" modal ---------- */
+  var applyBtn = document.getElementById('jd-apply');
+  var applyModal = document.getElementById('apply-modal');
+
+  if (applyBtn && applyModal) {
+    var applyCard = applyModal.querySelector('.jm-card');
+
+    var setApply = function (open) {
+      document.body.classList.toggle('is-apply-open', open);
+      applyModal.classList.toggle('is-open', open);
+      applyModal.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (open) {
+        var first = applyModal.querySelector('input');
+        if (first) first.focus({ preventScroll: true });
+      } else {
+        applyBtn.focus({ preventScroll: true });
+      }
+    };
+
+    applyBtn.addEventListener('click', function () { setApply(true); });
+
+    Array.prototype.forEach.call(applyModal.querySelectorAll('[data-apply-close]'), function (btn) {
+      btn.addEventListener('click', function () { setApply(false); });
+    });
+
+    /* the scrim is the modal itself, so only a hit outside the card counts */
+    applyModal.addEventListener('click', function (e) {
+      if (!applyCard.contains(e.target)) setApply(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && applyModal.classList.contains('is-open')) setApply(false);
+    });
+
+    /* Next has no step two and no endpoint yet — swallow the submit so it
+       cannot navigate away and drop everything the applicant typed */
+    applyCard.addEventListener('submit', function (e) { e.preventDefault(); });
+
+    /* ── resume drop zone ── */
+    var drop = document.getElementById('jd-resume');
+
+    if (drop) {
+      var dropInput = drop.querySelector('input[type="file"]');
+      var dropName = drop.querySelector('.jm-drop__file');
+
+      var showFile = function (file) {
+        if (!file) return;
+        drop.classList.add('has-file');
+        dropName.textContent = file.name;
+      };
+
+      dropInput.addEventListener('change', function () { showFile(dropInput.files[0]); });
+
+      ['dragenter', 'dragover'].forEach(function (type) {
+        drop.addEventListener(type, function (e) {
+          e.preventDefault();
+          drop.classList.add('is-dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(function (type) {
+        drop.addEventListener(type, function (e) {
+          e.preventDefault();
+          drop.classList.remove('is-dragover');
+        });
+      });
+
+      drop.addEventListener('drop', function (e) {
+        var files = e.dataTransfer && e.dataTransfer.files;
+        if (!files || !files.length) return;
+        /* hand the dropped file to the real input so the form submits it */
+        dropInput.files = files;
+        showFile(files[0]);
+      });
+    }
+  }
+
   /* ---------- Case-study filter tabs ---------- */
   var filters = document.querySelectorAll('.cs-filter');
   Array.prototype.forEach.call(filters, function (btn) {
@@ -685,20 +807,19 @@
   }
 
   /* ---------- About: Our Story — one year per arrow click ----------
-     Every year sits on the rail as a small stop; the active one is also drawn
-     big at the head of the rail. Stepping forward slides the rail one stop
-     left, so the next year takes the big slot and the years already told fade
-     out behind it. */
+     Every year is one stop on a single rail. Stepping forward slides the rail
+     one stop left and moves the active class along with it, so the incoming
+     year grows into the big slot while the one being left behind shrinks back
+     to a plain stop and carries on out to the left. Nothing is swapped: the
+     year that reads big is the same element that read small a moment ago. */
   var jrTrack = document.getElementById('jr-track');
-  var jrBig = document.getElementById('jr-big');
 
-  if (jrTrack && jrBig) {
+  if (jrTrack) {
     var JR_STEP = 364;                    /* 346 column + 18 gap */
     var jrYears = jrTrack.querySelectorAll('.jr__year');
-    var jrCards = jrBig.querySelectorAll('.jr__bigcard');
     var jrPrev = document.querySelector('.jr__arrow--prev');
     var jrNext = document.querySelector('.jr__arrow--next');
-    var jrLast = jrCards.length - 1;
+    var jrLast = jrYears.length - 1;
     var jrIndex = 0;
 
     var showYear = function (i) {
@@ -707,10 +828,8 @@
       jrTrack.style.transform = 'translateX(' + (-jrIndex * JR_STEP) + 'px)';
 
       Array.prototype.forEach.call(jrYears, function (y, n) {
-        y.classList.toggle('is-past', n <= jrIndex);
-      });
-      Array.prototype.forEach.call(jrCards, function (c, n) {
-        c.classList.toggle('is-active', n === jrIndex);
+        y.classList.toggle('is-active', n === jrIndex);
+        y.classList.toggle('is-past', n < jrIndex);
       });
 
       if (jrPrev) jrPrev.disabled = jrIndex === 0;
@@ -789,12 +908,36 @@
       return document.body.classList.contains('is-menu-open');
     };
 
+    /* Panels with a scroller of their own — the enquiry drawer above all —
+       must keep the native wheel, or preventDefault below hands every notch
+       to the page and they never move. The page only takes the wheel back
+       once the panel has run out of room in the direction being asked for,
+       which is what makes the hand-off at the ends feel like one scroller. */
+    var ownScroller = function (node, delta) {
+      while (node && node.nodeType === 1 && node !== document.body) {
+        var flow = getComputedStyle(node).overflowY;
+
+        if ((flow === 'auto' || flow === 'scroll') &&
+            node.scrollHeight > node.clientHeight) {
+          var room = delta < 0
+            ? node.scrollTop
+            : node.scrollHeight - node.clientHeight - node.scrollTop;
+          if (room > 1) return true;
+        }
+
+        node = node.parentNode;
+      }
+      return false;
+    };
+
     window.addEventListener('wheel', function (e) {
       if (e.ctrlKey || locked()) return;      /* leave pinch-zoom alone */
 
       var delta = e.deltaY;
       if (e.deltaMode === 1) delta *= 16;                  /* lines -> px */
       else if (e.deltaMode === 2) delta *= window.innerHeight;
+
+      if (ownScroller(e.target, delta)) return;
 
       e.preventDefault();
       target = clamp(target + delta * SPEED);

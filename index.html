@@ -11,8 +11,86 @@
 </head>
 <body>
 
-  <!-- Fixed side tab -->
-  <a class="talk-tab" href="#contact"><span>Let's Talk Business</span></a>
+  <!-- Fixed side tab — the handle for the slide-in enquiry form -->
+  <button class="talk-tab" type="button" id="talk-toggle" aria-expanded="false" aria-controls="talk-form"><span>Let's Talk Business</span></button>
+
+  <!-- ================= Let's Talk Business — slide-in form ================= -->
+  <aside class="lt-form" id="talk-form" aria-hidden="true" aria-label="Get in touch">
+    <form class="lt-form__card" novalidate>
+      <p class="lt-form__title">Get In Touch</p>
+
+      <div class="lt-form__scroll">
+        <div class="lt-fields">
+          <label class="lt-field">
+            <span class="lt-field__label">Full Name<b>*</b></span>
+            <input class="lt-input" type="text" name="fullname" autocomplete="name" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Email<b>*</b></span>
+            <input class="lt-input" type="email" name="email" autocomplete="email" required>
+          </label>
+
+          <div class="lt-field">
+            <span class="lt-field__label">Phone Number<b>*</b></span>
+            <div class="lt-phone">
+              <select class="lt-select lt-phone__code" name="dialcode" aria-label="Country dialling code">
+                <option>&#127482;&#127480; +1</option>
+                <option>&#127470;&#127475; +91</option>
+                <option>&#127468;&#127463; +44</option>
+                <option>&#127462;&#127466; +971</option>
+                <option>&#127462;&#127482; +61</option>
+                <option>&#127480;&#127468; +65</option>
+              </select>
+              <input class="lt-input lt-phone__num" type="tel" name="phone" placeholder="(201) 555-0123" autocomplete="tel" required>
+            </div>
+          </div>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company Name<b>*</b></span>
+            <input class="lt-input" type="text" name="company" autocomplete="organization" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company URL</span>
+            <input class="lt-input" type="url" name="website" autocomplete="url">
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Region<b>*</b></span>
+            <select class="lt-select" name="region" required>
+              <option value="" selected>Select Region</option>
+              <option>North America</option>
+              <option>Europe</option>
+              <option>Asia Pacific</option>
+              <option>Middle East</option>
+              <option>Africa</option>
+              <option>Australia &amp; Oceania</option>
+              <option>Other</option>
+            </select>
+          </label>
+
+          <div class="lt-check">
+            <span class="lt-field__label">Services you are looking for<b>*</b></span>
+            <div class="lt-check__list">
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Remote IT Resources">Remote IT Resources</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Custom Software Development">Custom Software Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Web Development">Web Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Mobile App Development">Mobile App Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Other IT Services">Other IT Services</label>
+            </div>
+          </div>
+
+          <label class="lt-field" style="padding-top:8px">
+            <span class="lt-field__label">Project Details<b>*</b></span>
+            <textarea class="lt-input lt-textarea" name="details" required></textarea>
+          </label>
+
+          <button class="lt-form__submit" type="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </aside>
 
   <div class="page-shell">
   <div class="wrap">
@@ -37,7 +115,17 @@
           <a href="#industries">Industries</a>
           <a href="career.html">Career</a>
           <a href="#contact">Contact Us</a>
-          <a class="nav-links__cta" href="#contact">Let's Talk <i class="dot"></i></a>
+          <a class="nav-links__cta" href="#contact">
+            <span class="nav-links__cta-row">
+              Let's Talk
+              <span class="nav-links__cta-icon" aria-hidden="true">
+                <img class="nav-links__cta-ring" src="assets/lt-cta-ring.svg" alt="">
+                <i class="nav-links__cta-disc"></i>
+                <img class="nav-links__cta-arrow" src="assets/lt-cta-arrow.svg" alt="">
+              </span>
+            </span>
+            <i class="nav-links__cta-line" aria-hidden="true"></i>
+          </a>
         </nav>
 
         <button class="nav-burger" type="button" aria-label="Menu">
@@ -152,14 +240,14 @@
               <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
             </a>
 
-            <article class="svc-card">
+            <a class="svc-card" href="salesforce.html">
               <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
               <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
               <div class="svc-card__icon"><img class="wide" src="assets/icon-salesforce.svg" alt=""></div>
               <p class="svc-card__tag">Salesforce</p>
               <h3 class="svc-card__heading"><span>Salesforce</span><span>CRM Solutions</span></h3>
               <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
-            </article>
+            </a>
 
             <a class="svc-card" href="staff-augmentation.html">
               <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
@@ -339,7 +427,7 @@
           <p class="ai-sec__lead">Transform Your Business with Salesforce.</p>
           <p class="ai-sec__body">We help businesses implement, customize, and optimize Salesforce to streamline sales, improve customer relationships, automate workflows, and drive measurable business growth.</p>
 
-          <a class="pill-btn ai-sec__btn" href="#salesforce">
+          <a class="pill-btn ai-sec__btn" href="salesforce.html">
             <span class="pill-btn__label">Explore Solution</span>
             <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
           </a>
@@ -371,7 +459,7 @@
             </div>
             <div class="ai-row__right">
               <p class="ai-row__desc">Design scalable CRM strategies, optimize business processes, and align Salesforce with your business goals.</p>
-              <a class="ai-row__go" href="#salesforce"><img src="assets/arrow-diag.svg" alt=""></a>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
             </div>
           </div>
 
@@ -382,7 +470,7 @@
             </div>
             <div class="ai-row__right">
               <p class="ai-row__desc">Deploy Salesforce from scratch with custom objects, workflows, security, and user training.</p>
-              <a class="ai-row__go" href="#salesforce"><img src="assets/arrow-diag.svg" alt=""></a>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
             </div>
           </div>
 
@@ -393,7 +481,7 @@
             </div>
             <div class="ai-row__right">
               <p class="ai-row__desc">Manage leads, opportunities, sales pipelines, forecasting, and customer relationships efficiently.</p>
-              <a class="ai-row__go" href="#salesforce"><img src="assets/arrow-diag.svg" alt=""></a>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
             </div>
           </div>
 
@@ -404,7 +492,7 @@
             </div>
             <div class="ai-row__right">
               <p class="ai-row__desc">Deliver exceptional customer support through case management, omnichannel service, and automation.</p>
-              <a class="ai-row__go" href="#salesforce"><img src="assets/arrow-diag.svg" alt=""></a>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
             </div>
           </div>
 
@@ -415,7 +503,7 @@
             </div>
             <div class="ai-row__right">
               <p class="ai-row__desc">Connect Salesforce with ERP systems, payment gateways, marketing tools, APIs, and third-party applications.</p>
-              <a class="ai-row__go" href="#salesforce"><img src="assets/arrow-diag.svg" alt=""></a>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
             </div>
           </div>
 
@@ -426,7 +514,7 @@
             </div>
             <div class="ai-row__right">
               <p class="ai-row__desc">Build Lightning Components, Apex solutions, Visualforce pages, Flows, and tailored Salesforce applications.</p>
-              <a class="ai-row__go" href="#salesforce"><img src="assets/arrow-diag.svg" alt=""></a>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
             </div>
           </div>
         </div>
@@ -477,27 +565,30 @@
         <div class="case-sec__rule"></div>
 
         <div class="case-cards">
-          <a class="case-card" href="case-study-detail.html">
-            <img class="case-card__img" src="assets/case-1.png" alt="">
+          <a class="case-card" href="case-study-detail.html" style="--case-art: url('assets/case-1.png')">
+            <span class="case-card__img"></span>
             <img class="case-card__badge" src="assets/case-badge.svg" alt="">
+            <img class="case-card__badge case-card__badge--hover" src="assets/case-badge-hover.svg" alt="">
             <div class="case-card__body">
               <img src="assets/case-book.svg" alt="">
               <p>Provide the best service with out of the box ideas</p>
             </div>
           </a>
 
-          <a class="case-card" href="case-study-detail-video.html">
-            <img class="case-card__img" src="assets/case-2.png" alt="">
+          <a class="case-card" href="case-study-detail-video.html" style="--case-art: url('assets/case-2.png')">
+            <span class="case-card__img"></span>
             <img class="case-card__badge" src="assets/case-badge.svg" alt="">
+            <img class="case-card__badge case-card__badge--hover" src="assets/case-badge-hover.svg" alt="">
             <div class="case-card__body">
               <img src="assets/case-book.svg" alt="">
               <p>Private Jet</p>
             </div>
           </a>
 
-          <a class="case-card" href="case-study-detail.html">
-            <img class="case-card__img" src="assets/case-3.png" alt="">
+          <a class="case-card" href="case-study-detail.html" style="--case-art: url('assets/case-3.png')">
+            <span class="case-card__img"></span>
             <img class="case-card__badge" src="assets/case-badge.svg" alt="">
+            <img class="case-card__badge case-card__badge--hover" src="assets/case-badge-hover.svg" alt="">
             <div class="case-card__body">
               <img src="assets/case-book.svg" alt="">
               <p>Provide the best service with out of the box ideas</p>
@@ -533,11 +624,11 @@
 
       <div class="ind-sec__viewport">
         <div class="ind-track" id="ind-track">
-          <article class="ind-card">
+          <a class="ind-card" href="salesforce.html">
             <img class="bg" src="assets/industry-bg.png" alt="">
             <div class="ind-card__head"><img src="assets/ind-salesforce.svg" alt=""><p>Salesforce</p></div>
             <p class="ind-card__desc">CRM implementation, customization, automation, integrations, and managed services.</p>
-          </article>
+          </a>
 
           <article class="ind-card">
             <img class="bg" src="assets/industry-bg.png" alt="">
@@ -873,7 +964,7 @@
               <h4>Services</h4>
               <ul>
                 <li><a href="ai-solution.html">Ai Solutions</a></li>
-                <li><a href="#salesforce">Salesforce</a></li>
+                <li><a href="salesforce.html">Salesforce</a></li>
                 <li><a href="staff-augmentation.html">Staff Augumentation</a></li>
                 <li><a href="#services">Mobile Development</a></li>
                 <li><a href="#services">Web Development</a></li>

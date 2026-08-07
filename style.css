@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Suwannaphum:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Raleway:wght@500&family=Suwannaphum:wght@400&display=swap');
 /* the AI page's automation cards set their 01..04 in condensed Open Sans
    (wdth 75, ExtraBold) — outlined, so the width axis is clearly visible */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wdth,wght@75,800&display=swap');
@@ -343,29 +343,108 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   color: var(--primary-color);
 }
 
+/* ── "Let's Talk" — Figma "Buttons / 05", Default → Variant2 ──
+   One smart-animate between the two variants: the 4px dot slides 17px right
+   and inflates into the 48px disc while its fill goes #383636 → #f2f2f2, the
+   8px ring rides the same 17px and shrinks to 4px (ending up under the disc),
+   the arrow travels with the disc's centre and fades up from 0, and the rule
+   under the label retracts 73px → 40px.
+
+   Geometry is in em off the label, so the button keeps Figma's proportions at
+   the nav's type size: every em below is the Figma pixel over its 16px label. */
 .nav-links__cta {
+  /* 17px — how far the dot's centre sits left of the icon box's centre */
+  --cta-shift: 1.0625em;
+  --cta-ease: 0.3s cubic-bezier(0, 0, 0.58, 1);
+
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-start;
   color: var(--primary-color);
 }
 
-.nav-links__cta::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 18px;
-  bottom: -10px;
-  height: 1px;
-  background: var(--text-color);
+.nav-links__cta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
-.nav-links__cta .dot {
-  width: 5px;
-  height: 5px;
+/* Figma clips this box, so the disc can only ever fill it — never spill */
+.nav-links__cta-icon {
+  position: relative;
+  flex: none;
+  width: 3em;
+  height: 3em;
+  overflow: hidden;
+}
+
+/* Each part is centred on the box first, then pushed left by --cta-shift, so
+   the hover state is a plain reset to translateX(0). Scale is applied before
+   the shift, about each part's own centre, which is what keeps the dot's
+   centre — and with it the arrow — on one straight 17px path. */
+.nav-links__cta-ring,
+.nav-links__cta-disc,
+.nav-links__cta-arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: transform var(--cta-ease), opacity var(--cta-ease),
+              background-color var(--cta-ease);
+}
+
+.nav-links__cta-ring {
+  width: 0.525em;
+  height: 0.525em;
+  transform: translate(-50%, -50%) translateX(calc(-1 * var(--cta-shift)));
+}
+
+.nav-links__cta-disc {
+  width: 3em;
+  height: 3em;
   border-radius: 50%;
-  background: var(--primary-color);
+  background: var(--text-color);
+  /* 4px of the 48px disc */
+  transform: translate(-50%, -50%) translateX(calc(-1 * var(--cta-shift))) scale(0.08333);
+}
+
+.nav-links__cta-arrow {
+  width: 1.5em;
+  height: 1.5em;
+  opacity: 0;
+  transform: translate(-50%, -50%) translateX(calc(-1 * var(--cta-shift)));
+}
+
+.nav-links__cta-line {
+  width: 4.5625em;
+  height: 1px;
+  background: var(--text-color);
+  transition: width var(--cta-ease);
+}
+
+.nav-links__cta:hover .nav-links__cta-ring {
+  transform: translate(-50%, -50%) scale(0.5);
+}
+
+.nav-links__cta:hover .nav-links__cta-disc {
+  background: #f2f2f2;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.nav-links__cta:hover .nav-links__cta-arrow {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.nav-links__cta:hover .nav-links__cta-line {
+  width: 2.5em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links__cta-ring,
+  .nav-links__cta-disc,
+  .nav-links__cta-arrow,
+  .nav-links__cta-line { transition-duration: 0.01ms; }
 }
 
 .nav-burger {
@@ -402,46 +481,77 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 /* ===========================================================
    Shared: animated pill button
    =========================================================== */
+/* Flex + padding rather than an absolutely placed label: the Figma label sits
+   at top 16 assuming Gilroy's natural line box, so pinning it optically
+   off-centres it. 58px right = the 46px the disc occupies plus a 12px gap. */
 .pill-btn {
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
   height: 48px;
+  padding: 0 58px 0 21px;
   border-radius: 192px;
   background: var(--text-color);
-  transition: background-color 0.25s ease;
+  cursor: pointer;
 }
 
+/* the label rides above the white sweep: it reads white on the dark pill, is
+   briefly white-on-white as the sweep passes under it (as in the design's
+   middle state), then flips to the pill colour once the sweep has cleared it */
 .pill-btn__label {
-  position: absolute;
-  left: 21px;
-  top: 16px;
+  position: relative;
+  z-index: 1;
+  flex: none;
   font-size: 12px;
   font-weight: 500;
-  line-height: 1.075;
+  line-height: normal;
   color: #fff;
   white-space: nowrap;
+  transition: color 0.12s ease;
 }
 
+/* one white pill inset 2px, clipped back to a 44px disc at rest — hover opens
+   the clip leftwards so the disc grows into the full pill, leaving the 2px of
+   button showing all round as the outline of the final state */
 .pill-btn__circle {
   position: absolute;
   top: 2px;
   right: 2px;
-  width: 44px;
-  height: 44px;
+  bottom: 2px;
+  left: 2px;
   border-radius: 136px;
   background: #fff;
+  clip-path: inset(0 0 0 calc(100% - 44px) round 136px);
+  transition: clip-path 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* right-anchored so the icon holds its place in the disc as the pill opens */
 .pill-btn__circle img {
   position: absolute;
-  left: 15px;
+  right: 14px;
   top: 15px;
   width: 15px;
   height: 15px;
 }
 
-.pill-btn:hover {
-  background: #4a4747;
+.pill-btn:hover .pill-btn__circle,
+.pill-btn:focus-visible .pill-btn__circle {
+  clip-path: inset(0 round 136px);
+}
+
+/* the delay lives on the hover state only, so the flip back to white on
+   mouse-out happens at once and never lands dark-on-dark */
+.pill-btn:hover .pill-btn__label,
+.pill-btn:focus-visible .pill-btn__label {
+  color: var(--text-color);
+  transition-delay: 0.22s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill-btn__circle,
+  .pill-btn__label { transition-duration: 0.01ms; }
+  .pill-btn:hover .pill-btn__label,
+  .pill-btn:focus-visible .pill-btn__label { transition-delay: 0s; }
 }
 
 /* ===========================================================
@@ -878,9 +988,22 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
      cannot slide off the card the pointer is on. Only the arrows change layout. */
   --svc-pitch: 346px;
   --svc-fold: calc(var(--svc-pitch) / 3);
-  --svc-fold-bg: #e0e0e0;
   --svc-dur: 640ms;
   --svc-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Depth shading. In the design each card is wrapped in a frame offset by one
+     fold and nested seven deep, so a strip is tinted once for every level it is
+     buried under — darkest on the far left, lightening toward the open card,
+     which stays pure white. The ramp runs between two knobs: --svc-fold-bg is
+     the floor the leftmost strip reaches once the rail is fully folded, and
+     --svc-fold-lift is how far back toward white the shallowest strip climbs,
+     which at 62% puts it on #f0f0f0. The strips stay grey the whole way rather
+     than fading out to white, which is how the design reads. --svc-n and
+     --svc-max are written by the script; --svc-i is each card's own position. */
+  --svc-fold-bg: #e0e0e0;
+  --svc-fold-lift: 62%;
+  --svc-n: 0;
+  --svc-max: 1;
 }
 
 .services__arrows {
@@ -967,15 +1090,33 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
               box-shadow var(--svc-dur) var(--svc-ease);
 }
 
+/* Each card carries its own position so the shade can be worked out in CSS
+   rather than written per card by the script. */
+.svc-card:nth-child(1) { --svc-i: 0; }
+.svc-card:nth-child(2) { --svc-i: 1; }
+.svc-card:nth-child(3) { --svc-i: 2; }
+.svc-card:nth-child(4) { --svc-i: 3; }
+.svc-card:nth-child(5) { --svc-i: 4; }
+.svc-card:nth-child(6) { --svc-i: 5; }
+.svc-card:nth-child(7) { --svc-i: 6; }
+
 /* Folded: a third of a card, contents simply clipped where the design's own
    left-anchored offsets put them — icon whole, heading and chips cut off. The
    tag is the one exception: right-anchored, it would land on top of the icon, so
-   it fades out. Every strip settles on the same grey; folding several in quick
-   succession is what makes the newest ones look lighter, since each is still
-   interpolating out of white. */
+   it fades out.
+
+   The shade is how deep the strip sits in the stack: 1 for the one that just
+   folded, counting up to the far left. Every strip re-shades on the same click,
+   so they interpolate in lockstep and the order never inverts mid-fold — the
+   newest strip starts at white and ends the lightest of them. */
 .svc-card.is-collapsed {
   --svc-w: var(--svc-fold);
-  --svc-bg: var(--svc-fold-bg);
+  --svc-depth: calc(var(--svc-n) - var(--svc-i));
+  --svc-bg: color-mix(in srgb,
+                      var(--svc-fold-bg)
+                      calc(100% - var(--svc-fold-lift) *
+                           (var(--svc-max) - var(--svc-depth)) / var(--svc-max)),
+                      #fff);
 }
 
 .svc-card.is-collapsed::after { background: #fff; }
@@ -1788,14 +1929,52 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 }
 
 /* width:100%, not left+right — an absolutely positioned <img> with width:auto
-   falls back to its intrinsic width and ignores `right` */
+   falls back to its intrinsic width and ignores `right`.
+
+   the artwork ships with the notch + rounded corners baked into its alpha, and
+   on hover only the *content* zooms — the notch stays put so the badge keeps
+   sitting in it. so the same PNG is used twice: as a fixed mask on this box,
+   and as the scaling paint layer inside it. */
 .case-card__img {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 248px;
-  /* object-fit: cover; */
+  -webkit-mask-image: var(--case-art);
+  mask-image: var(--case-art);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.case-card__img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--case-art) 50% 50% / 100% 100% no-repeat;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* top-down black scrim the hover variant lays over the artwork */
+.case-card__img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.case-card:hover .case-card__img::before,
+.case-card:focus-visible .case-card__img::before {
+  transform: scale(1.2);
+}
+
+.case-card:hover .case-card__img::after,
+.case-card:focus-visible .case-card__img::after {
+  opacity: 1;
 }
 
 .case-card__badge {
@@ -1804,6 +1983,28 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   top: 214px;
   width: 43px;
   height: 44px;
+  transition: opacity 0.35s ease;
+}
+
+/* the hover badge inverts the disc (white fill, dark arrow) and carries a
+   0 0 15px black-15% glow, so its export is 72.43 square with the blur bleed
+   around the same 42px circle — hence the offset origin */
+.case-card__badge--hover {
+  left: -26.4265px;
+  top: 199.7868px;
+  width: 72.4265px;
+  height: 72.4264px;
+  opacity: 0;
+}
+
+.case-card:hover .case-card__badge,
+.case-card:focus-visible .case-card__badge {
+  opacity: 0;
+}
+
+.case-card:hover .case-card__badge--hover,
+.case-card:focus-visible .case-card__badge--hover {
+  opacity: 1;
 }
 
 .case-card__body {
@@ -3077,11 +3278,10 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 }
 
 .cs-more .pill-btn__circle img {
-  left: 50%;
-  top: 50%;
+  right: 13px;
+  top: 13px;
   width: 18px;
   height: 18px;
-  transform: translate(-50%, -50%);
 }
 
 /* ===========================================================
@@ -3281,8 +3481,11 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   background: var(--sub-text-color);
 }
 
-.menu-cta .pill-btn:hover {
-  background: #757575;
+/* the sweep leaves this pill's own grey as the outline, so the label has to
+   match it rather than the default near-black */
+.menu-cta .pill-btn:hover .pill-btn__label,
+.menu-cta .pill-btn:focus-visible .pill-btn__label {
+  color: var(--sub-text-color);
 }
 
 .menu-locations {
@@ -5006,58 +5209,86 @@ body.is-menu-open {
   background: #fff;
 }
 
-/* the head of the rail: every year is stacked here, only the active one shows */
-.jr__big {
+/* ── The rail ──
+   One element per year, all on the same 364px grid, and the track slides one
+   grid step per click. The active stop is not a separate card that swaps its
+   contents: it is the same button, grown in place. Everything inside a stop is
+   anchored on the dot rather than on the stop's top edge, so a label can go
+   from 18px to 112px and the dot still lands on the line. That is what lets a
+   year shrink back to a plain stop as it is left behind, instead of one card
+   fading out while another fades in. */
+.jr__track {
   position: absolute;
-  left: 7px;
-  top: 0;
-  width: 346px;
-  height: 258px;
-}
-
-.jr__bigcard {
-  position: absolute;
-  left: 0;
+  left: 87px;
   top: 0;
   display: flex;
-  flex-direction: column;
   gap: 18px;
   align-items: flex-start;
-  width: 346px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateX(-40px);
-  transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-              visibility 0s linear 0.55s;
+  height: 258px;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.jr__bigcard.is-active {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(0);
-  transition: opacity 0.5s ease 0.08s,
-              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+.jr__year {
+  position: relative;
+  flex: 0 0 346px;
+  width: 346px;
+  height: 258px;
+  padding: 0;
+  text-align: left;
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
               visibility 0s linear 0s;
 }
 
-.jr__bigyear {
-  font-size: 112px;
+/* The big slot sits 80px left of the grid, so the stop taking it steps that
+   far forward as it grows and gives the distance back on the way out. */
+.jr__year.is-active {
+  transform: translateX(-80px);
+}
+
+/* bottom-anchored: the label grows upward off the line rather than pushing
+   the dot down */
+.jr__yearlabel {
+  position: absolute;
+  left: 0;
+  bottom: 112px;
+  font-size: 18px;
   font-weight: 400;
   line-height: 1.2;
   color: #fff;
   white-space: nowrap;
+  transition: font-size 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              bottom 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jr__year.is-active .jr__yearlabel {
+  bottom: 124px;
+  font-size: 112px;
+}
+
+.jr__yeardot {
+  position: absolute;
+  left: 0;
+  top: 154px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  background: #fff;
+  transition: width 0.45s ease, height 0.45s ease, top 0.45s ease,
+              border-color 0.45s ease, background-color 0.45s ease;
+}
+
+.jr__year:not(.is-active):hover .jr__yeardot {
+  transform: scale(1.5);
 }
 
 /* the active point: a ring on the rail, drawn in the brand red */
-.jr__bigdot {
+.jr__year.is-active .jr__yeardot {
+  top: 152px;
   width: 12px;
   height: 12px;
-  border: 1px solid var(--primary-color);
-  border-radius: 100px;
+  border-color: var(--primary-color);
   background: var(--text-color);
-}
-
-.jr__bigcard.is-active .jr__bigdot {
   animation: jr-ping 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -5067,7 +5298,30 @@ body.is-menu-open {
   100% { transform: scale(1); box-shadow: 0 0 0 14px rgba(237, 49, 58, 0); }
 }
 
-.jr__bigtext p {
+/* the detail lines live below the line, so they never meet the label of the
+   stop to the right even when a line runs wider than the 346 column */
+.jr__yeartext {
+  position: absolute;
+  left: 0;
+  top: 182px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.jr__year.is-active .jr__yeartext {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.45s ease 0.12s,
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+}
+
+.jr__yeartext span {
+  display: block;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.2;
@@ -5075,60 +5329,15 @@ body.is-menu-open {
   white-space: nowrap;
 }
 
-/* The upcoming years, one 364px stop apart. The track starts one stop to the
-   left of the first visible position (451 - 364), so at year 0 the transform
-   is a plain 0 and nothing lurches on load. */
-.jr__track {
-  position: absolute;
-  left: 87px;
-  top: 124px;
-  display: flex;
-  gap: 18px;
-  align-items: flex-start;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.jr__year {
-  flex: 0 0 346px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-start;
-  justify-content: center;
-  width: 346px;
-  padding: 0;
-  text-align: left;
-  transition: opacity 0.5s ease, visibility 0s linear 0s;
-}
-
-.jr__yearlabel {
-  font-size: 18px;
-  font-weight: 400;
-  line-height: normal;
-  color: #fff;
-  white-space: nowrap;
-}
-
-.jr__yeardot {
-  width: 8px;
-  height: 8px;
-  border-radius: 100px;
-  background: #fff;
-  transition: transform 0.35s ease;
-}
-
-.jr__year:hover .jr__yeardot {
-  transform: scale(1.5);
-}
-
-/* Years already told slide out to the left and fade away. visibility follows
-   the fade so they leave the tab order and the accessibility tree instead of
-   sitting invisibly on top of the big year. */
+/* Years already told keep shrinking as they go, and fade once they are past
+   the head of the rail. visibility follows the fade so they leave the tab
+   order instead of sitting invisibly over the active year. */
 .jr__year.is-past {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              visibility 0s linear 0.5s;
 }
 
 .jr__arrows {
@@ -5234,13 +5443,15 @@ body.is-menu-open {
   color: var(--sub-text-color);
 }
 
+/* the 918px row is centred on the design frame, not offset from its left edge */
 .mt__cards {
   position: absolute;
-  left: 164px;
+  left: 50%;
   top: 272px;
   display: flex;
   gap: 18px;
   align-items: center;
+  transform: translateX(-50%);
 }
 
 /* the glass card: a 10px white frame over a frosted, barely-tinted pane */
@@ -5289,7 +5500,7 @@ body.is-menu-open {
 
 .mt-card__face {
   position: absolute;
-  left: 14px;
+  left: 15px;
   top: 15px;
   width: 174px;
   height: 174px;
@@ -5365,7 +5576,7 @@ body.is-menu-open {
   bottom: -10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 62px;
   width: 264px;
   padding: 16px 17px;
   border-top: 1px solid var(--hairline);
@@ -5381,6 +5592,8 @@ body.is-menu-open {
   overflow: hidden;
   transition: transform 0.25s ease, filter 0.25s ease;
 }
+
+.mt-card__social a:first-child { width: 34px; }
 
 .mt-card__social a:hover {
   transform: translateY(-2px);
@@ -5408,10 +5621,13 @@ body.is-menu-open {
   height: 18px;
 }
 
+/* card 2's spark is its own vector — slightly smaller and set 5px in from the
+   other two, per the Figma node bounds */
 .mt-card__glyph--2 {
-  left: 30px;
-  top: 30px;
+  left: 20px;
+  top: 20px;
   width: 16.661px;
+  height: 18px;
 }
 
 .mt-card__ticks {
@@ -5432,7 +5648,7 @@ body.is-menu-open {
     transition: none;
   }
 
-  .jr__bigcard.is-active .jr__bigdot {
+  .jr__year.is-active .jr__yeardot {
     animation: none;
   }
 }
@@ -6747,7 +6963,7 @@ body.is-menu-open {
 .ai-cases__more { width: 139px; }
 
 .ai-cases__more .pill-btn__circle img {
-  left: 13px;
+  right: 13px;
   top: 13px;
   width: 18px;
   height: 18px;
@@ -9546,4 +9762,965 @@ body.is-menu-open {
 .tv-ct__art .tv-ct__mask-a,
 .tv-ct__art .tv-ct__mask-b {
   overflow: visible;
+}
+
+/* ===========================================================
+   Salesforce — Hero
+
+   Same 816px stage as the AI hero: a full-bleed photograph, a fade
+   into the white section below, and the box-line grid pushed mostly
+   off the left edge so only the sliver beside the copy column
+   survives. The certification badges take the place of the AI page's
+   two frosted cards at the foot of the copy block.
+   =========================================================== */
+.sf-hero {
+  position: relative;
+  height: 816px;
+  background: var(--shell-bg);
+  overflow: hidden;
+}
+
+.sf-hero__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.sf-hero__fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 68.937%, #fff 100%);
+  pointer-events: none;
+}
+
+.sf-hero__grid {
+  position: absolute;
+  left: -621px;
+  top: 0;
+  width: 1244px;
+  height: 816px;
+  pointer-events: none;
+}
+
+.sf-hero__grid img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.sf-hero__grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 68.937%, #fff 100%),
+    radial-gradient(ellipse 50% 50% at 50% 50%,
+              rgba(244, 244, 244, 0) 0%, rgba(244, 244, 244, 1) 100%);
+}
+
+.sf-hero__copy {
+  position: absolute;
+  left: 121px;
+  top: 142px;
+  width: 603px;
+  height: 506px;
+}
+
+/* the blue rule sits outside the text box, hence the negative offsets */
+.sf-hero__eyebrow {
+  position: absolute;
+  left: -11px;
+  top: -4px;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 18px;
+  border-left: 2px solid #2d4df1;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 0.9;
+  color: #2d4df1;
+  white-space: nowrap;
+}
+
+.sf-hero__title {
+  position: absolute;
+  left: 0;
+  top: 34px;
+  font-size: 54px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.sf-hero__lede {
+  position: absolute;
+  left: 0;
+  top: 168px;
+  width: 603px;
+  font-family: var(--font-poppins);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #888;
+  transform: translateY(-50%);
+}
+
+.sf-hero__btn {
+  position: absolute;
+  left: 0;
+  top: 218px;
+  width: 159px;
+}
+
+/* 332px = three 100px badges plus two 16px gaps, so the row wraps to
+   exactly 3 + 3 and the block bottoms out with the copy box */
+.sf-certs {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-content: flex-start;
+  width: 332px;
+}
+
+.sf-certs img {
+  flex: 0 0 auto;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+/* ===========================================================
+   Salesforce — The Future of Work
+   =========================================================== */
+.sf-fw {
+  position: relative;
+  height: 940px;
+  background: #fff;
+  overflow: hidden;
+}
+
+/* the cloud band is one 1280-wide artwork shown through two windows
+   pinned to the panel edges — the middle stays white behind the gears */
+.sf-fw__cloud {
+  position: absolute;
+  bottom: -3px;
+  height: 230px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sf-fw__cloud img {
+  position: absolute;
+  top: 0;
+  width: 1280px;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.sf-fw__cloud--left { left: 0; width: 526px; }
+.sf-fw__cloud--left img { left: -2px; }
+
+.sf-fw__cloud--right { right: 0; width: 402px; }
+.sf-fw__cloud--right img { left: -878px; }
+
+.sf-fw__head {
+  position: absolute;
+  left: 67px;
+  right: 67px;
+  top: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 152px;
+}
+
+.sf-fw__headcol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.sf-fw__title {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.225;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.sf-fw__title b {
+  font-weight: inherit;
+  color: var(--primary-color);
+}
+
+.sf-fw__lede {
+  width: 566px;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+/* ── the four-gear diagram ──
+   every piece keeps its Figma offset inside the 440x385 stage, so the
+   connectors still meet the gear teeth at any panel width */
+.fw-diagram {
+  position: absolute;
+  left: 50%;
+  top: 378px;
+  width: 440px;
+  height: 385px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.fw-g { position: absolute; }
+
+.fw-g img {
+  position: absolute;
+  max-width: none;
+}
+
+/* the top gear reuses the right-hand connector, turned a quarter turn */
+.fw-rot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fw-rot__in {
+  position: relative;
+  flex: 0 0 auto;
+  transform: rotate(-90deg);
+}
+
+.fw-rot__in img {
+  position: absolute;
+  max-width: none;
+}
+
+.fw-note {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 237px;
+  font-family: var(--font-jakarta);
+  font-size: 18px;
+  line-height: normal;
+}
+
+.fw-note__title { font-weight: 600; }
+.fw-note__text { font-weight: 400; color: var(--text-color); }
+
+.fw-note--einstein   { left: 617px; top: 283px; }
+.fw-note--data       { left: 860px; top: 556px; }
+.fw-note--trust-red  { left: 147px; top: 537px; }
+.fw-note--trust-blue { left: 617px; top: 781px; }
+
+.fw-note--einstein   .fw-note__title { color: #7a6fde; }
+.fw-note--data       .fw-note__title { color: #81ca01; }
+.fw-note--trust-red  .fw-note__title { color: #fe3d40; }
+.fw-note--trust-blue .fw-note__title { color: #207fe8; }
+
+/* ===========================================================
+   Salesforce — CRM Development Solutions
+
+   The orbit is the same 1132x637 stage the Staff Augmentation page
+   uses, so .sa-skills / .sa-orbit carry it. Only the centrepiece
+   changes: the Salesforce cloud instead of the chip.
+   =========================================================== */
+.sf-crm {
+  position: relative;
+  height: 930px;
+  background: var(--shell-bg);
+  overflow: hidden;
+}
+
+.sf-crm__head {
+  position: absolute;
+  left: 67px;
+  right: 67px;
+  top: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 152px;
+}
+
+.sf-crm__headcol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.sf-crm__title {
+  width: 439px;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.225;
+  color: var(--text-color);
+}
+
+.sf-crm__title em { font-style: normal; color: var(--primary-color); }
+
+.sf-crm__lede {
+  width: 566px;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--sub-text-color);
+}
+
+/* centred on the panel rather than pinned at 67px — the Figma frame
+   centres this block inside the section gutters */
+.sf-crm__skills {
+  left: 50%;
+  top: 245px;
+  transform: translateX(-50%);
+}
+
+.sf-orbit__logo { z-index: 1; }
+
+/* ── the two capability panels ── */
+.sf-cloudcards {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.sf-cc {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 46px;
+  border: 1px solid var(--hairline);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sf-cc__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-content: flex-start;
+  align-items: flex-start;
+}
+
+.sf-cc__item {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 24px;
+  overflow: hidden;
+  font-family: 'Raleway', var(--font-main);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 36px;
+  color: #000;
+  white-space: nowrap;
+}
+
+/* fixed box, image sized inside it — the icon set mixes 32px and 36px
+   artboards and `auto` would blow each one up to its intrinsic size */
+.sf-cc__ic {
+  position: relative;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+}
+
+.sf-cc__ic img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: none;
+}
+
+/* ===========================================================
+   Salesforce — tweaks on the sections shared with other pages
+   =========================================================== */
+.sf-ben__art {
+  left: 807px;
+  top: 81.19px;
+  width: 370px;
+  height: 246.36px;
+}
+
+/* the heading is one nowrap line pair, so its column is content-sized
+   rather than the 435px the Staff Augmentation copy needs */
+.sf-cta .sa-hire__left { width: auto; }
+.sf-cta .sa-hire__text { width: 436px; }
+.sf-cta__btn { width: 181px; }
+
+.sf-cases__more { width: 139px; }
+
+/* the fourth case shot is framed low in the design — centring it would
+   crop to the poster title instead of the sketch */
+.cf-card__shot--low { object-position: 50% 75%; }
+
+/* ===========================================================
+   Let's Talk Business — slide-in enquiry form
+
+   The tab is the drawer's handle: closed it sits flush with the
+   right edge, open it travels left with the card so it lands on the
+   card's leading edge, exactly as the Figma open state shows. The
+   card itself is 486x736 with only its left corners rounded, since
+   its right edge is off-screen against the viewport.
+   =========================================================== */
+.lt-form {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  z-index: 70;
+  width: 486px;
+  height: 736px;
+  max-height: 100vh;
+  transform: translate(100%, -50%);
+  visibility: hidden;
+  transition: transform 0.55s cubic-bezier(0.22, 0.9, 0.24, 1), visibility 0s linear 0.55s;
+}
+
+.lt-form.is-open {
+  transform: translate(0, -50%);
+  visibility: visible;
+  transition: transform 0.55s cubic-bezier(0.22, 0.9, 0.24, 1), visibility 0s;
+}
+
+/* the handle rides the card, so it needs the same easing and duration */
+.talk-tab {
+  transition: transform 0.55s cubic-bezier(0.22, 0.9, 0.24, 1);
+}
+
+body.is-talk-open .talk-tab {
+  transform: translateX(-486px);
+}
+
+.lt-form__card {
+  display: flex;
+  flex-direction: column;
+  gap: 31px;
+  align-items: flex-start;
+  height: 100%;
+  padding: 41px 40px 41px 41px;
+  border: 1px solid rgba(187, 202, 196, 0.5);
+  border-right: 0;
+  border-radius: 32px 0 0 24px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  box-shadow: -18px 0 48px rgba(0, 0, 0, 0.08);
+}
+
+.lt-form__title {
+  width: 100%;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+/* the form is taller than the card, so this is the only scroller —
+   the page behind keeps its own scroll position */
+.lt-form__scroll {
+  flex: 1 0 0;
+  min-height: 1px;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  /* the bar is hidden but the scrolling is not — the card is glass over the
+     page, and a gutter cut into its right edge showed through as a seam */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.lt-form__scroll::-webkit-scrollbar { width: 0; height: 0; }
+
+.lt-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.lt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.lt-field__label {
+  width: 100%;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #1b1c1c;
+}
+
+.lt-field__label b {
+  font-weight: inherit;
+  color: var(--primary-color);
+}
+
+.lt-input,
+.lt-select,
+.lt-textarea {
+  width: 100%;
+  height: 51.59px;
+  padding: 0 17px;
+  border: 1px solid #e3e2e2;
+  border-radius: 12px;
+  background: rgba(245, 243, 243, 0.6);
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #3c4a46;
+  outline: none;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.lt-textarea {
+  height: 128.38px;
+  padding: 14px 17px;
+  line-height: 1.4;
+  resize: none;
+}
+
+.lt-input::placeholder,
+.lt-textarea::placeholder { color: #a8aaab; }
+
+.lt-input:focus,
+.lt-select:focus,
+.lt-textarea:focus {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* the chevron is the design's own 24px glyph, parked 10px off the right
+   edge — `appearance: none` is what lets it show through */
+.lt-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-image: url('assets/lt-chevron.svg');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 24px 24px;
+  cursor: pointer;
+}
+
+/* ── phone: a 96px dial-code box welded to the number field ── */
+.lt-phone {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 52px;
+}
+
+.lt-phone__code {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 100%;
+  padding: 0 32px 0 13px;
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  background-position: right 8px center;
+}
+
+.lt-phone__num {
+  flex: 1 0 0;
+  min-width: 1px;
+  height: 100%;
+  border-radius: 0 12px 12px 0;
+}
+
+/* ── services checklist ── */
+.lt-check {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  width: 100%;
+  padding-top: 9.01px;
+}
+
+.lt-check__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.lt-check__row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #3c4a46;
+  cursor: pointer;
+}
+
+/* the tick is drawn on the box itself, so the native control can go */
+.lt-check__row input {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid #bbcac4;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.lt-check__row input:checked {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+}
+
+.lt-check__row input:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.lt-form__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 98px;
+  height: 40px;
+  margin: 18.1px 0 0 2.82px;
+  border-radius: 9999px;
+  background: var(--primary-color);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  transition: filter 0.25s ease, transform 0.25s ease;
+}
+
+.lt-form__submit:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+/* below the card's own width the drawer takes the viewport instead of
+   hanging half of itself off-screen */
+@media (max-width: 560px) {
+  .lt-form { width: 100vw; }
+
+  .lt-form__card {
+    padding: 32px 20px;
+    border-radius: 0;
+  }
+
+  /* park the handle against the left edge rather than off-screen */
+  body.is-talk-open .talk-tab {
+    transform: translateX(calc(65px - 100vw));
+  }
+}
+
+/* ===========================================================
+   Job details — "Apply For This Position" modal
+
+   The Figma card is 748x416 with no explicit height: 30 padding +
+   34 title + 37 gap + 200 fields + 37 gap + 48 actions + 30 padding
+   lands on 416 exactly, so the card is left content-sized and the
+   numbers stay readable.
+   =========================================================== */
+.jm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(24, 22, 22, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.jm-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s;
+}
+
+body.is-apply-open {
+  overflow: hidden;
+}
+
+.jm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 37px;
+  align-items: flex-start;
+  width: 748px;
+  max-width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 30px;
+  border-radius: 30px;
+  background: #fff;
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.jm-modal.is-open .jm-card { transform: none; }
+
+.jm-card__title {
+  font-family: var(--font-jakarta);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.212;
+  color: #383838;
+  white-space: nowrap;
+}
+
+.jm-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.jm-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.jm-field {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 1px;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.jm-field__label {
+  width: 100%;
+  font-family: var(--font-poppins);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--sub-text-color);
+}
+
+.jm-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 46px;
+  padding: 10px 16px;
+  border: 1px solid #dcdcdc;
+  border-radius: 14px;
+  background: #fcfcfc;
+  transition: border-color 0.25s ease;
+}
+
+.jm-input:focus-within { border-color: var(--primary-color); }
+
+.jm-input input {
+  flex: 1 0 0;
+  min-width: 1px;
+  border: 0;
+  background: none;
+  outline: none;
+  font-family: var(--font-poppins);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+.jm-input input::placeholder { color: #888; }
+
+.jm-input__prefix {
+  flex: 0 0 auto;
+  font-family: var(--font-poppins);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--sub-text-color);
+}
+
+.jm-input__sep {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 16px;
+  border-radius: 4px;
+  background: #cfcfcf;
+}
+
+/* ── resume drop zone ── */
+.jm-drop {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 84px;
+  padding: 10px 16px;
+  border: 1px dashed #f1a0a5;
+  border-radius: 14px;
+  background: rgba(255, 232, 168, 0.12);
+  font-family: var(--font-poppins);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.jm-drop:hover,
+.jm-drop.is-dragover {
+  border-color: var(--primary-color);
+  background: rgba(255, 232, 168, 0.28);
+}
+
+.jm-drop input { display: none; }
+
+.jm-drop__lead {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--primary-color);
+}
+
+.jm-drop__hint {
+  font-size: 8px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #888;
+}
+
+/* the picked file replaces the two hint lines, never the lead */
+.jm-drop__file {
+  max-width: 100%;
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jm-drop__file:empty { display: none; }
+.jm-drop.has-file .jm-drop__hint { display: none; }
+
+/* ── actions ── */
+.jm-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.jm-close {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 105px;
+  height: 48px;
+  padding: 0 24px;
+  border: 1.17px solid var(--sub-text-color);
+  border-radius: 56px;
+  font-family: var(--font-poppins);
+  font-size: 12.74px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--sub-text-color);
+  white-space: nowrap;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.jm-close:hover {
+  border-color: var(--text-color);
+  color: var(--text-color);
+}
+
+/* the Next button is the shared pill, re-lettered in Poppins */
+.jm-next { width: 120px; padding-left: 18px; }
+
+.jm-next .pill-btn__label {
+  font-family: var(--font-poppins);
+  font-size: 12.74px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .jm-card {
+    gap: 24px;
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .jm-card__title {
+    font-size: 22px;
+    white-space: normal;
+  }
+
+  .jm-row { flex-direction: column; gap: 20px; }
+  .jm-field { width: 100%; }
+  .jm-actions { justify-content: stretch; }
+  .jm-close { flex: 1 0 0; width: auto; }
 }

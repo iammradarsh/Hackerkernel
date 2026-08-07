@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salesforce Development Solutions &amp; CRM Services | HackerKernel</title>
+  <meta name="description" content="Certified Salesforce consulting partner — Sales Cloud, Service Cloud, Marketing Cloud, custom development, integration and AI-powered CRM automation.">
+
+  <link rel="icon" type="image/png" href="assets/hk-logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="cs-page sf-page">
+
+  <!-- Fixed side tab — the handle for the slide-in enquiry form -->
+  <button class="talk-tab" type="button" id="talk-toggle" aria-expanded="false" aria-controls="talk-form"><span>Let's Talk Business</span></button>
+
+  <!-- ================= Let's Talk Business — slide-in form ================= -->
+  <aside class="lt-form" id="talk-form" aria-hidden="true" aria-label="Get in touch">
+    <form class="lt-form__card" novalidate>
+      <p class="lt-form__title">Get In Touch</p>
+
+      <div class="lt-form__scroll">
+        <div class="lt-fields">
+          <label class="lt-field">
+            <span class="lt-field__label">Full Name<b>*</b></span>
+            <input class="lt-input" type="text" name="fullname" autocomplete="name" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Email<b>*</b></span>
+            <input class="lt-input" type="email" name="email" autocomplete="email" required>
+          </label>
+
+          <div class="lt-field">
+            <span class="lt-field__label">Phone Number<b>*</b></span>
+            <div class="lt-phone">
+              <select class="lt-select lt-phone__code" name="dialcode" aria-label="Country dialling code">
+                <option>&#127482;&#127480; +1</option>
+                <option>&#127470;&#127475; +91</option>
+                <option>&#127468;&#127463; +44</option>
+                <option>&#127462;&#127466; +971</option>
+                <option>&#127462;&#127482; +61</option>
+                <option>&#127480;&#127468; +65</option>
+              </select>
+              <input class="lt-input lt-phone__num" type="tel" name="phone" placeholder="(201) 555-0123" autocomplete="tel" required>
+            </div>
+          </div>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company Name<b>*</b></span>
+            <input class="lt-input" type="text" name="company" autocomplete="organization" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company URL</span>
+            <input class="lt-input" type="url" name="website" autocomplete="url">
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Region<b>*</b></span>
+            <select class="lt-select" name="region" required>
+              <option value="" selected>Select Region</option>
+              <option>North America</option>
+              <option>Europe</option>
+              <option>Asia Pacific</option>
+              <option>Middle East</option>
+              <option>Africa</option>
+              <option>Australia &amp; Oceania</option>
+              <option>Other</option>
+            </select>
+          </label>
+
+          <div class="lt-check">
+            <span class="lt-field__label">Services you are looking for<b>*</b></span>
+            <div class="lt-check__list">
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Remote IT Resources">Remote IT Resources</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Custom Software Development">Custom Software Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Web Development">Web Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Mobile App Development">Mobile App Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Other IT Services">Other IT Services</label>
+            </div>
+          </div>
+
+          <label class="lt-field" style="padding-top:8px">
+            <span class="lt-field__label">Project Details<b>*</b></span>
+            <textarea class="lt-input lt-textarea" name="details" required></textarea>
+          </label>
+
+          <button class="lt-form__submit" type="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </aside>
+
+<div class="page-shell">
+  <div class="wrap">
+
+    <!-- ================= Navbar ================= -->
+    <header class="navbar">
+      <div class="navbar__veil" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="navbar__inner">
+        <a class="logo" href="index.html">
+          <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+          <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+        </a>
+
+        <button class="burger" type="button" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu-overlay">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= Hero ================= -->
+    <section class="sf-hero">
+      <div class="design-frame design-frame--fill">
+
+        <img class="sf-hero__photo" src="assets/sf/hero-bg.png" alt="">
+        <div class="sf-hero__fade" aria-hidden="true"></div>
+
+        <div class="sf-hero__grid" aria-hidden="true"><img src="assets/box-line.png" alt=""></div>
+
+        <div class="sf-hero__copy">
+          <p class="sf-hero__eyebrow">Certified Consulting Partner</p>
+
+          <h1 class="sf-hero__title">Salesforce Development<br>Solutions</h1>
+
+          <p class="sf-hero__lede">Salesforce consulting services are meant to streamline the business process in terms of sales, marketing, and enhanced customer services.</p>
+
+          <a class="pill-btn sf-hero__btn" href="#contact">
+            <span class="pill-btn__label">Arrange a Call</span>
+            <span class="pill-btn__circle"><img src="assets/sf/arrow.svg" alt=""></span>
+          </a>
+
+          <div class="sf-certs">
+            <img src="assets/sf/cert-1.png" alt="Salesforce Certified Administrator">
+            <img src="assets/sf/cert-2.png" alt="Salesforce Certified Advanced Administrator">
+            <img src="assets/sf/cert-3.png" alt="Salesforce Certified Service Cloud Consultant">
+            <img src="assets/sf/cert-4.png" alt="Salesforce Certified Data Cloud Consultant">
+            <img src="assets/sf/cert-5.png" alt="Salesforce Certified Platform Developer I">
+            <img src="assets/sf/cert-6.png" alt="Salesforce Certified Platform Developer II">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= The Future of Work ================= -->
+    <section class="sf-fw">
+      <!-- the cloud band bleeds to both panel edges, so it hangs off the
+           section rather than the 1244 measuring frame -->
+      <div class="sf-fw__cloud sf-fw__cloud--left" aria-hidden="true"><img src="assets/sf/cloud-bg.png" alt=""></div>
+      <div class="sf-fw__cloud sf-fw__cloud--right" aria-hidden="true"><img src="assets/sf/cloud-bg.png" alt=""></div>
+
+      <div class="design-frame design-frame--fill">
+        <div class="sf-fw__head">
+          <div class="sf-fw__headcol">
+            <div class="sec-badge"><b>#</b>TheFuture</div>
+            <h2 class="sf-fw__title">The Future of Work is<br><b>CRM</b> + <b>AI</b> + <b>Data</b> + <b>Trust</b>.</h2>
+          </div>
+          <p class="sf-fw__lede">Drive productivity and personalization with Salesforce Einstein. Leverage predictive and generative AI across Customer 360 to automate workflows, empower teams, and deliver smarter, data-driven customer experiences.</p>
+        </div>
+
+        <div class="fw-diagram" aria-hidden="true">
+          <!-- Data & Analytics (green, right) -->
+          <div class="fw-g" style="left:266.180px;top:141.490px;width:173.688px;height:100.160px">
+            <div class="fw-g" style="left:95.080px;top:3.260px;width:78.614px;height:93.638px">
+              <img src="assets/sf/fw-g0.svg" alt="" style="left:0.000px;top:0.000px;width:20.841px;height:93.638px">
+              <img src="assets/sf/fw-g1.svg" alt="" style="left:19.017px;top:45.836px;width:44.346px;height:1.826px">
+              <img src="assets/sf/fw-g2.svg" alt="" style="left:62.011px;top:38.448px;width:16.603px;height:16.602px">
+            </div>
+            <div class="fw-g" style="left:0.000px;top:0.000px;width:100.160px;height:100.160px">
+              <img src="assets/sf/fw-g3.svg" alt="" style="left:-3.626px;top:-3.506px;width:107.412px;height:107.412px">
+              <img src="assets/sf/fw-ic-analytics.svg" alt="" style="left:25.742px;top:25.201px;width:49.077px;height:49.077px">
+            </div>
+          </div>
+
+          <!-- AI with Einstein (purple, top) -->
+          <div class="fw-g" style="left:164.900px;top:0.720px;width:107.536px;height:176.813px">
+            <div class="fw-rot" style="left:7.059px;top:0.140px;width:93.638px;height:78.614px">
+              <div class="fw-rot__in" style="width:78.614px;height:93.638px">
+                <img src="assets/sf/fw-g4.svg" alt="" style="left:0.000px;top:0.000px;width:20.841px;height:93.638px">
+                <img src="assets/sf/fw-g5.svg" alt="" style="left:19.017px;top:45.836px;width:44.346px;height:1.826px">
+                <img src="assets/sf/fw-g6.svg" alt="" style="left:62.011px;top:38.448px;width:16.603px;height:16.602px">
+              </div>
+            </div>
+            <div class="fw-g" style="left:3.670px;top:72.880px;width:100.160px;height:100.160px">
+              <img src="assets/sf/fw-g7.svg" alt="" style="left:-3.626px;top:-3.506px;width:107.412px;height:107.412px">
+              <img src="assets/sf/fw-g8.svg" alt="" style="left:27.613px;top:27.807px;width:44.234px;height:44.290px">
+            </div>
+          </div>
+
+          <!-- Trust & Security (red, left) -->
+          <div class="fw-g" style="left:0.530px;top:141.490px;width:174.100px;height:100.160px">
+            <div class="fw-g" style="left:0.000px;top:3.260px;width:79.025px;height:93.638px">
+              <img src="assets/sf/fw-g9.svg" alt="" style="left:58.218px;top:0.000px;width:20.807px;height:93.638px">
+              <img src="assets/sf/fw-g10.svg" alt="" style="left:15.252px;top:45.836px;width:44.349px;height:1.826px">
+              <img src="assets/sf/fw-g11.svg" alt="" style="left:0.000px;top:38.448px;width:16.603px;height:16.602px">
+            </div>
+            <div class="fw-g" style="left:73.940px;top:0.000px;width:100.160px;height:100.160px">
+              <img src="assets/sf/fw-g28.svg" alt="" style="left:-3.646px;top:-3.596px;width:107.402px;height:107.412px">
+              <img src="assets/sf/fw-g12.svg" alt="" style="left:46.194px;top:52.724px;width:5.639px;height:5.649px">
+              <img src="assets/sf/fw-g13.svg" alt="" style="left:44.381px;top:59.024px;width:9.265px;height:6.891px">
+              <img src="assets/sf/fw-g14.svg" alt="" style="left:44.381px;top:64.503px;width:9.265px;height:1.412px">
+              <img src="assets/sf/fw-g15.svg" alt="" style="left:46.194px;top:33.283px;width:5.639px;height:5.649px">
+              <img src="assets/sf/fw-g16.svg" alt="" style="left:44.381px;top:39.583px;width:9.265px;height:6.891px">
+              <img src="assets/sf/fw-g17.svg" alt="" style="left:44.381px;top:45.062px;width:9.265px;height:1.412px">
+              <img src="assets/sf/fw-g18.svg" alt="" style="left:57.372px;top:43.810px;width:5.649px;height:5.639px">
+              <img src="assets/sf/fw-g19.svg" alt="" style="left:55.569px;top:50.110px;width:9.265px;height:6.891px">
+              <img src="assets/sf/fw-g20.svg" alt="" style="left:55.569px;top:55.589px;width:9.265px;height:1.412px">
+              <img src="assets/sf/fw-g21.svg" alt="" style="left:35.366px;top:43.810px;width:5.649px;height:5.639px">
+              <img src="assets/sf/fw-g22.svg" alt="" style="left:33.564px;top:50.110px;width:9.255px;height:6.891px">
+              <img src="assets/sf/fw-g23.svg" alt="" style="left:33.564px;top:55.589px;width:9.255px;height:1.412px">
+              <img src="assets/sf/fw-g24.svg" alt="" style="left:36.578px;top:29.557px;width:32.943px;height:32.943px">
+              <img src="assets/sf/fw-g25.svg" alt="" style="left:28.616px;top:37.520px;width:32.943px;height:32.943px">
+              <img src="assets/sf/fw-g26.svg" alt="" style="left:35.587px;top:30.228px;width:5.429px;height:5.699px">
+              <img src="assets/sf/fw-g27.svg" alt="" style="left:57.121px;top:64.002px;width:5.459px;height:5.248px">
+            </div>
+          </div>
+
+          <!-- Trust & Security (blue, bottom) -->
+          <div class="fw-g" style="left:172.180px;top:208.860px;width:100.160px;height:175.419px">
+            <div class="fw-g" style="left:3.260px;top:96.480px;width:93.638px;height:78.943px">
+              <img src="assets/sf/fw-g29.svg" alt="" style="left:0.000px;top:0.000px;width:93.638px;height:20.809px">
+              <img src="assets/sf/fw-g30.svg" alt="" style="left:45.911px;top:19.341px;width:1.826px;height:44.350px">
+              <img src="assets/sf/fw-g31.svg" alt="" style="left:38.513px;top:62.341px;width:16.611px;height:16.602px">
+            </div>
+            <div class="fw-g" style="left:0.000px;top:0.000px;width:100.160px;height:100.160px">
+              <img src="assets/sf/fw-g32.svg" alt="" style="left:-3.566px;top:-3.636px;width:107.412px;height:107.412px">
+              <img src="assets/sf/fw-g33.svg" alt="" style="left:31.313px;top:28.976px;width:38.074px;height:42.169px">
+            </div>
+          </div>
+        </div>
+
+        <div class="fw-note fw-note--einstein">
+          <p class="fw-note__title">AI with Einstein</p>
+          <p class="fw-note__text">Predict, personalize, and<br>automate with trusted AI</p>
+        </div>
+
+        <div class="fw-note fw-note--data">
+          <p class="fw-note__title">Data &amp; Analytics</p>
+          <p class="fw-note__text">turn unified data into real-time insights and smarter decisions.</p>
+        </div>
+
+        <div class="fw-note fw-note--trust-red">
+          <p class="fw-note__title">Trust &amp; Security</p>
+          <p class="fw-note__text">Built on&nbsp; salesforce Trust<br>with enterprise-grade security and compliance</p>
+        </div>
+
+        <div class="fw-note fw-note--trust-blue">
+          <p class="fw-note__title">Trust &amp; Security</p>
+          <p class="fw-note__text">Built on&nbsp; salesforce Trust<br>with enterprise-grade security and compliance</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Salesforce CRM Development Solutions ================= -->
+    <section class="sf-crm" id="crm">
+      <div class="design-frame design-frame--fill">
+        <div class="sf-crm__head">
+          <div class="sf-crm__headcol">
+            <div class="sec-badge"><b>#</b>CRM</div>
+            <h2 class="sf-crm__title">Salesforce CRM Development <em>Solutions</em></h2>
+          </div>
+          <p class="sf-crm__lede">Hackerkernel guarantees top-notch Salesforce development services, delivering solutions that are highly usable, scalable, extensible, and maintainable. We craft solutions tailored to perfectly align with the unique needs of your business.</p>
+        </div>
+
+        <div class="sa-skills sf-crm__skills">
+          <div class="sa-orbit" aria-hidden="true">
+            <img class="mirror" src="assets/sa/or-v28.svg" alt="" style="left:421px;top:215px;width:118px;height:167px">
+            <img class="mirror" src="assets/sa/or-v29.svg" alt="" style="left:483px;top:215px;width:66px;height:173px">
+            <img class="mirror" src="assets/sa/or-v30.svg" alt="" style="left:532px;top:216px;width:21px;height:175px">
+            <img src="assets/sa/or-v27.svg" alt="" style="left:554.25px;top:216px;width:35px;height:165px">
+            <img src="assets/sa/or-v26.svg" alt="" style="left:570.25px;top:217px;width:71px;height:152px">
+            <img src="assets/sa/or-v25.svg" alt="" style="left:580px;top:216px;width:122px;height:148px">
+            <img src="assets/sa/or-e6.svg" alt="" style="left:299px;top:307px;width:542px;height:330px">
+            <img src="assets/sa/or-e21.svg" alt="" style="left:118px;top:340px;width:881px;height:269px">
+            <img src="assets/sa/or-e22.svg" alt="" style="left:181px;top:340px;width:764px;height:269px">
+            <img src="assets/sa/or-e23.svg" alt="" style="left:226px;top:340px;width:695px;height:269px">
+            <img src="assets/sa/or-g1907.svg" alt="" style="left:410px;top:268px;width:306px;height:275px">
+            <img src="assets/sa/or-l8.svg" alt="" style="inset:57.93% 71.64% 39.76% 26.94%">
+            <img src="assets/sa/or-l6.svg" alt="" style="inset:60.62% 24.97% 37.57% 73.06%">
+            <img src="assets/sa/or-l2.svg" alt="" style="inset:61.07% 21.38% 36.58% 77.3%">
+            <img src="assets/sa/or-l9.svg" alt="" style="inset:63.47% 80.69% 34.18% 18.02%">
+            <img src="assets/sa/or-l1.svg" alt="" style="inset:65.67% 13.07% 31.05% 84.89%">
+            <img src="assets/sa/or-l11.svg" alt="" style="inset:72.21% 78.62% 24.96% 19.79%">
+            <img src="assets/sa/or-l3.svg" alt="" style="inset:73.94% 9.89% 22.61% 88.43%">
+            <img src="assets/sa/or-l5.svg" alt="" style="inset:77.02% 16.43% 20.55% 82.24%">
+            <img src="assets/sa/or-l7.svg" alt="" style="inset:80.22% 85.25% 16.59% 13.34%">
+            <img src="assets/sa/or-l10.svg" alt="" style="inset:84.46% 76.97% 12.61% 21.02%">
+            <img src="assets/sa/or-l4.svg" alt="" style="inset:87.17% 20.76% 9.81% 78.09%">
+            <img class="sf-orbit__logo" src="assets/sf/sf-cloud.svg" alt="Salesforce" style="left:460px;top:312px;width:220px;height:154px">
+          </div>
+
+          <div class="sf-cloudcards">
+            <div class="sf-cc">
+              <div class="sf-cc__grid" style="width:433px">
+                <span class="sf-cc__item"><i class="sf-cc__ic" style="width:32px"><img src="assets/sf/ic-analytics-l.svg" alt="" style="width:32px;height:36px"></i>Analytics</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-industries.svg" alt="" style="width:36px;height:36px"></i>Industries</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-communities.png" alt="" style="width:36px;height:36px"></i>Communities</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-sales.svg" alt="" style="left:4.75px;top:2.5px;width:26.5px;height:31px"></i>Sales</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-productivity.png" alt="" style="width:36px;height:36px"></i>Productivity</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-enablement.png" alt="" style="width:36px;height:36px"></i>Enablement</span>
+              </div>
+            </div>
+
+            <div class="sf-cc">
+              <div class="sf-cc__grid" style="width:425px">
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-services.svg" alt="" style="width:36px;height:36px"></i>Services</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-marketing.svg" alt="" style="left:2.25px;top:5.25px;width:31.5px;height:25.5px"></i>Marketing</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-integration.png" alt="" style="width:36px;height:36px"></i>Integration</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-commerce.svg" alt="" style="width:36px;height:36px"></i>Commerce</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic"><img src="assets/sf/ic-engagement.svg" alt="" style="width:36px;height:36px"></i>Engagement</span>
+                <span class="sf-cc__item"><i class="sf-cc__ic" style="width:32px"><img src="assets/sf/ic-platform.svg" alt="" style="width:32px;height:36px"></i>Platform &amp; Ecosystem</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Salesforce Solutions & Services ================= -->
+    <section class="ai-auto sf-serv" id="services">
+      <div class="design-frame design-frame--fill">
+      <div class="ai-auto__head">
+        <div class="ai-auto__headcol">
+          <div class="sec-badge"><b>#</b>AI Solution</div>
+          <h2 class="ai-auto__title">Salesforce Solutions &amp;<br>Services</h2>
+        </div>
+        <p class="ai-auto__lede">Empower your business with Salesforce solutions that streamline sales, automate workflows, enhance customer experiences, and deliver actionable insights through AI-powered CRM.</p>
+      </div>
+
+      <div class="ai-auto__cards">
+        <article class="au-card au-card--dark">
+          <img class="au-card__shape" src="assets/ai/au-card-dark.svg" alt="">
+          <p class="au-card__num">01</p>
+          <p class="au-card__title">Sales Cloud</p>
+          <p class="au-card__text" style="width:194px">Manage leads, opportunities, and sales pipelines efficiently.</p>
+        </article>
+
+        <article class="au-card">
+          <img class="au-card__shape" src="assets/ai/au-card-light.svg" alt="">
+          <p class="au-card__num">02</p>
+          <p class="au-card__title">Service Cloud</p>
+          <p class="au-card__text" style="width:205px">Deliver faster support with AI-powered customer service.</p>
+        </article>
+
+        <article class="au-card">
+          <img class="au-card__shape" src="assets/ai/au-card-light.svg" alt="">
+          <p class="au-card__num">03</p>
+          <p class="au-card__title">Marketing Cloud</p>
+          <p class="au-card__text" style="width:186px">Create personalized campaigns and automate customer journeys.</p>
+        </article>
+
+        <article class="au-card">
+          <img class="au-card__shape" src="assets/ai/au-card-light.svg" alt="">
+          <p class="au-card__num">04</p>
+          <p class="au-card__title" style="width:159px">Salesforce Development</p>
+          <p class="au-card__text" style="width:205px">Build custom apps, integrations, and workflow automation.</p>
+        </article>
+      </div>
+      </div>
+    </section>
+
+    <!-- ================= Case Files ================= -->
+    <section class="ai-cases sf-cases" id="case-files">
+      <div class="design-frame ai-cases__frame">
+      <div class="ai-cases__head">
+        <div class="sec-badge sec-badge--white"><b>#</b>Case&nbsp;<b>Files</b></div>
+        <p class="ai-cases__title"><span>Real problems.</span><span>Real solutions.</span></p>
+      </div>
+
+      <div class="ai-cases__grid">
+        <article class="cf-card">
+          <div class="cf-card__media">
+            <img class="cf-card__shot" src="assets/sf/cf-1.png" alt="Sales Cloud Implementation">
+          </div>
+          <div class="cf-card__body">
+            <p class="cf-card__title">Sales Cloud Implementation</p>
+            <p class="cf-card__text">Implemented Sales Cloud to streamline leads, opportunities, and pipeline management.</p>
+            <div class="cf-card__tags"><span>Sales Cloud</span><span>CRM</span><span>Salesforce</span></div>
+          </div>
+        </article>
+
+        <article class="cf-card">
+          <div class="cf-card__media">
+            <img class="cf-card__shot" src="assets/sf/cf-2.png" alt="Service Cloud Support Portal">
+          </div>
+          <div class="cf-card__body">
+            <p class="cf-card__title">Service Cloud Support Portal</p>
+            <p class="cf-card__text">Built an AI-powered support portal with case management and omnichannel service.</p>
+            <div class="cf-card__tags"><span>Service Cloud</span><span>Support</span><span>AI</span></div>
+          </div>
+        </article>
+
+        <article class="cf-card">
+          <div class="cf-card__media">
+            <img class="cf-card__shot" src="assets/sf/cf-3.png" alt="Marketing Cloud Automation">
+          </div>
+          <div class="cf-card__body">
+            <p class="cf-card__title">Marketing Cloud Automation</p>
+            <p class="cf-card__text">Created personalized customer journeys with automated email campaigns and audience segmentation.</p>
+            <div class="cf-card__tags"><span>Marketing Cloud</span><span>Automation</span><span>Email</span></div>
+          </div>
+        </article>
+
+        <article class="cf-card">
+          <div class="cf-card__media">
+            <img class="cf-card__shot cf-card__shot--low" src="assets/sf/cf-4.png" alt="Salesforce CRM Integration">
+          </div>
+          <div class="cf-card__body">
+            <p class="cf-card__title">Salesforce CRM Integration</p>
+            <p class="cf-card__text">Integrated Salesforce with ERP, APIs, and third-party tools for seamless business operations.</p>
+            <div class="cf-card__tags"><span>Integration</span><span>API</span><span>CRM</span></div>
+          </div>
+        </article>
+      </div>
+
+      <a class="pill-btn sf-cases__more" href="case-study.html">
+        <span class="pill-btn__label">Load More</span>
+        <span class="pill-btn__circle"><img src="assets/ai/reload.svg" alt=""></span>
+      </a>
+      </div>
+    </section>
+
+    <!-- ================= Benefits ================= -->
+    <section class="sa-ben sf-ben" id="benefits">
+      <div class="design-frame design-frame--fill">
+      <img class="sa-ben__art sf-ben__art" src="assets/ai/bn-art.svg" alt="" onerror="this.style.display='none'">
+
+      <div class="sa-ben__inner">
+        <div class="sa-ben__head">
+          <div class="sa-ben__headcol">
+            <div class="sec-badge"><b>#</b>Benefits</div>
+            <p class="sa-ben__title">Benefits of Our<br>Salesforce Solutions<br><b>(</b> <i>Business Growth</i> <b>)</b></p>
+          </div>
+        </div>
+
+        <div class="wp" id="benefits-card">
+          <!-- the design keeps one backdrop across all three states, so the
+               three layers the swap script expects share the same artwork -->
+          <div class="wp__bg" aria-hidden="true">
+          <img class="is-active" src="assets/sf/bn-bg.png" alt="" data-bg="0">
+          <img src="assets/sf/bn-bg.png" alt="" data-bg="1">
+          <img src="assets/sf/bn-bg.png" alt="" data-bg="2">
+          </div>
+
+          <div class="wp__cols">
+          <button class="wp-col is-active" type="button" data-benefit="0">
+            <span class="wp-col__body">
+              <span class="wp-col__num">01.</span>
+              <span class="wp-col__title">Boost Sales Productivity</span>
+              <span class="wp-col__text">Give every rep a single pipeline view, so leads are worked in order and nothing stalls between stages.</span>
+            </span>
+          </button>
+          <button class="wp-col" type="button" data-benefit="1">
+            <span class="wp-col__body">
+              <span class="wp-col__num">02.</span>
+              <span class="wp-col__title">Improve Customer Experience</span>
+              <span class="wp-col__text">Answer on any channel with the full customer history in front of you, not scattered across tools.</span>
+            </span>
+          </button>
+          <button class="wp-col" type="button" data-benefit="2">
+            <span class="wp-col__body">
+              <span class="wp-col__num">03.</span>
+              <span class="wp-col__title">Automate Business Processes</span>
+              <span class="wp-col__text">Streamline approvals, workflows, and repetitive tasks with Salesforce.</span>
+            </span>
+          </button>
+          </div>
+
+          <div class="wp__arrows">
+            <button class="wp__arrow wp__arrow--prev" type="button" aria-label="Previous benefit">
+              <img src="assets/sa/bn-arrow-a.svg" alt="">
+            </button>
+            <button class="wp__arrow wp__arrow--next" type="button" aria-label="Next benefit">
+              <img src="assets/sa/bn-arrow-b.svg" alt="">
+            </button>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ================= Ready to Transform ================= -->
+    <section class="sa-hire sf-cta">
+      <div class="design-frame sa-hire__frame">
+      <div class="sa-hire__left">
+        <p class="sa-hire__title"><span>Ready to Transform Your</span><br><span>Business</span> <em>with Salesforce</em>?</p>
+      </div>
+
+      <div class="sa-hire__right">
+        <p class="sa-hire__text">From CRM implementation to AI-powered automation, we deliver scalable Salesforce solutions that streamline operations and drive business growth.</p>
+        <a class="pill-btn sf-cta__btn" href="#contact">
+          <span class="pill-btn__label">Free Consultation</span>
+          <span class="pill-btn__circle"><img src="assets/sf/arrow.svg" alt=""></span>
+        </a>
+      </div>
+      </div>
+    </section>
+
+    <!-- ================= Contact ================= -->
+    <section class="sa-contact" id="contact">
+      <div class="design-frame design-frame--fill">
+      <form class="sa-contact__form" novalidate>
+        <div class="sa-contact__head">
+          <div class="sec-badge"><b>#</b>StartWithUs</div>
+          <p class="sa-contact__title"><span>Have an Idea?</span><span>We&rsquo;ll Build It.</span></p>
+        </div>
+
+        <div class="sa-contact__fields">
+          <div class="sa-row">
+            <div class="sa-field">
+              <label for="sf-name">Name</label>
+              <div class="sa-input"><input id="sf-name" type="text" placeholder="Enter Name"></div>
+            </div>
+            <div class="sa-field">
+              <label for="sf-email">Email Address</label>
+              <div class="sa-input"><input id="sf-email" type="email" placeholder="Enter Email Address"></div>
+            </div>
+          </div>
+
+          <div class="sa-row">
+            <div class="sa-field">
+              <label for="sf-phone">Phone Number</label>
+              <div class="sa-input">
+                <span class="sa-input__prefix">+91</span>
+                <span class="sa-input__sep"></span>
+                <input id="sf-phone" type="tel" placeholder="Enter Phone Number">
+              </div>
+            </div>
+            <div class="sa-field">
+              <label for="sf-msg">Message</label>
+              <div class="sa-input sa-input--area">
+                <textarea id="sf-msg" placeholder="Tell us briefly about your project"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="sa-source">
+            <p>How Did You Hear About Us?</p>
+            <div class="sa-source__rows">
+              <div class="sa-source__row">
+            <label class="sa-radio"><input type="radio" name="source"><i></i>Google</label>
+            <label class="sa-radio"><input type="radio" name="source"><i></i>LinkedIn</label>
+            <label class="sa-radio"><input type="radio" name="source"><i></i>Facebook</label>
+              </div>
+              <div class="sa-source__row sa-source__row--fixed">
+            <label class="sa-radio"><input type="radio" name="source"><i></i>Instagram</label>
+            <label class="sa-radio"><input type="radio" name="source"><i></i>Friend Suggested</label>
+            <label class="sa-radio"><input type="radio" name="source"><i></i>Other</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sa-contact__ctas">
+          <button class="pill-btn sa-contact__btn" type="submit">
+            <span class="pill-btn__label">Book Free Call</span>
+            <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+          </button>
+
+          <a class="sa-learn" href="index.html#about">
+            <span class="sa-learn__row">
+              <span>Learn More About Us</span>
+              <span class="sa-learn__dot"><img src="assets/arrow-btn.svg" alt=""></span>
+            </span>
+            <span class="sa-learn__rule"></span>
+          </a>
+        </div>
+      </form>
+
+      <div class="sa-contact__art">
+        <img src="assets/sa/ct-rocket.svg" alt="" onerror="this.style.display='none'">
+      </div>
+      </div>
+    </section>
+
+    <!-- ================= Footer ================= -->
+    <footer class="footer">
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <a class="logo" href="index.html">
+              <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+              <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+            </a>
+            <p class="footer__tagline">Discover the power of our secure Services</p>
+          </div>
+
+          <div class="footer__cols">
+            <div class="footer__col">
+              <h4>About us</h4>
+              <ul>
+                <li><a href="index.html#services">Features</a></li>
+                <li><a href="#contact">Let&rsquo;s Talk</a></li>
+              </ul>
+            </div>
+
+            <div class="footer__col footer__col--wide">
+              <h4>Services</h4>
+              <ul>
+                <li><a href="ai-solution.html">Ai Solutions</a></li>
+                <li><a href="salesforce.html">Salesforce</a></li>
+                <li><a href="staff-augmentation.html">Staff Augumentation</a></li>
+                <li><a href="index.html#services">Mobile Development</a></li>
+                <li><a href="index.html#services">Web Development</a></li>
+              </ul>
+            </div>
+
+            <div class="footer__col">
+              <h4>Social</h4>
+              <ul>
+                <li><a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a></li>
+                <li><a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a></li>
+                <li><a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer__bar">
+          <p>copyright 2025 Hackerkernel All Rights Reserved</p>
+          <p class="footer__cookies">This page uses cookies. See cookies details here
+            <img src="assets/footer-underline.svg" alt="">
+          </p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  </div>
+
+  <!-- ================= Slide-in menu ================= -->
+  <div class="menu-overlay" id="menu-overlay" role="dialog" aria-modal="true" aria-label="Main menu" aria-hidden="true">
+
+    <div class="menu-overlay__left">
+      <img class="menu-overlay__bg" src="assets/menu-bg.png" alt="" aria-hidden="true">
+
+      <nav class="menu-links" aria-label="Main menu">
+        <div class="menu-links__primary">
+          <a href="index.html">Home</a>
+          <a href="index.html#services">Services</a>
+          <a href="case-study.html">Portfolio</a>
+          <a href="index.html#industries">Industries</a>
+          <a href="index.html#about">About Us</a>
+        </div>
+
+        <div class="menu-links__secondary">
+          <div class="menu-links__col">
+            <a href="industry-detail.html">Foodtech</a>
+            <a href="travel-tech.html">Traveltech</a>
+            <a href="index.html#industries">Fintech</a>
+            <a href="index.html#industries">RealEstate</a>
+            <a href="index.html#industries">Education</a>
+            <a href="index.html#industries">Healthcare</a>
+            <a href="index.html#industries">E-Commerce</a>
+            <a href="index.html#industries">Media &amp; Social</a>
+          </div>
+
+          <div class="menu-links__col menu-links__col--pages">
+            <a href="index.html">Home</a>
+            <a href="index.html#services">Services</a>
+            <a href="case-study.html">Portfolio</a>
+            <a href="index.html#industries">Industries</a>
+            <a href="index.html#about">About Us</a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="menu-socials">
+        <a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a>
+        <a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://twitter.com/hackerkernel" target="_blank" rel="noopener">Twitter</a>
+      </div>
+    </div>
+
+    <div class="menu-overlay__right">
+      <div class="menu-cta">
+        <div class="menu-cta__copy">
+          <p class="menu-cta__eyebrow">Got An Idea?</p>
+          <h2 class="menu-cta__title">Let&rsquo;s Craft<br>Brilliance Together!</h2>
+        </div>
+
+        <a class="pill-btn" href="#contact">
+          <span class="pill-btn__label">Get In Touch</span>
+          <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+        </a>
+      </div>
+
+      <div class="menu-locations">
+        <a href="#india">India</a>
+        <a href="#usa">USA</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="Script.js"></script>
+</body>
+</html>

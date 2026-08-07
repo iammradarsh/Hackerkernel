@@ -62,10 +62,10 @@
 
         <h1 class="jd-board__title">Flutter Developer</h1>
 
-        <a class="jd-board__act jd-board__act--apply" href="mailto:info@hackerkernel.com?subject=Application%3A%20Flutter%20Developer">
+        <button class="jd-board__act jd-board__act--apply" type="button" id="jd-apply" aria-haspopup="dialog" aria-controls="apply-modal">
           <span class="jd-board__actlabel">Apply Now</span>
           <img class="jd-board__acticon" src="assets/job/arrow-apply.svg" alt="">
-        </a>
+        </button>
 
         <a class="jd-board__act jd-board__act--share" href="#more-jobs">
           <span class="jd-board__actlabel">Share Job</span>
@@ -282,7 +282,7 @@
               <h4>Services</h4>
               <ul>
                 <li><a href="ai-solution.html">Ai Solutions</a></li>
-                <li><a href="index.html#salesforce">Salesforce</a></li>
+                <li><a href="salesforce.html">Salesforce</a></li>
                 <li><a href="staff-augmentation.html">Staff Augumentation</a></li>
                 <li><a href="index.html#services">Mobile Development</a></li>
                 <li><a href="index.html#services">Web Development</a></li>
@@ -375,6 +375,58 @@
         <a href="#usa">USA</a>
       </div>
     </div>
+  </div>
+
+  <!-- ================= Apply For This Position ================= -->
+  <div class="jm-modal" id="apply-modal" role="dialog" aria-modal="true" aria-labelledby="apply-modal-title" aria-hidden="true">
+    <form class="jm-card" novalidate>
+      <p class="jm-card__title" id="apply-modal-title">Apply For This Position</p>
+
+      <div class="jm-fields">
+        <div class="jm-row">
+          <label class="jm-field">
+            <span class="jm-field__label">Name</span>
+            <span class="jm-input"><input type="text" name="name" placeholder="Enter Name" autocomplete="name" required></span>
+          </label>
+
+          <label class="jm-field">
+            <span class="jm-field__label">Email Address</span>
+            <span class="jm-input"><input type="email" name="email" placeholder="Enter Email Address" autocomplete="email" required></span>
+          </label>
+        </div>
+
+        <div class="jm-row">
+          <label class="jm-field">
+            <span class="jm-field__label">Phone Number</span>
+            <span class="jm-input">
+              <span class="jm-input__prefix">+91</span>
+              <span class="jm-input__sep"></span>
+              <input type="tel" name="phone" placeholder="Enter Phone Number" autocomplete="tel" required>
+            </span>
+          </label>
+
+          <div class="jm-field">
+            <span class="jm-field__label">Upload Resume</span>
+            <label class="jm-drop" id="jd-resume">
+              <input type="file" name="resume" accept=".png,.pdf,.jpg,.jpeg">
+              <span class="jm-drop__lead">Drag an image or tap to upload</span>
+              <span class="jm-drop__hint">File Format : .png, .pdf &amp; .jpg</span>
+              <span class="jm-drop__hint">File Size : max 5 mb</span>
+              <span class="jm-drop__file"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="jm-actions">
+        <button class="jm-close" type="button" data-apply-close>Close</button>
+
+        <button class="pill-btn jm-next" type="submit">
+          <span class="pill-btn__label">Submit</span>
+          <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+        </button>
+      </div>
+    </form>
   </div>
 
   <script src="Script.js"></script>
