@@ -3417,10 +3417,10 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   white-space: nowrap;
 }
 
-.menu-links__col--pages {
+/* .menu-links__col--pages {
   width: 106px;
   white-space: normal;
-}
+} */
 
 .menu-socials {
   position: absolute;
