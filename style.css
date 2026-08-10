@@ -52,7 +52,7 @@
   --sub-text-color: #666666;
   --hairline: #dadada;
 
-  --font-main: 'Gilroy', 'Poppins', sans-serif;
+  --font-main: 'Gilroy';
   --font-poppins: 'Poppins', sans-serif;
   --font-jakarta: 'Plus Jakarta Sans', sans-serif;
   /* the job-details billboard sets its title and meta line in this serif */
@@ -3295,6 +3295,8 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   -webkit-backdrop-filter: blur(50px);
 }
 
+
+
 .cs-card__shot {
   position: relative;
   flex: 1 0 0;
@@ -3304,6 +3306,8 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   overflow: hidden;
   background: rgba(245, 245, 245, 0.6);
 }
+
+
 
 .cs-card__shot img {
   position: absolute;
@@ -4949,7 +4953,7 @@ body.is-menu-open {
 
 .ab-hero__blobs {
   position: absolute;
-  left: 692.9px;
+  right: 220px;
   top: 174px;
   width: 416.1px;
   height: 371.458px;
@@ -4978,7 +4982,7 @@ body.is-menu-open {
 
 .ab-hero__mantra {
   position: absolute;
-  left: 1195px;
+  right: 10px;
   top: 272px;
   width: 106px;
   font-size: 10.181px;
@@ -7505,14 +7509,51 @@ body.is-menu-open {
   height: 252px;
 }
 
+/* same dual-use trick as .case-card__img on the home page: the pre-masked PNG
+   clips the box while a second copy inside (::before) does the hover zoom, so
+   the corner notch stays put under the badge */
 .id-pf__img {
   position: absolute;
   left: 0;
   top: 0;
   width: 317.392px;
   height: 252.286px;
-  max-width: none;
+  -webkit-mask-image: var(--pf-art);
+  mask-image: var(--pf-art);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
+
+.id-pf__img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--pf-art) 50% 50% / 100% 100% no-repeat;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.id-pf__img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.96) 0%,
+    rgba(0, 0, 0, 0.67) 20%,
+    rgba(0, 0, 0, 0.43) 40%,
+    rgba(0, 0, 0, 0.24) 60%,
+    rgba(0, 0, 0, 0.11) 80%,
+    rgba(0, 0, 0, 0.03) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.id-pf:hover .id-pf__img::before { transform: scale(1.2); }
+.id-pf:hover .id-pf__img::after { opacity: 1; }
 
 .id-pf__badge {
   position: absolute;
@@ -7520,6 +7561,26 @@ body.is-menu-open {
   top: 217.7px;
   width: 43.743px;
   height: 44.76px;
+  transition: opacity 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* hover disc reuses the home-page export (72.43 square with the glow bleed
+   baked in), centred on the resting badge's disc */
+.id-pf__badge--hover {
+  left: -26.55px;
+  top: 203.87px;
+  width: 72.4265px;
+  height: 72.4264px;
+  opacity: 0;
+}
+
+.id-pf:hover .id-pf__badge { opacity: 0; }
+.id-pf:hover .id-pf__badge--hover { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .id-pf__img::before,
+  .id-pf__img::after,
+  .id-pf__badge { transition-duration: 0.01ms; }
 }
 
 .id-pf__body {
