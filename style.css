@@ -11022,3 +11022,1121 @@ body.is-apply-open {
   .jm-actions { justify-content: stretch; }
   .jm-close { flex: 1 0 0; width: auto; }
 }
+
+/* ===========================================================
+   HOME - MOBILE (max-width: 768px)
+   ===========================================================
+   Everything below this line is scoped two ways and cannot reach
+   the desktop design:
+
+     * `.home` - only index.html carries it, so the other pages
+       keep whatever they had.
+     * `@media (max-width: 768px)` - the one exception is the
+       mobile drawer's `display:none` base, which has to exist
+       outside the query so the panel never renders on desktop.
+
+   The desktop home page is a stack of fixed-height sections whose
+   children are absolutely positioned on Figma coordinates. Mobile
+   undoes exactly that: each section becomes `height:auto` and a
+   flex column, and its children return to the flow. Nothing here
+   changes a value that applies above the breakpoint.
+   =========================================================== */
+
+/* the drawer's markup is always in the page; this is what keeps it
+   out of the desktop render */
+.m-nav { display: none; }
+.lt-form__close { display: none; }
+
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-declaring them on <body> re-bases
+     every rule that already measures off them - the navbar's inner
+     margin, the section rules, the footer inset - without touching a
+     single one of those selectors. */
+  body.home {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile; anything that
+     wants to bleed does it inside a section, never past the panel */
+  .home .page-shell { overflow: hidden; }
+
+  /* the desktop rule is body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap,
+     which is (0,4,1) - this has to out-specify it rather than fight it */
+  body.home:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
+    padding-top: 52px;
+  }
+
+  /* ---------- Shared section furniture ---------- */
+  .home .sec-title {
+    font-size: clamp(26px, 7.4vw, 40px);
+    white-space: normal;
+  }
+
+  .home .sec-badge { font-size: clamp(14px, 3.9vw, 18px); }
+
+  .home .sec-copy,
+  .home .sec-head__top { width: auto; }
+
+  .home .sec-copy { font-size: clamp(15px, 4vw, 20px); }
+
+  .home .sec-head__top { gap: 14px; }
+
+  .home .sec-index { font-size: clamp(22px, 6vw, 32px); }
+
+  /* ---------- Header: logo + hamburger, nothing else ---------- */
+  .home .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  .home .nav-links { display: none; }
+
+  .home .nav-burger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .home .nav-burger img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .home .logo__mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .home .logo__text {
+    height: auto;
+    padding: 0 0 0 5px;
+    font-size: 14px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* the side tab is a second, competing entry point to the enquiry form -
+     on mobile the drawer owns it, so the tab stands down */
+  .home .talk-tab { display: none; }
+
+  /* ---------- Hero ----------
+     Copy, media and the brand rail become three rows. The rail keeps its
+     full bleed, so the gutter lives on the two blocks above it rather
+     than on the section. */
+  .home .hero {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding-top: 12px;
+    overflow: hidden;
+  }
+
+  .home .hero__copy {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    align-items: flex-start;
+  }
+
+  .home .hero__bar {
+    top: 2px;
+    width: 4px;
+    height: clamp(38px, 11vw, 56px);
+  }
+
+  .home .hero__text {
+    position: static;
+    width: auto;
+    gap: 14px;
+  }
+
+  .home .hero__title { font-size: clamp(26px, 7.4vw, 44px); }
+
+  .home .hero__desc {
+    width: auto;
+    max-width: 46ch;
+    font-size: clamp(14px, 3.7vw, 16px);
+    line-height: 1.4;
+  }
+
+  .home .hero__stats { gap: 24px; }
+
+  .home .hero__stat,
+  .home .hero__stat:first-child,
+  .home .hero__stat:last-child {
+    width: auto;
+    gap: 2px;
+  }
+
+  .home .hero__stat span { width: auto; }
+
+  .home .hero__stat b { font-size: clamp(22px, 6vw, 28px); }
+
+  .home .hero__btn {
+    position: static;
+    width: 208px;
+    max-width: 100%;
+    height: 48px;
+  }
+
+  /* The media block keeps its 428x388 composition, re-expressed as
+     percentages of its own box so the rotated cards, the tags and the
+     Salesforce mark all hold their relative places as it shrinks. */
+  .home .hero__media {
+    position: relative;
+    right: auto;
+    top: auto;
+    width: calc(100% - var(--shell-gutter) * 2);
+    max-width: 420px;
+    height: auto;
+    aspect-ratio: 428 / 388;
+    margin-inline: auto;
+  }
+
+  .home .hero__cards {
+    left: 14%;
+    top: 0.8%;
+    width: 71.1%;
+    height: 97%;
+  }
+
+  .home .hero__card-back,
+  .home .hero__card-front {
+    width: 83.5%;
+    height: 90.6%;
+  }
+
+  .home .hero__card-front {
+    left: 8.2%;
+    top: 4.7%;
+    border-width: 3px;
+  }
+
+  .home .hero__play {
+    width: 78px;
+    height: 78px;
+    padding: 12px;
+  }
+
+  .home .hero__play span { padding: 14px; }
+
+  .home .hero__play img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .home .hero__tags {
+    width: 100%;
+    height: 100%;
+  }
+
+  .home .hero__tag {
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: clamp(10px, 2.9vw, 16px);
+  }
+
+  /* right-anchored rather than parked on a Figma left offset: the labels
+     are nowrap, and at this width a left offset pushes them off the box */
+  .home .hero__tag--staff {
+    left: auto;
+    right: 0;
+    top: 0;
+  }
+
+  .home .hero__tag--ai {
+    left: auto;
+    right: 3%;
+    top: 77%;
+    width: auto;
+    height: auto;
+  }
+
+  .home .hero__salesforce {
+    left: 2%;
+    top: 78%;
+    width: 26%;
+    height: auto;
+  }
+
+  /* ---------- Brand rail ----------
+     Back into the flow as the hero's last row; the card size is left alone
+     because every logo inside is placed on a 261x108 coordinate. */
+  .home .brands {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: 108px;
+  }
+
+  /* ---------- Services: the fold rail becomes a stack ----------
+     Script.js still folds cards as the arrows are pressed, so the two
+     things a fold changes - the card's width and its depth shade - are
+     both neutralised here rather than the script being branched. */
+  .home .services {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 34px 0 40px;
+  }
+
+  .home .services__corner {
+    width: 190px;
+    height: 140px;
+  }
+
+  .home .services__head {
+    position: static;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .services__index {
+    position: static;
+    right: auto;
+    padding: 0 var(--shell-gutter);
+    text-align: right;
+  }
+
+  .home .services__rule {
+    position: static;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .home .services__slider {
+    position: static;
+    height: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  /* the arrows drive a rail that no longer exists */
+  .home .services__arrows { display: none; }
+
+  .home .services__viewport {
+    position: static;
+    height: auto;
+    padding-bottom: 0;
+    overflow: visible;
+  }
+
+  .home .services__track {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .home .services__track .svc-card { width: 100%; }
+
+  .home .services__track .svc-card.is-collapsed {
+    --svc-w: 100%;
+    --svc-bg: #fff;
+  }
+
+  .home .services__track .svc-card.is-collapsed .svc-card__tag { opacity: 1; }
+
+  /* the divider separated columns; stacked, it separates rows */
+  .home .services__track .svc-card::after {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 1px;
+  }
+
+  /* ---------- AI Solution / Salesforce Solutions ---------- */
+  .home .ai-sec {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 34px 0 40px;
+  }
+
+  .home .ai-sec__grid {
+    top: 0;
+    height: 100%;
+  }
+
+  .home .ai-sec__top,
+  .home .sf-sec .ai-sec__top {
+    position: static;
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: 26px;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .ai-sec__copy,
+  .home .sf-sec .ai-sec__copy {
+    width: auto;
+    gap: 14px;
+  }
+
+  .home .ai-sec__lead {
+    width: auto;
+    font-size: clamp(19px, 5.2vw, 28px);
+  }
+
+  .home .ai-sec__body {
+    width: auto;
+    font-size: clamp(15px, 4vw, 22px);
+    line-height: 1.35;
+  }
+
+  .home .ai-sec__btn {
+    width: 164px;
+    height: 48px;
+  }
+
+  .home .ai-checks p {
+    font-size: clamp(14px, 3.8vw, 18px);
+    white-space: normal;
+  }
+
+  .home .ai-sec__robot {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .home .ai-sec__bottom,
+  .home .sf-sec .ai-sec__bottom {
+    position: static;
+    flex-direction: column;
+    align-items: stretch;
+    width: auto;
+    height: auto;
+    gap: 20px;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .ai-card {
+    width: 100%;
+    height: clamp(280px, 78vw, 360px);
+  }
+
+  .home .ai-card__arrow {
+    width: 68%;
+    height: auto;
+  }
+
+  .home .ai-card__logo {
+    top: 34px;
+    width: 62%;
+    height: auto;
+  }
+
+  .home .ai-card__bar {
+    width: calc(100% - 32px);
+    bottom: 16px;
+  }
+
+  .home .ai-card__bar span {
+    padding: 13px 20px;
+    font-size: 13px;
+  }
+
+  .home .ai-list { width: 100%; }
+
+  /* title over description over the go-link, so nothing has to be nowrap */
+  .home .ai-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 0;
+  }
+
+  .home .ai-row__title { white-space: normal; }
+
+  .home .ai-row__right {
+    width: 100%;
+    gap: 14px;
+    justify-content: space-between;
+  }
+
+  .home .ai-row__desc {
+    width: auto;
+    flex: 1 1 auto;
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  /* 30px is below the 44px tap floor - the icon inside stays centred */
+  .home .ai-row__go {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* the Salesforce diagram is the section's lead image on mobile */
+  .home .sf-diagram {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: calc(100% - var(--shell-gutter) * 2);
+    max-width: 360px;
+    height: auto;
+    aspect-ratio: 507.809 / 393;
+    margin-inline: auto;
+  }
+
+  .home .sf-diagram__cloud {
+    width: 25.4%;
+    height: 31.8%;
+  }
+
+  .home .sf-diagram__logo {
+    left: 38.2%;
+    top: 41.2%;
+    width: 23.8%;
+    height: auto;
+  }
+
+  /* ---------- Case Studies ---------- */
+  .home .case-sec {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 34px 0 40px;
+  }
+
+  .home .case-sec__head {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .case-sec__head .sec-head__top {
+    position: static;
+    top: auto;
+  }
+
+  .home .case-sec__lede {
+    position: static;
+    width: auto;
+    margin-top: 14px;
+    font-size: clamp(15px, 4vw, 20px);
+    white-space: normal;
+  }
+
+  .home .case-sec__main {
+    position: static;
+    height: auto;
+    align-items: stretch;
+    gap: 24px;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .case-feature {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    height: auto;
+  }
+
+  /* same trick as the hero media: the 511x406 composition re-expressed
+     as percentages of its own box */
+  .home .case-feature__media {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 511 / 406;
+  }
+
+  .home .case-feature__plate {
+    width: 74%;
+    height: 82%;
+  }
+
+  .home .case-feature__shot {
+    left: 3.3%;
+    top: 4.4%;
+    width: 96.7%;
+    height: 95.6%;
+  }
+
+  .home .case-feature__chips {
+    left: 4.3%;
+    top: auto;
+    bottom: 4%;
+    gap: 6px;
+  }
+
+  .home .case-feature__chips span {
+    padding: 7px 13px;
+    font-size: clamp(10px, 2.9vw, 14px);
+  }
+
+  .home .case-feature__info {
+    position: static;
+    width: auto;
+  }
+
+  .home .case-feature__title { font-size: clamp(22px, 5.8vw, 28px); }
+
+  .home .case-feature__desc {
+    width: auto;
+    font-size: clamp(15px, 4vw, 18px);
+  }
+
+  .home .case-feature__btn {
+    width: 159px;
+    height: 48px;
+  }
+
+  .home .case-sec__rule { width: 100%; }
+
+  /* the badge sits on a 248px coordinate, so the card keeps that height */
+  .home .case-cards {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: 20px;
+    padding: 0;
+  }
+
+  .home .case-cards .case-card {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 248px;
+  }
+
+  .home .case-card__body p { font-size: clamp(16px, 4.4vw, 20px); }
+
+  /* ---------- Industries ---------- */
+  .home .ind-sec {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 34px 0 40px;
+  }
+
+  .home .ind-sec__grid {
+    top: 0;
+    height: 100%;
+  }
+
+  .home .ind-sec__map {
+    top: 200px;
+    height: 300px;
+    object-fit: contain;
+  }
+
+  .home .ind-sec__head {
+    position: static;
+    height: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .ind-sec__headcol {
+    position: static;
+    width: auto;
+  }
+
+  .home .ind-sec__lede { font-size: clamp(15px, 4vw, 20px); }
+
+  .home .ind-sec__arrows { display: none; }
+
+  .home .ind-sec__viewport {
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding: 0 var(--shell-gutter);
+  }
+
+  /* the step slider writes translateX() straight onto the track, so the
+     stack has to say so louder than an inline style */
+  .home .ind-track {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    height: auto;
+    gap: 16px;
+    transform: none !important;
+  }
+
+  .home .ind-track .ind-card {
+    width: 100%;
+    height: 210px;
+  }
+
+  .home .ind-card__head {
+    right: 24px;
+    width: auto;
+    top: 28px;
+  }
+
+  .home .ind-card__head p { font-size: clamp(22px, 6vw, 28px); }
+
+  .home .ind-card__desc {
+    right: 24px;
+    top: auto;
+    bottom: 24px;
+    width: auto;
+  }
+
+  /* ---------- Testimonials ----------
+     The coverflow rail stamps the five cards out three times over so it can
+     loop; the outer two copies are the ones Script.js marks aria-hidden, so
+     hiding those leaves exactly one of each card to stack. Tapping a card
+     still centres and plays it - that logic is index-based, not geometric. */
+  .home .test-sec {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 34px 0 40px;
+  }
+
+  .home .test-sec__quote { display: none; }
+
+  .home .test-sec__head {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .test-sec__head .sec-head__top {
+    position: static;
+    top: auto;
+  }
+
+  .home .test-sec__lede {
+    position: static;
+    width: auto;
+    margin-top: 14px;
+    font-size: clamp(15px, 4vw, 20px);
+  }
+
+  .home .test-vids {
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding: 0 var(--shell-gutter);
+    cursor: default;
+    touch-action: auto;
+  }
+
+  .home .test-vids::before,
+  .home .test-vids::after { display: none; }
+
+  .home .test-vids__track {
+    position: static;
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: 16px;
+    transform: none !important;
+  }
+
+  .home .test-vids__track .tvid[aria-hidden='true'] { display: none; }
+
+  .home .test-vids__track .tvid {
+    width: 100%;
+    height: clamp(300px, 82vw, 380px);
+    cursor: pointer;
+  }
+
+  /* stacked, every card is "the centre one" - no reason to clip the quote */
+  .home .test-vids__track .tvid .tvid__quote {
+    width: auto;
+    max-height: 200px;
+    opacity: 1;
+    white-space: normal;
+    font-size: 12px;
+  }
+
+  .home .test-vids__track .tvid .tvid__more { display: none; }
+
+  .home .tvid__meta {
+    left: 18px;
+    right: 74px;
+    bottom: 16px;
+    width: auto;
+  }
+
+  .home .tvid__name { font-size: 15px; line-height: 1.4; }
+  .home .tvid__role { font-size: 12px; line-height: 1.4; white-space: normal; }
+
+  .home .tvid__play {
+    right: 16px;
+    bottom: 16px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .home .test-sec__arrows { display: none; }
+
+  .home .test-sec__rule {
+    position: static;
+    width: auto;
+    margin: 4px var(--shell-gutter);
+  }
+
+  /* the review wall keeps both drifting rows - the cards just shrink to fit.
+     Script.js measures a pass from the rendered widths, so the seam still
+     lands correctly at this size. */
+  .home .reviews {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: 372px;
+  }
+
+  .home .reviews::before,
+  .home .reviews::after { display: none; }
+
+  .home .reviews__row { gap: 20px; }
+
+  .home .reviews__row--1 { left: -70px; top: 0; }
+  .home .reviews__row--2 { left: -170px; top: 192px; }
+
+  .home .review {
+    width: 280px;
+    height: 172px;
+    padding: 22px 18px;
+  }
+
+  .home .review__face { padding: 22px 18px; }
+
+  .home .review__head > img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .home .review__name { font-size: 16px; }
+  .home .review__body { font-size: 13px; line-height: 1.25; }
+
+  .home .review__mark {
+    left: auto;
+    right: 18px;
+    top: 20px;
+    width: 32px;
+    height: 32px;
+  }
+
+  /* ---------- Our Process ----------
+     The seven steps are placed over an illustration that only reads at
+     desktop width. Drop the artwork and the steps become a plain vertical
+     list, each one keeping its red tick as a left-hand accent. */
+  .home .proc-sec {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 34px 0 40px;
+  }
+
+  .home .proc-sec__grid {
+    top: 0;
+    height: 100%;
+  }
+
+  .home .proc-sec__head {
+    position: static;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .proc-sec__art { display: none; }
+
+  .home .proc-sec__stage {
+    position: static;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .home .proc-sec__stage .proc-step {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    padding: 18px 0 18px 18px;
+    border-left: 1px solid var(--hairline);
+  }
+
+  .home .proc-sec__stage .proc-step__row {
+    position: static;
+    top: auto;
+    gap: 12px;
+    align-items: baseline;
+  }
+
+  .home .proc-sec__stage .proc-step__num {
+    width: auto;
+    text-align: left;
+    font-size: clamp(24px, 6.6vw, 36px);
+  }
+
+  .home .proc-sec__stage .proc-step__body {
+    width: auto;
+    flex: 1 1 auto;
+  }
+
+  .home .proc-sec__stage .proc-step__title,
+  .home .proc-sec__stage .proc-step__desc {
+    width: auto;
+    font-size: clamp(14px, 3.8vw, 16px);
+  }
+
+  /* the tick marked a point on the illustration; here it marks the row */
+  .home .proc-sec__stage .proc-step__tick {
+    left: -2px;
+    top: 20px;
+    height: 34px;
+  }
+
+  /* ---------- Footer ---------- */
+  .home .footer {
+    height: auto;
+    padding-bottom: 34px;
+  }
+
+  .home .footer__inner {
+    position: static;
+    height: auto;
+    gap: 30px;
+    padding: 34px var(--shell-gutter) 0;
+  }
+
+  .home .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .home .footer__brand { height: auto; }
+
+  .home .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  .home .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .home .footer__col,
+  .home .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  .home .footer__col ul { gap: 0; }
+
+  .home .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .home .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned to a desktop text length */
+  .home .footer__cookies img { display: none; }
+
+  /* ---------- Enquiry form: full-screen sheet ---------- */
+  .home .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .home .lt-form__card {
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .home .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .home .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .home .lt-form__title { font-size: 26px; }
+
+  /* ---------- Mobile navigation drawer ---------- */
+  .m-nav {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0s linear 0.4s;
+  }
+
+  .m-nav.is-open {
+    visibility: visible;
+    pointer-events: auto;
+    transition: visibility 0s linear 0s;
+  }
+
+  .m-nav__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(24, 22, 22, 0.5);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .m-nav.is-open .m-nav__scrim { opacity: 1; }
+
+  .m-nav__panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: min(86vw, 360px);
+    padding: 14px 22px 28px;
+    background: #fff;
+    box-shadow: -18px 0 48px rgba(0, 0, 0, 0.18);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .m-nav.is-open .m-nav__panel { transform: translateX(0); }
+
+  .m-nav__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+  }
+
+  .m-nav__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    border-radius: 50%;
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .m-nav__close:hover,
+  .m-nav__close:focus-visible {
+    background: #f4f4f4;
+    color: var(--primary-color);
+  }
+
+  .m-nav__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .m-nav__links {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-poppins);
+  }
+
+  .m-nav__links a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    border-bottom: 1px solid #efefef;
+    font-size: clamp(16px, 4.6vw, 19px);
+    font-weight: 500;
+    color: var(--text-color);
+    transition: color 0.2s ease;
+  }
+
+  .m-nav__links a:active { color: var(--primary-color); }
+
+  .m-nav__foot {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: flex-start;
+    margin-top: auto;
+  }
+
+  .m-nav__cta {
+    width: 100%;
+    max-width: 260px;
+    height: 48px;
+  }
+
+  .m-nav__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-family: var(--font-poppins);
+    font-size: 14px;
+    color: var(--sub-text-color);
+  }
+
+  .m-nav__socials a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* the panel is the scroller while it is open; the page behind holds
+     its position */
+  body.is-mnav-open { overflow: hidden; }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .m-nav__panel,
+  .m-nav__scrim { transition-duration: 0.01ms; }
+}

@@ -739,6 +739,72 @@
 
     /* the burger and the drawer both own the right-hand edge — never both */
     if (burger) burger.addEventListener('click', function () { setTalk(false); });
+
+    /* below 768 the card fills the viewport, so the side tab it normally
+       closes from is off-canvas — the card's own ✕ takes over. The click is
+       inside .lt-form, so the outside-click handler above leaves it alone. */
+    var talkClose = document.getElementById('talk-close');
+    if (talkClose) talkClose.addEventListener('click', function () { setTalk(false); });
+  }
+
+  /* ---------- Mobile navigation drawer (≤768px) ----------
+     The home page has no .menu-overlay of its own: on mobile every nav link
+     and action collapses into this one panel, opened from the header burger.
+     Both the markup and the CSS are inert above the breakpoint, so nothing
+     here can reach the desktop layout. */
+  var mNav = document.getElementById('m-nav');
+  var mBurger = document.querySelector('.navbar .nav-burger');
+
+  if (mNav && mBurger) {
+    var mPanel = mNav.querySelector('.m-nav__panel');
+
+    var setMNav = function (open) {
+      mNav.classList.toggle('is-open', open);
+      mNav.setAttribute('aria-hidden', open ? 'false' : 'true');
+      mBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      mBurger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      document.body.classList.toggle('is-mnav-open', open);
+
+      if (open && mPanel) mPanel.scrollTop = 0;
+      else mBurger.focus({ preventScroll: true });
+    };
+
+    mBurger.addEventListener('click', function () {
+      setMNav(!mNav.classList.contains('is-open'));
+    });
+
+    /* the scrim and the ✕ both carry data-mnav-close */
+    Array.prototype.forEach.call(mNav.querySelectorAll('[data-mnav-close]'), function (el) {
+      el.addEventListener('click', function () { setMNav(false); });
+    });
+
+    /* follow the link, then let the panel close behind it — in-page anchors
+       would otherwise scroll under a drawer that is still covering them */
+    Array.prototype.forEach.call(mNav.querySelectorAll('a'), function (link) {
+      link.addEventListener('click', function () { setMNav(false); });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && mNav.classList.contains('is-open')) setMNav(false);
+    });
+
+    /* The drawer is the only way to the enquiry form on mobile. Opening it on
+       a timer lets the panel finish sliding out first, and puts the call past
+       the click that triggered it — the form's own outside-click handler would
+       otherwise see this button as "outside" and shut it again immediately. */
+    var mTalk = document.getElementById('m-nav-talk');
+    if (mTalk && typeof setTalk === 'function') {
+      mTalk.addEventListener('click', function () {
+        setMNav(false);
+        setTimeout(function () { setTalk(true); }, 340);
+      });
+    }
+
+    /* rotating to a desktop width with the drawer open would strand the
+       scroll lock on a body that no longer has a panel over it */
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 768 && mNav.classList.contains('is-open')) setMNav(false);
+    });
   }
 
   /* ---------- Job details: "Apply For This Position" modal ---------- */
