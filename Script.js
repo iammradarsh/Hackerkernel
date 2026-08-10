@@ -670,7 +670,18 @@
   var overlay = document.getElementById('menu-overlay');
 
   if (burger && overlay) {
+    /* Locking the page takes the scrollbar away, so the layout would widen by
+       its width the instant the panel starts moving. Measure the strip while
+       it is still there and publish it as --sbw; the stylesheet hands the same
+       width back as padding, so nothing under the panel shifts. Overlay
+       scrollbars (macOS, touch) measure 0 and cost nothing. */
+    var gutter = function (open) {
+      var w = open ? window.innerWidth - document.documentElement.clientWidth : 0;
+      document.documentElement.style.setProperty('--sbw', (w > 0 ? w : 0) + 'px');
+    };
+
     var setMenu = function (open) {
+      gutter(open);
       document.body.classList.toggle('is-menu-open', open);
       overlay.classList.toggle('is-open', open);
       overlay.setAttribute('aria-hidden', open ? 'false' : 'true');

@@ -69,6 +69,11 @@
   /* content inset from the panel edge — the Figma sections all start at
      left:102px, so the navbar grid has to use the same number */
   --shell-gutter: 102px;
+
+  /* width of the viewport scrollbar, measured in JS the moment the page is
+     locked and handed back as padding so the lock costs no layout width.
+     0 when nothing is locked, and on overlay-scrollbar platforms. */
+  --sbw: 0px;
 }
 
 *,
@@ -225,13 +230,15 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   margin: 0 calc(var(--shell-inset) + var(--shell-gutter));
 }
 
-/* ── Scrolled backdrop: white gradient + progressive blur ──
+/* ── Scrolled backdrop: progressive blur only, no tint ──
    Each layer blurs the backdrop a little more than the one below it and is
-   masked to stop a little higher, so the blur accumulates towards the top and
-   reaches zero at the bottom edge. */
+   masked to stop a little higher, so the blur accumulates towards the top.
+   The veil runs 45px past the bar's bottom edge: the ramp needs room to decay
+   to zero *below* the nav content, otherwise the fade finishes mid-bar and
+   whatever scrolls under the lower half stays sharp. */
 .navbar__veil {
   position: absolute;
-  inset: 0;
+  inset: 0 0 -45px;
   z-index: 1;
   opacity: 0;
   pointer-events: none;
@@ -248,48 +255,42 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   display: block;
 }
 
+/* Percentages are of the 130px veil, so the 85px bar ends at ~65%. The weakest
+   layer stays fully opaque past that mark and only lets go in the tail — that
+   is what keeps the bottom of the bar frosted instead of clear. */
 .navbar__veil span:nth-child(1) {
-  backdrop-filter: blur(0.5px);
-  -webkit-backdrop-filter: blur(0.5px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 30%, transparent 100%);
-          mask-image: linear-gradient(180deg, #000 0%, #000 30%, transparent 100%);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
 }
 
 .navbar__veil span:nth-child(2) {
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 20%, transparent 80%);
-          mask-image: linear-gradient(180deg, #000 0%, #000 20%, transparent 80%);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 52%, transparent 88%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 52%, transparent 88%);
 }
 
 .navbar__veil span:nth-child(3) {
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 15%, transparent 60%);
-          mask-image: linear-gradient(180deg, #000 0%, #000 15%, transparent 60%);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 38%, transparent 70%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 38%, transparent 70%);
 }
 
 .navbar__veil span:nth-child(4) {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 10%, transparent 40%);
-          mask-image: linear-gradient(180deg, #000 0%, #000 10%, transparent 40%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 24%, transparent 50%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 24%, transparent 50%);
 }
 
 .navbar__veil span:nth-child(5) {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 5%, transparent 22%);
-          mask-image: linear-gradient(180deg, #000 0%, #000 5%, transparent 22%);
-}
-
-/* white wash, opaque at the top edge, gone at the bottom — painted over the
-   blur stack so it is the last thing in the layer */
-.navbar__veil::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 12%, transparent 32%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 12%, transparent 32%);
 }
 
 .logo {
@@ -3637,8 +3638,23 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 .menu-socials a:hover,
 .menu-locations a:hover { opacity: 0.7; }
 
+/* Locking the page hides the viewport scrollbar, and the layout immediately
+   claims the width it gave up: every centred block slides half a scrollbar
+   right and the fixed navbar's burger a whole one — a snap that reads as the
+   panel jolting the page rather than sliding over it. Paying the exact width
+   back as padding keeps the content box identical either side of the lock, so
+   the only thing that moves is the panel. */
 body.is-menu-open {
   overflow: hidden;
+  padding-right: var(--sbw);
+}
+
+/* Fixed chrome is laid out against the viewport, not the body, so the padding
+   above never reaches it — it needs the same gutter of its own. The overlay is
+   deliberately left out: it should cover the scrollbar's strip too. */
+body.is-menu-open .navbar,
+body.is-menu-open .talk-tab {
+  right: var(--sbw);
 }
 
 /* ===========================================================
@@ -6927,13 +6943,18 @@ body.is-menu-open {
 
 .au-card:hover { transform: translateY(-6px); }
 
+/* the notched-corner card body — a clipped block rather than a flat SVG so the
+   fill can cross-fade white → dark on hover (Figma's "01" card is that state) */
 .au-card__shape {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  max-width: none;
+  display: block;
+  background: #fff;
+  clip-path: polygon(0 0, 82.514% 0, 100% 15.094%, 100% 100%, 0 100%);
+  transition: background-color 0.35s ease;
 }
+
+.au-card:hover .au-card__shape { background: #383636; }
 
 .au-card__num {
   position: absolute;
@@ -6947,6 +6968,7 @@ body.is-menu-open {
   color: transparent;
   -webkit-text-stroke: 1.4px var(--text-color);
   white-space: nowrap;
+  transition: -webkit-text-stroke-color 0.35s ease;
 }
 
 .au-card__title {
@@ -6958,6 +6980,7 @@ body.is-menu-open {
   font-weight: 600;
   line-height: 1.1;
   color: var(--text-color);
+  transition: color 0.35s ease;
 }
 
 .au-card__text {
@@ -6969,11 +6992,12 @@ body.is-menu-open {
   font-weight: 400;
   line-height: 1.15;
   color: var(--text-color);
+  transition: color 0.35s ease;
 }
 
-.au-card--dark .au-card__num { -webkit-text-stroke-color: #fff; }
-.au-card--dark .au-card__title,
-.au-card--dark .au-card__text { color: #fff; }
+.au-card:hover .au-card__num { -webkit-text-stroke-color: #fff; }
+.au-card:hover .au-card__title,
+.au-card:hover .au-card__text { color: #fff; }
 
 /* ── Case Files ───────────────────────────────────────────── */
 .ai-cases { position: relative; }
