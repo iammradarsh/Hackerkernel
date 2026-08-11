@@ -48,6 +48,11 @@
 
 :root {
   --primary-color: #ed313a;
+  /* the brand red only reaches 4.12:1 on white, so it fails WCAG 1.4.3 the
+     moment it carries body-sized text. This darker cast is the same hue at
+     5.3:1 on white / 4.8:1 on the panel — use it wherever the red *is* the
+     text (nav hover, focus rings) rather than decoration. */
+  --primary-ink: #d0222b;
   --text-color: #383636;
   --sub-text-color: #666666;
   --hairline: #dadada;
@@ -293,26 +298,33 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
           mask-image: linear-gradient(180deg, #000 0%, #000 12%, transparent 32%);
 }
 
+/* flex:none is load-bearing — the nav row is nowrap, so the logo is the only
+   item flex can shrink, and under ~1100px it was being squeezed narrower than
+   the wordmark and the links were printing straight over "Kernel" */
 .logo {
+  flex: none;
   display: flex;
   align-items: center;
+  /* 2.5.8 Target Size (Minimum) — the link box has to clear 24px in both
+     axes on every breakpoint, whatever the mark inside it measures */
+  min-height: 44px;
 }
 
 .logo__mark {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 
 .logo__text {
   display: flex;
-  align-items: flex-start;
-  height: 31.453px;
-  padding: 2.906px 5.47px 3.932px;
+  align-items: center;
+  padding-left: 7px;
   font-family: var(--font-poppins);
-  font-size: 15.043px;
-  font-weight: 500;
-  line-height: 25.299px;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
   white-space: nowrap;
 }
 
@@ -324,24 +336,84 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   color: var(--text-color);
 }
 
+/* Type scales with the panel instead of sitting at a fixed 12px: the row has
+   to clear 1040px of grid at the 1280 design width and still survive a 1024
+   window, where the same links at a fixed size would run into the logo. gap
+   and the CTA's breathing room ride the same curve — the "Let's Talk" button
+   is em-based off this font-size, so everything stays in proportion. */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin-right: 62px;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--sub-text-color);
+  gap: clamp(14px, 1.5vw, 22px);
+  margin-right: clamp(20px, 2.5vw, 40px);
+  font-size: clamp(13px, 1.17vw, 15px);
+  font-weight: 500;
+  color: var(--text-color);
   white-space: nowrap;
-  font-family: "poppins";
+  font-family: var(--font-poppins);
 }
 
+/* the vertical padding is the 2.5.8 target: the line box alone is ~20px, and
+   the links are the primary navigation, so they cannot be a 20px strip */
 .nav-links a {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 2px;
+  border-radius: 4px;
   transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
-  color: var(--primary-color);
+  color: var(--primary-ink);
+}
+
+.nav-links a:focus-visible,
+.logo:focus-visible,
+.nav-burger:focus-visible {
+  outline: 2px solid var(--primary-ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Below the 1040 grid the row runs out of room: the links are nowrap and the
+   logo no longer shrinks, so something has to give. The 102px gutter goes
+   first — it only exists to line the logo up with the section headings, and
+   under ~1180 the sections have already stopped sitting on that column. */
+@media (max-width: 1180px) {
+  .navbar__inner {
+    margin: 0 calc(var(--shell-inset) + clamp(24px, 5.5vw, 102px));
+  }
+
+  .nav-links {
+    gap: 12px;
+    margin-right: 16px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .navbar__inner {
+    margin: 0 calc(var(--shell-inset) + clamp(14px, 4vw, 102px));
+  }
+
+  .nav-links {
+    gap: 8px;
+    margin-right: 8px;
+  }
+}
+
+/* Last resort before the burger takes over at 768: seven nowrap links plus
+   the button simply do not fit beside the wordmark here. The CTA stands down
+   rather than the links shrinking below 13px — .talk-tab is on screen at
+   these widths and offers the same action, so nothing is lost. */
+@media (max-width: 940px) {
+  .navbar__inner {
+    margin: 0 calc(var(--shell-inset) + clamp(12px, 3vw, 102px));
+  }
+
+  /* the descendant selector is deliberate: .nav-links__cta's own display rule
+     is declared further down the file and would otherwise out-order this */
+  .nav-links .nav-links__cta { display: none; }
 }
 
 /* ── "Let's Talk" — Figma "Buttons / 05", Default → Variant2 ──
@@ -362,7 +434,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  color: var(--primary-color);
+  color: var(--primary-ink);
 }
 
 .nav-links__cta-row {
@@ -2734,19 +2806,32 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 /* ===========================================================
    Our Process
    =========================================================== */
+/* Figma stacks two fills on this frame: a white→#f4f4f4 radial, and an
+   opaque white linear on top of it. The top fill wins everywhere, so the
+   section reads as flat white — it does NOT inherit the shell's grey.
+   Without this the grid PNG (which is opaque white) floated as a white
+   band on grey, and the heading area above it stayed grey. */
 .proc-sec {
   position: relative;
   height: 865px;
+  background: #fff;
   overflow: hidden;
 }
 
+/* the grid and the stage below both carry literal Figma coordinates, so
+   they sit in a centred 1244 frame rather than stretching edge to edge —
+   stretched, the illustration grew with the viewport while the step
+   labels stayed pinned at their `left:` values and the two desynced.
+   The vignette fades the grid to white before the frame edge, so nothing
+   shows a seam on wider screens. */
 .proc-sec__grid {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
   top: 125px;
+  width: var(--wrap);
   height: 740px;
   overflow: hidden;
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
@@ -2759,6 +2844,17 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   max-width: none;
 }
 
+/* white vignette over the grid — transparent at the centre, solid white at
+   the box edge, so the ruling dissolves before it reaches the frame
+   instead of stopping at the PNG's hard right/bottom edge */
+.proc-sec__grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+              rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
 .proc-sec__head {
   position: absolute;
   left: 102px;
@@ -2767,10 +2863,11 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 
 .proc-sec__stage {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 50%;
   top: 179px;
+  width: var(--wrap);
   height: 632px;
+  transform: translateX(-50%);
 }
 
 .proc-sec__art {
@@ -3007,8 +3104,11 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   width: 45px;
 }
 
-.ind-sec__grid::after,
-.proc-sec__grid::after {
+/* Industries sits on the shell's grey, so its vignette fades to #f4f4f4.
+   Our Process does NOT — its vignette is white and lives with the rest of
+   the .proc-sec block above; grouping the two here washed that whole
+   section grey. */
+.ind-sec__grid::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -4067,6 +4167,7 @@ body.is-menu-open .talk-tab {
   font-weight: 400;
   line-height: 1.35;
   color: var(--sub-text-color);
+  font-family: "poppins";
 }
 
 /* controls */
@@ -8278,6 +8379,9 @@ body.is-menu-open .talk-tab {
   object-fit: cover;
 }
 
+/* The player is a replaced element on its own compositing layer, so the
+   card's overflow:hidden never rounds it — its square corners punch out
+   past the 16px radius. It has to carry the card's radius itself. */
 .csd-hero__video {
   position: absolute;
   inset: 0;
@@ -8286,6 +8390,7 @@ body.is-menu-open .talk-tab {
   width: 100%;
   height: 100%;
   border: 0;
+  border-radius: inherit;
   background: #000;
   object-fit: cover;
 }
@@ -8494,6 +8599,9 @@ body.is-menu-open .talk-tab {
   z-index: 2;
   display: block;
   overflow: hidden;
+  /* backdrop-filter puts this on its own layer too — same reason as the
+     player, it rounds itself rather than relying on the card to clip it */
+  border-radius: inherit;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
@@ -11064,6 +11172,12 @@ body.is-apply-open {
      wants to bleed does it inside a section, never past the panel */
   .home .page-shell { overflow: hidden; }
 
+  /* the sticky header would otherwise sit on top of whatever an in-page
+     link jumps to */
+  .home .wrap section[id],
+  .home .wrap footer[id] { scroll-margin-top: 72px; }
+
+
   /* the desktop rule is body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap,
      which is (0,4,1) - this has to out-specify it rather than fight it */
   body.home:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
@@ -11095,7 +11209,13 @@ body.is-apply-open {
 
   .home .nav-links { display: none; }
 
+  /* assets/menu-icon.svg holds both states of the Figma icon, but its two red
+     menu bars are drawn outside the 40x40 viewBox and the clipPath cuts them
+     off — all that survives is the white cross of the *open* state. The other
+     pages never hit this because their .burger draws its bars in CSS, so this
+     one does the same rather than shipping a corrected asset. */
   .home .nav-burger {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -11103,20 +11223,37 @@ body.is-apply-open {
     height: 44px;
   }
 
-  .home .nav-burger img {
+  .home .nav-burger img { display: none; }
+
+  .home .nav-burger::before,
+  .home .nav-burger::after {
+    content: '';
+    position: absolute;
+    left: 9px;
     width: 26px;
-    height: 26px;
+    height: 2.5px;
+    border-radius: 1.25px;
+    background: var(--primary-color);
+  }
+
+  .home .nav-burger::before { top: 15px; }
+  .home .nav-burger::after { top: 26px; }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .home .logo {
+    min-height: 44px;
+    align-items: center;
   }
 
   .home .logo__mark {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
   }
 
   .home .logo__text {
     height: auto;
-    padding: 0 0 0 5px;
-    font-size: 14px;
+    padding: 0 0 0 6px;
+    font-size: 16px;
     line-height: 1.3;
     align-items: center;
   }
@@ -11186,8 +11323,13 @@ body.is-apply-open {
 
   .home .hero__stat b { font-size: clamp(22px, 6vw, 28px); }
 
+  /* relative, not static: .pill-btn__circle is absolutely positioned against
+     this button, and a static button would hand it .hero__copy instead — the
+     white sweep would then stretch across the whole hero and cover the copy */
   .home .hero__btn {
-    position: static;
+    position: relative;
+    left: 0;
+    top: 0;
     width: 208px;
     max-width: 100%;
     height: 48px;
@@ -11296,9 +11438,10 @@ body.is-apply-open {
     padding: 34px 0 40px;
   }
 
+  /* 368x272 clears the desktop heading; at this width it would sit on it */
   .home .services__corner {
-    width: 190px;
-    height: 140px;
+    width: 150px;
+    height: 111px;
   }
 
   .home .services__head {
@@ -11636,11 +11779,9 @@ body.is-apply-open {
     height: 100%;
   }
 
-  .home .ind-sec__map {
-    top: 200px;
-    height: 300px;
-    object-fit: contain;
-  }
+  /* the world map is a full-width backdrop behind a four-across rail; over a
+     single column it lands mid-card as disconnected dotted fragments */
+  .home .ind-sec__map { display: none; }
 
   .home .ind-sec__head {
     position: static;
@@ -11769,6 +11910,10 @@ body.is-apply-open {
 
   .home .test-vids__track .tvid .tvid__more { display: none; }
 
+  /* the quote is always open here, so the card needs more shade under it
+     than the 144px the collapsed desktop card gets by */
+  .home .test-vids__track .tvid__shade { height: 62%; }
+
   .home .tvid__meta {
     left: 18px;
     right: 74px;
@@ -11849,9 +11994,14 @@ body.is-apply-open {
     padding: 34px 0 40px;
   }
 
+  /* the desktop rule centres these in a 1244 design frame; at this width
+     there is no design frame to honour, so they go back to full bleed */
   .home .proc-sec__grid {
+    left: 0;
     top: 0;
+    width: 100%;
     height: 100%;
+    transform: none;
   }
 
   .home .proc-sec__head {
@@ -11863,10 +12013,12 @@ body.is-apply-open {
 
   .home .proc-sec__stage {
     position: static;
+    width: auto;
     height: auto;
     display: flex;
     flex-direction: column;
     padding: 0 var(--shell-gutter);
+    transform: none;
   }
 
   .home .proc-sec__stage .proc-step {
@@ -11886,8 +12038,12 @@ body.is-apply-open {
     align-items: baseline;
   }
 
-  .home .proc-sec__stage .proc-step__num {
-    width: auto;
+  /* the desktop steps alternate between a 50px right-aligned number and an
+     auto-width left-aligned one, which is what keeps each step tucked against
+     its own point on the illustration. In a list they just need to agree. */
+  .home .proc-sec__stage .proc-step__num,
+  .home .proc-sec__stage .proc-step--low .proc-step__num {
+    width: 58px;
     text-align: left;
     font-size: clamp(24px, 6.6vw, 36px);
   }
@@ -11999,6 +12155,11 @@ body.is-apply-open {
   }
 
   .home .lt-form__title { font-size: 26px; }
+
+  .home .lt-form__submit {
+    min-height: 44px;
+    padding: 0 24px;
+  }
 
   /* ---------- Mobile navigation drawer ---------- */
   .m-nav {
@@ -12134,9 +12295,1009 @@ body.is-apply-open {
   /* the panel is the scroller while it is open; the page behind holds
      its position */
   body.is-mnav-open { overflow: hidden; }
+
+  /* ---------- Stacking: content over decoration ----------
+     Several sections carry an absolutely positioned decorative layer - the
+     box-line grid and its white vignette, the world map, the corner mesh.
+     On desktop the content out-paints them simply by being absolutely
+     positioned itself and later in the DOM. Returning that content to the
+     flow drops it into the block layer, i.e. *behind* the decoration, which
+     is what washed the AI copy out to near-white. Lifting each content
+     block back over its decoration is the whole fix.
+
+     Last in the file on purpose: these same blocks are set `position:
+     static` further up, and this has to be the declaration that wins. */
+  .home .services__head,
+  .home .services__index,
+  .home .services__rule,
+  .home .services__slider,
+  .home .ai-sec__top,
+  .home .sf-sec .ai-sec__top,
+  .home .ai-sec__bottom,
+  .home .sf-sec .ai-sec__bottom,
+  .home .sf-diagram,
+  .home .ind-sec__head,
+  .home .ind-sec__viewport,
+  .home .test-sec__head,
+  .home .test-vids,
+  .home .test-sec__rule,
+  .home .reviews,
+  .home .proc-sec__head,
+  .home .proc-sec__stage,
+  .home .footer__inner {
+    position: relative;
+    z-index: 1;
+
+    /* every one of these blocks is absolutely positioned on desktop and
+       carries Figma offsets. `relative` keeps honouring them - left:102px
+       would push the whole use-case row a third of the way off the panel -
+       so the offsets are cleared in the same breath as the lift. */
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+  }
 }
 
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
   .m-nav__panel,
   .m-nav__scrim { transition-duration: 0.01ms; }
+}
+
+/* ===========================================================
+   Chat Bot — the modal behind the navbar "Let's Talk" CTA
+
+   The Figma card is 496x639 with every corner rounded, so it is
+   centred over a scrim rather than pinned to an edge like the
+   enquiry drawer. Two blurred circles sit half outside the card
+   at the bottom; the card clips them into the pink/blue wash.
+   =========================================================== */
+.chatbot {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.28s ease, visibility 0s linear 0.28s;
+}
+
+.chatbot.is-open {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.28s ease, visibility 0s;
+}
+
+.chatbot__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(24, 22, 22, 0.38);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.chatbot__card {
+  position: relative;
+  width: 496px;
+  max-width: 100%;
+  height: 639px;
+  max-height: 100%;
+  overflow: hidden;
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.18);
+  transform: translateY(14px) scale(0.98);
+  transition: transform 0.36s cubic-bezier(0.22, 0.9, 0.24, 1);
+}
+
+.chatbot.is-open .chatbot__card {
+  transform: none;
+}
+
+/* Figma exports these two as one flattened SVG, but its filter region clips
+   the falloff into visible rings — drawn as circles, the browser sizes the
+   blur region itself. Figma's layer-blur value is the gaussian deviation,
+   which is exactly what CSS blur() takes. */
+.chatbot__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.chatbot__glow i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+
+.chatbot__glow i:first-child {
+  left: 242.68px;
+  bottom: -33.87px;
+  width: 195.87px;
+  height: 195.87px;
+  background: #89bcff;
+  filter: blur(104.93px);
+}
+
+.chatbot__glow i:last-child {
+  left: 58px;
+  bottom: -162.59px;
+  width: 289.61px;
+  height: 289.61px;
+  background: #ff8686;
+  filter: blur(174.89px);
+}
+
+.chatbot__close {
+  position: absolute;
+  top: 38px;
+  right: 38px;
+  z-index: 2;
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.chatbot__close img { display: block; width: 100%; height: 100%; }
+
+.chatbot__head {
+  position: absolute;
+  top: 35.5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: center;
+  width: 410px;
+  max-width: calc(100% - 86px);
+}
+
+.chatbot__logo { display: block; width: 36px; height: 42.83px; }
+
+.chatbot__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+.chatbot__title {
+  font-family: var(--font-main);
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--text-color);
+}
+
+.chatbot__sub {
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--sub-text-color);
+}
+
+/* suggestions + composer share the bottom of the card */
+.chatbot__foot {
+  position: absolute;
+  bottom: 41px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 435px;
+  max-width: calc(100% - 60px);
+}
+
+.chatbot__suggest {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 8px;
+}
+
+/* the label carries its own 10px box in Figma, so it is inset past the chips */
+.chatbot__suggest-label {
+  padding: 10px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+/* Figma's row is 427 and already overflows its 8px padding; the web chips
+   round a couple of pixels wider, so the row is given the slack to keep the
+   first two on one line — the third still wraps, as designed. A % max-width
+   would resolve against the padded box and undo exactly this. */
+.chatbot__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 445px;
+}
+
+.chatbot__chip {
+  padding: 10px 18px;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.chatbot__chip:hover {
+  background: rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+.chatbot__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border: 1px solid rgba(102, 102, 102, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.chatbot__input {
+  flex: 1 0 0;
+  min-width: 1px;
+  border: 0;
+  background: none;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-color);
+  outline: none;
+}
+
+.chatbot__input::placeholder { color: var(--sub-text-color); }
+
+.chatbot__send {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.chatbot__send img { display: block; width: 27.14px; height: 27.14px; }
+.chatbot__send:hover { opacity: 0.7; }
+
+/* the composer is the point of the panel, so it keeps its own scroll
+   rather than letting the page behind move under the scrim */
+body.is-chatbot-open { overflow: hidden; }
+
+@media (max-width: 560px) {
+  .chatbot { padding: 16px; }
+
+  .chatbot__card { height: 100%; max-height: 620px; }
+
+  .chatbot__close { top: 22px; right: 22px; }
+
+  .chatbot__head {
+    top: 28px;
+    gap: 32px;
+    max-width: calc(100% - 72px);
+  }
+
+  .chatbot__title { font-size: 21px; }
+
+  .chatbot__foot { bottom: 24px; max-width: calc(100% - 36px); }
+
+  .chatbot__suggest { gap: 10px; }
+  .chatbot__suggest-label { padding: 4px 10px; }
+  .chatbot__chips { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chatbot,
+  .chatbot__card { transition-duration: 0.01ms; }
+}
+
+/* ===========================================================
+   ABOUT US - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home page's mobile sheet is:
+
+     * `.ab-page` - only about.html carries it, so the other
+       .cs-page siblings keep the desktop composition.
+     * `@media (max-width: 768px)` - nothing below this line is
+       read above the breakpoint, so the desktop design is
+       untouched.
+
+   Last in the file on purpose. Every block on this page is a
+   fixed-height section whose children sit on absolute Figma
+   coordinates; undoing that means re-declaring `position`,
+   `left/top` and `width` on selectors that are set further up,
+   and these have to be the declarations that win.
+
+   The two additions to about.html - the `.nav-burger` and the
+   `.m-nav` drawer - are both `display:none` in the base sheet,
+   so they exist in the markup without reaching desktop.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset, every `padding: 0 var(--shell-gutter)` below -
+     without touching one of those selectors. */
+  body.ab-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .ab-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .ab-page .wrap section[id],
+  .ab-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ---------- */
+  .ab-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the split-panel overlay is a 57.8% / 42.2% two-pane screen whose copy
+     is parked at left:120px - there is no room for either pane here. The
+     drawer takes over, so its trigger stands down with it. */
+  .ab-page .burger,
+  .ab-page .menu-overlay { display: none; }
+
+  /* assets/menu-icon.svg holds both states of the Figma icon, but its two
+     red menu bars are drawn outside the 40x40 viewBox and the clipPath cuts
+     them off - all that survives is the white cross of the *open* state.
+     Same fix the home page uses: draw the bars in CSS. */
+  .ab-page .nav-burger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .ab-page .nav-burger img { display: none; }
+
+  .ab-page .nav-burger::before,
+  .ab-page .nav-burger::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    width: 26px;
+    height: 2.5px;
+    border-radius: 1.25px;
+    background: var(--primary-color);
+  }
+
+  .ab-page .nav-burger::before { top: 15px; }
+  .ab-page .nav-burger::after { top: 26px; }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .ab-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .ab-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ab-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* ---------- Hero ----------
+     Four rows in one centred column: the accent bar, the copy, the 2x2
+     stat grid, then the artwork. DOM order runs art -> mantra -> copy, so
+     `order` puts the words first and the picture underneath. */
+  .ab-page .ab-hero {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    /* the fixed 62px bar floats over this hero - .cs-page opts out of the
+       navbar's flow spacer, so the clearance has to live here */
+    padding: 84px 0 30px;
+  }
+
+  /* the grid plate is centred on a 1244 design frame and hangs 621px off
+     the left edge; at this width there is no frame to honour */
+  .ab-page .ab-grid--hero,
+  .ab-page .ab-grid--wire {
+    left: 0;
+    right: auto;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* 416x371 of decorative blur pinned 220px off the right edge - it lands
+     over the copy at any width this side of the breakpoint */
+  .ab-page .ab-hero__blobs { display: none; }
+
+  .ab-page .ab-hero__copy {
+    position: relative;
+    z-index: 1;
+    order: 1;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* the 6x56 rule read as a left-hand accent beside left-aligned copy;
+     centred, it reads as the same accent above it */
+  .ab-page .ab-hero__bar {
+    position: static;
+    width: 56px;
+    height: 4px;
+  }
+
+  .ab-page .ab-hero__intro {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .ab-page .ab-hero__title { font-size: clamp(34px, 9.4vw, 52px); }
+
+  .ab-page .ab-hero__desc {
+    max-width: 46ch;
+    font-size: clamp(14px, 3.8vw, 16px);
+    line-height: 1.45;
+  }
+
+  /* stats: two per row, and `white-space: nowrap` has to go - "Building
+     since 2015" is wider than half of a 320px column */
+  .ab-page .ab-hero__stats {
+    position: static;
+    left: auto;
+    top: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 14px;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .ab-page .ab-stat {
+    width: auto;
+    align-items: center;
+    text-align: center;
+    gap: 2px;
+    white-space: normal;
+  }
+
+  .ab-page .ab-stat b { font-size: clamp(24px, 6.6vw, 32px); }
+  .ab-page .ab-stat span { font-size: clamp(13px, 3.5vw, 14px); }
+
+  /* the mantra is five nowrap lines set 10px tall against the right edge
+     of a 632px hero; in the column it becomes a centred sign-off */
+  .ab-page .ab-hero__mantra {
+    position: static;
+    order: 2;
+    width: auto;
+    padding: 0 var(--shell-gutter);
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+
+  /* the desktop box crops the illustration to 415x410 and lets the image
+     run 108% wide inside it; in the flow it is a plain full-width picture,
+     so the crop is undone rather than re-tuned */
+  .ab-page .ab-hero__art {
+    position: relative;
+    order: 3;
+    right: auto;
+    bottom: auto;
+    width: calc(100% - var(--shell-gutter) * 2);
+    max-width: 380px;
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .ab-page .ab-hero__art img {
+    position: static;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  /* ---------- Believe in Process ----------
+     The wire is a 910x1218 composition: an SVG path with four numbered
+     stops sitting exactly on its curve, and four copy blocks hung off
+     those stops. None of that survives a 320px column, so the path goes
+     and the section becomes a plain stack.
+
+     The stops and the notes are separate runs of siblings in the DOM
+     (01-04, then note 1-4), so `order` interleaves them back into
+     number-then-note pairs instead of four numbers over four notes. */
+  .ab-page .ab-wire {
+    height: auto;
+    padding: 34px 0 40px;
+  }
+
+  .ab-page .ab-wire__art {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 0 var(--shell-gutter);
+    transform: none;
+  }
+
+  .ab-page .ab-wire__svg { display: none; }
+
+  .ab-page .ab-wire__star {
+    position: static;
+    order: 1;
+    width: 48px;
+    height: 48px;
+    margin-inline: auto;
+  }
+
+  .ab-page .ab-wire__where {
+    position: static;
+    order: 2;
+    width: auto;
+    font-size: clamp(13px, 3.6vw, 14px);
+  }
+
+  .ab-page .ab-wire__stem {
+    position: static;
+    order: 3;
+    height: 40px;
+    margin: 2px auto;
+  }
+
+  .ab-page .ab-wire__lede {
+    position: static;
+    order: 4;
+    width: auto;
+    max-width: 34ch;
+    margin-inline: auto;
+    font-size: clamp(18px, 5vw, 24px);
+    line-height: 1.3;
+  }
+
+  .ab-page .ab-wire__believe {
+    position: static;
+    order: 5;
+    margin: 4px auto 18px;
+  }
+
+  /* each stop keeps its dot as the marker for the note under it */
+  .ab-page .ab-point {
+    position: static;
+    left: auto;
+    top: auto;
+    margin-top: 12px;
+  }
+
+  .ab-page .ab-point--1 { order: 6; }
+  .ab-page .ab-point--2 { order: 8; }
+  .ab-page .ab-point--3 { order: 10; }
+  .ab-page .ab-point--4 { order: 12; }
+
+  /* stops 2 and 3 print the dot before the number so they read outward
+     from the wire; off the wire they should all read the same way round */
+  .ab-page .ab-point--2 i,
+  .ab-page .ab-point--3 i { order: -1; }
+
+  .ab-page .ab-note {
+    position: static;
+    left: auto;
+    top: auto;
+  }
+
+  .ab-page .ab-note--1 { order: 7; }
+  .ab-page .ab-note--2 { order: 9; }
+  .ab-page .ab-note--3 { order: 11; }
+  .ab-page .ab-note--4 { order: 13; }
+
+  .ab-page .ab-note__body {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ab-page .ab-note__body h3 { font-size: clamp(16px, 4.4vw, 18px); }
+
+  .ab-page .ab-note__body p {
+    font-size: clamp(13px, 3.5vw, 14px);
+    line-height: 1.5;
+  }
+
+  /* ---------- Our Story ----------
+     The rail is a 4474px strip that slides one 364px step per click, with
+     every stop's label, dot and detail lines anchored on absolute offsets
+     inside a 258px column. Stacking all twelve years would bury the page,
+     so the rail becomes a one-at-a-time stepper instead: the arrows still
+     drive it, and the year Script.js marks `.is-active` is the one card on
+     screen. No JS branch - only `.is-active` is displayed, so `.is-past`
+     never has to be unwound. */
+  .ab-page .jr {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 34px 0 40px;
+  }
+
+  .ab-page .jr__head {
+    position: static;
+    left: auto;
+    top: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .ab-page .jr__headtop { gap: 14px; }
+
+  .ab-page .jr__title {
+    font-size: clamp(26px, 7.4vw, 34px);
+    white-space: normal;
+  }
+
+  .ab-page .jr__lede {
+    font-size: clamp(15px, 4vw, 20px);
+    white-space: normal;
+  }
+
+  .ab-page .jr__badge { font-size: clamp(14px, 3.9vw, 18px); }
+
+  .ab-page .jr__rail {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  /* the 4474px line ran the length of the rail; here it is the divider the
+     active year hangs from. `display` is load-bearing: this is a <span>, and
+     absolute positioning was the only thing giving it a block box - static
+     alone drops it back to inline, where the 2px height is ignored and the
+     rule vanishes. */
+  .ab-page .jr__line {
+    position: static;
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  /* the stepper writes translateX() straight onto the track as an inline
+     style, so the stack has to say so louder */
+  .ab-page .jr__track {
+    position: static;
+    left: auto;
+    top: auto;
+    display: block;
+    height: auto;
+    transform: none !important;
+  }
+
+  .ab-page .jr__year {
+    display: none;
+    width: 100%;
+    height: auto;
+    transform: none !important;
+  }
+
+  .ab-page .jr__year.is-active { display: block; }
+
+  /* bottom-anchored so the label could grow off the rail without moving the
+     dot; in the flow it is simply the card's heading */
+  .ab-page .jr__year.is-active .jr__yearlabel {
+    position: static;
+    bottom: auto;
+    font-size: clamp(46px, 15vw, 76px);
+    line-height: 1;
+  }
+
+  /* the dot marked this stop's point on the rail - there is no rail now */
+  .ab-page .jr__yeardot { display: none; }
+
+  .ab-page .jr__year.is-active .jr__yeartext {
+    position: static;
+    top: auto;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .ab-page .jr__yeartext span {
+    font-size: clamp(14px, 3.8vw, 16px);
+    line-height: 1.45;
+    white-space: normal;
+  }
+
+  .ab-page .jr__arrows {
+    position: static;
+    left: auto;
+    top: auto;
+    gap: 12px;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .ab-page .jr__arrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* ---------- Meet the Team ---------- */
+  .ab-page .mt {
+    height: auto;
+    margin-top: 0;
+    padding: 34px 0 40px;
+  }
+
+  /* the frame is the 1244 measuring stick for the Figma coordinates inside;
+     at this width there is no frame to centre on */
+  .ab-page .mt .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    transform: none;
+  }
+
+  .ab-page .mt__bg {
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 62%;
+  }
+
+  .ab-page .mt__bg img {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ab-page .mt__head {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  /* placed 22px in from the left edge of a 787px heading box - over the
+     title once that box is a 320px column */
+  .ab-page .mt__spark { display: none; }
+
+  .ab-page .mt__title {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    font-size: clamp(40px, 13vw, 76px);
+  }
+
+  .ab-page .mt__cards {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+    padding: 0 var(--shell-gutter);
+    transform: none;
+  }
+
+  /* ── The card ──
+     294x421 with every child on a Figma coordinate inside it. Rather than
+     shrink the card to keep those numbers literal, the card takes the
+     column and its coordinates are re-expressed as percentages of its own
+     box - the same move the home page makes on .hero__media. The aspect
+     ratio is what keeps the absolutely positioned children in proportion
+     as the card grows.
+
+     Percentages are of the 274x401 padding box, not the 294x421 border
+     box: the 10px white frame is a border, so absolute offsets measure
+     from inside it. */
+  .ab-page .mt-card {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    aspect-ratio: 294 / 421;
+    margin-inline: auto;
+  }
+
+  /* the lift on hover is a pointer affordance; on a touch screen it only
+     ever fires as a stuck state after a tap */
+  .ab-page .mt-card:hover { transform: none; }
+
+  .ab-page .mt-card__photo {
+    left: 12.8%;
+    top: 6.2%;
+    width: 73.7%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .ab-page .mt-card__blob {
+    left: 0.3%;
+    top: 0.3%;
+    width: 99.4%;
+    height: 99.4%;
+  }
+
+  .ab-page .mt-card__face {
+    left: 7.4%;
+    top: 7.4%;
+    width: 86.1%;
+    height: 86.1%;
+    border-radius: 24%;
+  }
+
+  .ab-page .mt-badge {
+    left: 64.3%;
+    height: auto;
+    padding: 9px 20px;
+  }
+
+  .ab-page .mt-badge--1 { top: 48%; }
+  .ab-page .mt-badge--2,
+  .ab-page .mt-badge--3 { top: 47%; }
+
+  .ab-page .mt-card__rule {
+    left: 27.7%;
+    top: 61.8%;
+    width: 44.5%;
+    height: auto;
+  }
+
+  .ab-page .mt-card__bio {
+    left: 7%;
+    top: 67%;
+    width: 86%;
+    font-size: clamp(12px, 3.4vw, 14px);
+    line-height: 1.35;
+  }
+
+  .ab-page .mt-card__ticks {
+    left: 86.5%;
+    top: 13%;
+  }
+
+  /* the 62px gaps spaced three icons across a 264px row; across the full
+     card they are spread instead, and each pill grows to the tap floor */
+  .ab-page .mt-card__social {
+    left: 0;
+    width: 100%;
+    gap: 0;
+    justify-content: space-between;
+    padding: 14px clamp(16px, 6%, 30px);
+  }
+
+  .ab-page .mt-card__social a,
+  .ab-page .mt-card__social a:first-child {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* ---------- Footer ---------- */
+  .ab-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .ab-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .ab-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .ab-page .footer__brand { height: auto; }
+
+  .ab-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  .ab-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .ab-page .footer__col,
+  .ab-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  .ab-page .footer__col ul { gap: 0; }
+
+  .ab-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .ab-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned to a desktop text length */
+  .ab-page .footer__cookies img { display: none; }
 }

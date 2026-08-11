@@ -31,6 +31,14 @@
           <span></span>
           <span></span>
         </button>
+
+        <!-- mobile only: the ≤768px drawer's trigger. `.nav-burger` is
+             `display:none` in the base sheet, so this never renders on
+             desktop — the .burger above keeps the split-panel overlay. -->
+        <button class="nav-burger" type="button" aria-label="Open menu"
+                aria-expanded="false" aria-controls="m-nav">
+          <img src="assets/menu-icon.svg" alt="">
+        </button>
       </div>
     </header>
 
@@ -457,14 +465,10 @@
 
         <div class="menu-links__secondary">
           <div class="menu-links__col">
-            <a href="industry-detail.html">Foodtech</a>
-            <a href="travel-tech.html">Traveltech</a>
-            <a href="index.html#industries">Fintech</a>
-            <a href="index.html#industries">RealEstate</a>
-            <a href="index.html#industries">Education</a>
-            <a href="index.html#industries">Healthcare</a>
-            <a href="index.html#industries">E-Commerce</a>
-            <a href="index.html#industries">Media &amp; Social</a>
+            <a href="case-study-detail.html">Humble Cow</a>
+            <a href="case-study-detail-video.html">Rise Pathway</a>
+            <a href="case-study-detail.html">Private Jet</a>
+            <a href="case-study.html">All Case Studies</a>
           </div>
 
         </div>
@@ -496,6 +500,55 @@
         <a href="#usa">USA</a>
       </div>
     </div>
+  </div>
+
+  <!-- ================= Mobile navigation drawer (≤768px) =================
+       The same component the home page uses, markup and all: `.m-nav` is
+       `display:none` in the base sheet and only switched on inside the
+       ≤768px query, and Script.js binds it to `.navbar .nav-burger`. It sits
+       outside .page-shell so nothing can clip it, and never renders on
+       desktop — where the split-panel .menu-overlay below still owns the
+       burger. -->
+  <div class="m-nav" id="m-nav" aria-hidden="true">
+    <div class="m-nav__scrim" data-mnav-close></div>
+
+    <aside class="m-nav__panel" role="dialog" aria-modal="true" aria-label="Main menu">
+      <div class="m-nav__head">
+        <a class="logo" href="index.html">
+          <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+          <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+        </a>
+
+        <button class="m-nav__close" type="button" aria-label="Close menu" data-mnav-close>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <nav class="m-nav__links" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="ai-solution.html">Explore Ai With us</a>
+        <a href="index.html#services">Services</a>
+        <a href="case-study.html">Case Studies</a>
+        <a href="career.html">Career</a>
+        <a href="#contact">Contact Us</a>
+      </nav>
+
+      <div class="m-nav__foot">
+        <!-- an anchor, not the home page's button: this page has no slide-in
+             enquiry form for `#m-nav-talk` to open -->
+        <a class="pill-btn m-nav__cta" href="#contact">
+          <span class="pill-btn__label">Let&rsquo;s Talk Business</span>
+          <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+        </a>
+
+        <div class="m-nav__socials">
+          <a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script src="Script.js"></script>

@@ -747,6 +747,55 @@
     if (talkClose) talkClose.addEventListener('click', function () { setTalk(false); });
   }
 
+  /* ---------- Chat Bot modal, opened from the navbar "Let's Talk" CTA ----------
+     The CTA keeps its #contact href as the no-JS fallback, so the click has to
+     be cancelled here rather than the link turned into a button. */
+  var chatbot = document.getElementById('chatbot');
+  var chatCta = document.querySelector('.nav-links__cta');
+
+  if (chatbot && chatCta) {
+    var chatInput = document.getElementById('chatbot-input');
+    var setChat = function (open) {
+      chatbot.classList.toggle('is-open', open);
+      chatbot.setAttribute('aria-hidden', open ? 'false' : 'true');
+      document.body.classList.toggle('is-chatbot-open', open);
+
+      if (open && chatInput) chatInput.focus({ preventScroll: true });
+      else if (!open) chatCta.focus({ preventScroll: true });
+    };
+
+    chatCta.addEventListener('click', function (e) {
+      e.preventDefault();
+      /* the enquiry drawer and the modal both claim the screen — never both */
+      if (typeof setTalk === 'function') setTalk(false);
+      setChat(true);
+    });
+
+    /* the ✕ and the scrim both carry data-chatbot-close */
+    Array.prototype.forEach.call(chatbot.querySelectorAll('[data-chatbot-close]'), function (el) {
+      el.addEventListener('click', function () { setChat(false); });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && chatbot.classList.contains('is-open')) setChat(false);
+    });
+
+    /* a suggestion is a starting point, not a send — it fills the composer
+       so the visitor can edit it before submitting */
+    Array.prototype.forEach.call(chatbot.querySelectorAll('.chatbot__chip'), function (chip) {
+      chip.addEventListener('click', function () {
+        if (!chatInput) return;
+        chatInput.value = chip.textContent.trim();
+        chatInput.focus();
+      });
+    });
+
+    /* no endpoint is wired up yet — swallow the submit so the page does not
+       reload and lose whatever was typed */
+    var chatForm = document.getElementById('chatbot-form');
+    if (chatForm) chatForm.addEventListener('submit', function (e) { e.preventDefault(); });
+  }
+
   /* ---------- Mobile navigation drawer (≤768px) ----------
      The home page has no .menu-overlay of its own: on mobile every nav link
      and action collapses into this one panel, opened from the header burger.

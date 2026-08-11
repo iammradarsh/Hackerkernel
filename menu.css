@@ -299,53 +299,72 @@ a {
   word-break: break-word;
 }
 
-/* ── Navbar overlay ─────────────────────────────────────────── */
+/* ── Navbar overlay ─────────────────────────────────────────────
+   Geometry copied from .navbar / .navbar__inner in style.css: the bar spans
+   the viewport and its row is inset by the shell inset (18px) plus the
+   sections' 102px gutter. A centred 1040px box instead drifts further left
+   the wider the window gets — 57px off the site burger at 1409, 201px at
+   1697 — so the logo and toggle jumped when this page opened. */
 .hk-navbar {
   position: absolute;
-  left: 50%;
-  top: 18px;
-  transform: translateX(-50%);
-  width: 1244px;
-  max-width: calc(100% - 36px);
-  height: 67px;
+  left: 0;
+  right: 0;
+  top: 0;
+  transform: none;
+  width: auto;
+  max-width: none;
+  height: 85px;
+  padding-top: 18px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0);
 }
 
 .hk-navbar__inner {
   position: relative;
-  top: 1.5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 1040px;
-  max-width: 100%;
   height: 100%;
-  margin: 0 auto;
+  margin: 0 calc(18px + 102px);
 }
 
+/* the same drop the site navbar takes once the 1040 grid runs out of room */
+@media (max-width: 1180px) {
+  .hk-navbar__inner { margin: 0 calc(18px + clamp(24px, 5.5vw, 102px)); }
+}
+
+@media (max-width: 1000px) {
+  .hk-navbar__inner { margin: 0 calc(18px + clamp(14px, 4vw, 102px)); }
+}
+
+@media (max-width: 940px) {
+  .hk-navbar__inner { margin: 0 calc(18px + clamp(12px, 3vw, 102px)); }
+}
+
+/* mark and wordmark at the site's metrics too, so the row matches end to end */
 .hk-logo {
+  flex: none;
   display: flex;
   align-items: center;
+  min-height: 44px;
 }
 
 .hk-logo__mark {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 
 .hk-logo__text {
   display: flex;
-  align-items: flex-start;
-  height: 31.453px;
-  padding: 2.906px 5.47px 3.932px;
+  align-items: center;
+  padding-left: 7px;
   font-family: var(--hk-logo-font);
-  font-size: 15.043px;
-  font-weight: 500;
-  line-height: 25.299px;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
   white-space: nowrap;
-  word-break: break-word;
 }
 
 .hk-logo__text span:first-child {
@@ -449,7 +468,8 @@ a {
     margin-top: 56px;
   }
 
+  /* the 18px drop lives in the bar's own padding-top now */
   .hk-navbar {
-    top: 18px;
+    top: 0;
   }
 }

@@ -100,6 +100,49 @@
     </form>
   </aside>
 
+  <!-- ================= Chat Bot — the navbar "Let's Talk" CTA opens this =================
+       A centred modal, unlike the enquiry drawer above: the Figma card is
+       rounded on all four corners, so nothing is meant to sit off-screen. -->
+  <div class="chatbot" id="chatbot" aria-hidden="true">
+    <div class="chatbot__scrim" data-chatbot-close></div>
+
+    <div class="chatbot__card" role="dialog" aria-modal="true" aria-labelledby="chatbot-title">
+      <!-- the two blurred circles sit half below the card; the card clips them -->
+      <div class="chatbot__glow" aria-hidden="true"><i></i><i></i></div>
+
+      <button class="chatbot__close" type="button" data-chatbot-close aria-label="Close chat">
+        <img src="assets/chat-close.svg" alt="">
+      </button>
+
+      <div class="chatbot__head">
+        <img class="chatbot__logo" src="assets/chat-logo.svg" alt="">
+        <div class="chatbot__intro">
+          <p class="chatbot__title" id="chatbot-title">Let's Build Your Next Digital Solution</p>
+          <p class="chatbot__sub">Tell us about your business requirements and our AI assistant will guide you with the right IT services and solutions.</p>
+        </div>
+      </div>
+
+      <div class="chatbot__foot">
+        <div class="chatbot__suggest">
+          <p class="chatbot__suggest-label">Suggestions on what to ask Our Chat Bot</p>
+          <div class="chatbot__chips">
+            <button class="chatbot__chip" type="button">Hire developers for project</button>
+            <button class="chatbot__chip" type="button">Looking for AI or automation services</button>
+            <button class="chatbot__chip" type="button">Need a website or software solution</button>
+          </div>
+        </div>
+
+        <form class="chatbot__bar" id="chatbot-form" novalidate>
+          <input class="chatbot__input" id="chatbot-input" type="text" autocomplete="off"
+                 placeholder="Tell us what you want to build..." aria-label="Tell us what you want to build">
+          <button class="chatbot__send" type="submit" aria-label="Send">
+            <img src="assets/chat-send.svg" alt="">
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <div class="page-shell">
   <div class="wrap">
 
@@ -122,8 +165,7 @@
           <a href="#case-study">Case Studies</a>
           <a href="#industries">Industries</a>
           <a href="career.html">Career</a>
-          <a href="#contact">Contact Us</a>
-          <a class="nav-links__cta" href="#contact">
+          <a class="nav-links__cta" href="">
             <span class="nav-links__cta-row">
               Let's Talk
               <span class="nav-links__cta-icon" aria-hidden="true">
@@ -1026,7 +1068,6 @@
         <a href="ai-solution.html">Explore Ai With us</a>
         <a href="#services">Services</a>
         <a href="#case-study">Case Studies</a>
-        <a href="#industries">Industries</a>
         <a href="career.html">Career</a>
         <a href="#contact">Contact Us</a>
       </nav>
