@@ -345,7 +345,11 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   display: flex;
   align-items: center;
   gap: clamp(14px, 1.5vw, 22px);
-  margin-right: clamp(20px, 2.5vw, 40px);
+  /* 6.667px = .burger span's own inset inside its 40x40 box. Every other page
+     hangs that burger flush on this grid line, so its bars stop 6.667px short
+     of it; matching the number here puts this row's last ink on the same
+     column. The CTA's trailing dead space is cancelled separately, below. */
+  margin-right: 6.667px;
   font-size: clamp(13px, 1.17vw, 15px);
   font-weight: 500;
   color: var(--text-color);
@@ -385,9 +389,11 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
     margin: 0 calc(var(--shell-inset) + clamp(24px, 5.5vw, 102px));
   }
 
+  /* margin-right stays at the base 6.667px: it is already tighter than the
+     16px this used to claw back, and holding it keeps the CTA on the burger's
+     column at every width. */
   .nav-links {
     gap: 12px;
-    margin-right: 16px;
   }
 }
 
@@ -398,7 +404,6 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 
   .nav-links {
     gap: 8px;
-    margin-right: 8px;
   }
 }
 
@@ -429,6 +434,16 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   /* 17px — how far the dot's centre sits left of the icon box's centre */
   --cta-shift: 1.0625em;
   --cta-ease: 0.3s cubic-bezier(0, 0, 0.58, 1);
+
+  /* The icon box is 3em wide only because the hover disc has to fill it — at
+     rest all that shows is the 0.525em dot, parked --cta-shift left of centre,
+     so the row's ink stops this far short of its own border box (2.3em at the
+     Figma numbers). Add the 2px that .nav-links a pads with and the button was
+     ending ~36px inside the line the other pages' hamburger sits on. Pulling
+     the box out by exactly that dead space lands the dot on that line instead;
+     the disc still grows outward on hover, into an empty gutter. */
+  --cta-ink-gap: calc(1.5em + var(--cta-shift) - 0.2625em);
+  margin-right: calc(-1 * (var(--cta-ink-gap) + 2px));
 
   position: relative;
   display: flex;
@@ -488,7 +503,17 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   transform: translate(-50%, -50%) translateX(calc(-1 * var(--cta-shift)));
 }
 
+/* Figma: 73x1, #383636, flush with the label's left edge — 2px wider than the
+   71px "Let's Talk" it underscores, nowhere near the 127px button. The gap
+   needs no rule of its own: the rule is the next item in the column, so it
+   lands on the row's 3em bottom exactly as Figma's does, 1.13em under the
+   label's baseline against Figma's 1.125em. */
 .nav-links__cta-line {
+  /* .nav-links a's align-items:center outranks the column's flex-start (0,1,1
+     beats 0,1,0), so the rule was being centred under the whole button — the
+     icon's 3em dragged it ~25px right of the "L". Aligning the item itself
+     sidesteps the specificity fight without re-ordering either rule. */
+  align-self: flex-start;
   width: 4.5625em;
   height: 1px;
   background: var(--text-color);
@@ -3398,6 +3423,8 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 
 
 
+/* overflow:hidden is what keeps the hover zoom inside the frame — the shot is
+   the only thing that moves, so the card's own box stays exactly where it is */
 .cs-card__shot {
   position: relative;
   flex: 1 0 0;
@@ -3418,6 +3445,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   max-width: none;
   object-fit: cover;
   border-radius: 32px;
+  transition: transform 0.3s ease;
 }
 
 .cs-card__shot img.blur {
@@ -3443,6 +3471,24 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   width: 100%;
   height: 159.15%;
   object-fit: fill;
+  /* the zoom below scales every layer about its own centre, but this one's box
+     is 159.15% tall and hung at -47.62%, so its centre sits well above the
+     frame's — left at 50% it would zoom about a different point than the base
+     image under it and the two would visibly slide apart. 97.62 / 159.15 puts
+     the origin back on the frame's centre line. */
+  transform-origin: 50% 61.34%;
+}
+
+/* Hover: the artwork zooms, nothing else. The card keeps its box, its radius
+   and its backdrop blur — only the layers inside the clipped frame move, so
+   neighbouring cards never reflow and the grid stays still. */
+.cs-card:hover .cs-card__shot img,
+.cs-card:focus-visible .cs-card__shot img {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-card__shot img { transition-duration: 0.01ms; }
 }
 
 .cs-card__body {
@@ -4232,7 +4278,12 @@ body.is-menu-open .talk-tab {
   background: var(--primary-color);
 }
 
-/* ── right diagram ── */
+/* ── right diagram ──
+   Chips and connectors are driven off the stack's own geometry rather than
+   measured out one by one, because a chip that misses its plate by a few px
+   reads as a bug. The SVG draws 1:1 (viewBox 190 x 258.226), so its units are
+   these pixels: each plate's side vertex — where a connector has to land — sits
+   at y = 27.8161 + n * 38.5608, and its x is the stack's own left/right edge. */
 .pl-diagram {
   position: absolute;
   left: 378px;
@@ -4240,41 +4291,58 @@ body.is-menu-open .talk-tab {
   width: 732px;
   height: 445px;
   overflow: hidden;
+
+  --pl-stack-w: 190px;
+  --pl-stack-h: 258.226px;
+  /* the stack sits off the diagram's centre by design */
+  --pl-stack-cx: calc(50% + 23.1px);
+  --pl-stack-cy: calc(50% + 20.61px);
+  --pl-stack-top: calc(var(--pl-stack-cy) - var(--pl-stack-h) / 2);
+  --pl-plate-1: 27.8161px;
+  --pl-plate-pitch: 38.5608px;
+  /* chips alternate sides, so one chip's row spans two plates */
+  --pl-row: calc(var(--pl-plate-pitch) * 2);
 }
 
 .pl-col {
   position: absolute;
   display: flex;
   flex-direction: column;
+  /* the rows carry the rhythm on their own — a gap on top of them would drift
+     the chips off the plates the moment one of them wraps to a second line */
+  gap: 0;
 }
 
-.pl-col--right {
-  right: 1.99px;
-  top: 159px;
-  gap: 33px;
-  align-items: flex-end;
-  width: 276.011px;
-}
-
+/* Row 1 covers plate 1, so its centre — half a row down — is plate 1's vertex.
+   Left/right are a pair so the column ends on the stack's edge: that is what
+   the connector grows into, and it tracks the stack instead of guessing. */
 .pl-col--left {
   left: 29px;
-  top: 120px;
-  gap: 23px;
-  align-items: flex-start;
-  width: 290.011px;
+  right: calc(100% - var(--pl-stack-cx) + var(--pl-stack-w) / 2);
+  top: calc(var(--pl-stack-top) + var(--pl-plate-1) - var(--pl-row) / 2);
+}
+
+/* the right chips start one plate lower, which is exactly half a row */
+.pl-col--right {
+  left: calc(var(--pl-stack-cx) + var(--pl-stack-w) / 2);
+  right: 1.99px;
+  top: calc(var(--pl-stack-top) + var(--pl-plate-1));
 }
 
 .pl-node {
   display: flex;
   align-items: center;
-}
-
-.pl-col--right .pl-node {
-  justify-content: flex-end;
+  /* the row sets the height, never the chip — that is what keeps the two-line
+     chip centred on its own plate instead of shoving the ones below it down */
+  flex: none;
+  height: var(--pl-row);
 }
 
 .pl-line {
-  flex: 0 0 auto;
+  /* takes whatever the chip leaves, so the dashes always die on the plate's
+     corner rather than on a width baked in at design time */
+  flex: 1 1 0;
+  min-width: 0;
   height: 2px;
   background-image: repeating-linear-gradient(90deg,
                     #383636 0 4px, transparent 4px 8px);
@@ -4314,10 +4382,10 @@ body.is-menu-open .talk-tab {
 /* the exploded stack */
 .pl-stack {
   position: absolute;
-  left: calc(50% + 23.1px);
-  top: calc(50% + 20.61px);
-  width: 190px;
-  height: 258.226px;
+  left: var(--pl-stack-cx);
+  top: var(--pl-stack-cy);
+  width: var(--pl-stack-w);
+  height: var(--pl-stack-h);
   transform: translate(-50%, -50%);
 }
 
@@ -6820,10 +6888,6 @@ body.is-menu-open .talk-tab {
   line-height: 1;
   color: var(--text-color);
 }
-
-/* ── process: this page has five steps, not six, so the left column
-   carries the design's wider 33px rhythm ── */
-.ai-page .pl-col--left { gap: 33px; }
 
 /* ── technologies ─────────────────────────────────────────── */
 .ai-tech {
@@ -10639,9 +10703,7 @@ body.is-talk-open .talk-tab {
   border: 1px solid rgba(187, 202, 196, 0.5);
   border-right: 0;
   border-radius: 32px 0 0 24px;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
+  background: #fff;
   box-shadow: -18px 0 48px rgba(0, 0, 0, 0.08);
 }
 
@@ -12133,7 +12195,7 @@ body.is-apply-open {
     padding: 30px 20px;
     border: 0;
     border-radius: 0;
-    background: rgba(255, 255, 255, 0.92);
+    background: #fff;
   }
 
   .home .lt-form__close {

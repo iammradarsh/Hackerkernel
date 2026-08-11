@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="assets/hk-logo.png">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="cs-page">
+<body class="cs-page sa-page">
 
   <!-- Fixed side tab — the handle for the slide-in enquiry form -->
   <button class="talk-tab" type="button" id="talk-toggle" aria-expanded="false" aria-controls="talk-form"><span>Let's Talk Business</span></button>
@@ -17,6 +17,13 @@
   <!-- ================= Let's Talk Business — slide-in form ================= -->
   <aside class="lt-form" id="talk-form" aria-hidden="true" aria-label="Get in touch">
     <form class="lt-form__card" novalidate>
+      <!-- mobile only: the side tab that normally closes the drawer is
+           off-canvas once the card fills the viewport, so the card needs
+           its own handle. `display:none` in the base sheet. -->
+      <button class="lt-form__close" type="button" id="talk-close" aria-label="Close form">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
       <p class="lt-form__title">Get In Touch</p>
 
       <div class="lt-form__scroll">
@@ -109,6 +116,15 @@
         <button class="burger" type="button" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu-overlay">
           <span></span>
           <span></span>
+        </button>
+
+        <!-- mobile only: the ≤768px drawer's trigger. `.nav-burger` is
+             `display:none` in the base sheet, so this never renders above
+             the breakpoint — the .burger above keeps the split-panel
+             overlay for desktop and tablet. -->
+        <button class="nav-burger" type="button" aria-label="Open menu"
+                aria-expanded="false" aria-controls="m-nav">
+          <img src="assets/menu-icon.svg" alt="">
         </button>
       </div>
     </header>
@@ -257,10 +273,10 @@
           <div class="pl-controls">
             <div class="pl-arrows">
               <button class="pl-arrow pl-arrow--prev" type="button" aria-label="Previous step">
-                <img src="assets/sa/pl-arrow-a.svg" alt="">
+                <img loading="lazy" decoding="async" src="assets/sa/pl-arrow-a.svg" alt="">
               </button>
               <button class="pl-arrow pl-arrow--next" type="button" aria-label="Next step">
-                <img src="assets/sa/pl-arrow-b.svg" alt="">
+                <img loading="lazy" decoding="async" src="assets/sa/pl-arrow-b.svg" alt="">
               </button>
             </div>
             <div class="pl-dots" id="pl-dots">
@@ -278,29 +294,29 @@
           <div class="pl-col pl-col--left">
           <div class="pl-node" data-node="1">
             <span class="pl-pill">1. Tell your requirements</span>
-            <span class="pl-line" style="width:57px"></span>
+            <span class="pl-line"></span>
           </div>
           <div class="pl-node" data-node="3">
             <span class="pl-pill">3. Get trial of 2 weeks free</span>
-            <span class="pl-line" style="width:56px"></span>
+            <span class="pl-line"></span>
           </div>
           <div class="pl-node" data-node="5">
             <span class="pl-pill">5. Manage extended team</span>
-            <span class="pl-line" style="width:44.011px"></span>
+            <span class="pl-line"></span>
           </div>
           </div>
 
           <div class="pl-col pl-col--right">
           <div class="pl-node" data-node="2">
-            <span class="pl-line" style="width:71px"></span>
+            <span class="pl-line"></span>
             <span class="pl-pill">2. Choose developers</span>
           </div>
           <div class="pl-node" data-node="4">
-            <span class="pl-line" style="width:44.011px"></span>
+            <span class="pl-line"></span>
             <span class="pl-pill pl-pill--wrap">4. Onboard Remote<br>Programmers</span>
           </div>
           <div class="pl-node" data-node="6">
-            <span class="pl-line" style="width:44.011px"></span>
+            <span class="pl-line"></span>
             <span class="pl-pill">6. Get your project delivered</span>
           </div>
           </div>
@@ -357,30 +373,30 @@
 
       <div class="sa-skills">
         <div class="sa-orbit" aria-hidden="true">
-        <img class="mirror" src="assets/sa/or-v28.svg" alt="" style="left:421px;top:215px;width:118px;height:167px">
-        <img class="mirror" src="assets/sa/or-v29.svg" alt="" style="left:483px;top:215px;width:66px;height:173px">
-        <img class="mirror" src="assets/sa/or-v30.svg" alt="" style="left:532px;top:216px;width:21px;height:175px">
-        <img src="assets/sa/or-v27.svg" alt="" style="left:554.25px;top:216px;width:35px;height:165px">
-        <img src="assets/sa/or-v26.svg" alt="" style="left:570.25px;top:217px;width:71px;height:152px">
-        <img src="assets/sa/or-v25.svg" alt="" style="left:580px;top:216px;width:122px;height:148px">
-        <img src="assets/sa/or-e6.svg" alt="" style="left:calc(50% - 7px);top:307px;width:542px;height:330px;transform:translateX(-50%)">
-        <img src="assets/sa/or-e21.svg" alt="" style="left:118px;top:340px;width:881px;height:269px">
-        <img src="assets/sa/or-e22.svg" alt="" style="left:181px;top:340px;width:764px;height:269px">
-        <img src="assets/sa/or-e23.svg" alt="" style="left:226px;top:340px;width:695px;height:269px">
-        <img src="assets/sa/or-g1907.svg" alt="" style="left:410px;top:268px;width:306px;height:275px">
-        <img src="assets/sa/or-e20.svg" alt="" style="left:468px;top:331px;width:180px;height:180px">
-        <img src="assets/sa/or-chip.svg" alt="" style="left:507px;top:370px;width:102px;height:102px">
-        <img src="assets/sa/or-l8.svg" alt="" style="inset:57.93% 71.64% 39.76% 26.94%">
-        <img src="assets/sa/or-l6.svg" alt="" style="inset:60.62% 24.97% 37.57% 73.06%">
-        <img src="assets/sa/or-l2.svg" alt="" style="inset:61.07% 21.38% 36.58% 77.3%">
-        <img src="assets/sa/or-l9.svg" alt="" style="inset:63.47% 80.69% 34.18% 18.02%">
-        <img src="assets/sa/or-l1.svg" alt="" style="inset:65.67% 13.07% 31.05% 84.89%">
-        <img src="assets/sa/or-l11.svg" alt="" style="inset:72.21% 78.62% 24.96% 19.79%">
-        <img src="assets/sa/or-l3.svg" alt="" style="inset:73.94% 9.89% 22.61% 88.43%">
-        <img src="assets/sa/or-l5.svg" alt="" style="inset:77.02% 16.43% 20.55% 82.24%">
-        <img src="assets/sa/or-l7.svg" alt="" style="inset:80.22% 85.25% 16.59% 13.34%">
-        <img src="assets/sa/or-l10.svg" alt="" style="inset:84.46% 76.97% 12.61% 21.02%">
-        <img src="assets/sa/or-l4.svg" alt="" style="inset:87.17% 20.76% 9.81% 78.09%">
+        <img loading="lazy" decoding="async" class="mirror" src="assets/sa/or-v28.svg" alt="" style="left:421px;top:215px;width:118px;height:167px">
+        <img loading="lazy" decoding="async" class="mirror" src="assets/sa/or-v29.svg" alt="" style="left:483px;top:215px;width:66px;height:173px">
+        <img loading="lazy" decoding="async" class="mirror" src="assets/sa/or-v30.svg" alt="" style="left:532px;top:216px;width:21px;height:175px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-v27.svg" alt="" style="left:554.25px;top:216px;width:35px;height:165px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-v26.svg" alt="" style="left:570.25px;top:217px;width:71px;height:152px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-v25.svg" alt="" style="left:580px;top:216px;width:122px;height:148px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-e6.svg" alt="" style="left:calc(50% - 7px);top:307px;width:542px;height:330px;transform:translateX(-50%)">
+        <img loading="lazy" decoding="async" src="assets/sa/or-e21.svg" alt="" style="left:118px;top:340px;width:881px;height:269px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-e22.svg" alt="" style="left:181px;top:340px;width:764px;height:269px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-e23.svg" alt="" style="left:226px;top:340px;width:695px;height:269px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-g1907.svg" alt="" style="left:410px;top:268px;width:306px;height:275px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-e20.svg" alt="" style="left:468px;top:331px;width:180px;height:180px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-chip.svg" alt="" style="left:507px;top:370px;width:102px;height:102px">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l8.svg" alt="" style="inset:57.93% 71.64% 39.76% 26.94%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l6.svg" alt="" style="inset:60.62% 24.97% 37.57% 73.06%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l2.svg" alt="" style="inset:61.07% 21.38% 36.58% 77.3%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l9.svg" alt="" style="inset:63.47% 80.69% 34.18% 18.02%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l1.svg" alt="" style="inset:65.67% 13.07% 31.05% 84.89%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l11.svg" alt="" style="inset:72.21% 78.62% 24.96% 19.79%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l3.svg" alt="" style="inset:73.94% 9.89% 22.61% 88.43%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l5.svg" alt="" style="inset:77.02% 16.43% 20.55% 82.24%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l7.svg" alt="" style="inset:80.22% 85.25% 16.59% 13.34%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l10.svg" alt="" style="inset:84.46% 76.97% 12.61% 21.02%">
+        <img loading="lazy" decoding="async" src="assets/sa/or-l4.svg" alt="" style="inset:87.17% 20.76% 9.81% 78.09%">
         </div>
 
         <div class="sa-skills__cards">
@@ -388,56 +404,56 @@
             <span class="tk-card__sheen" aria-hidden="true"></span>
             <p class="tk-card__title">AI &amp; Machine Learning</p>
             <div class="tk-card__icons" style="left:21px;width:160px">
-              <span class="tk-chip"><img src="assets/sa/tk-python.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-opencv.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-langchain.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-pandas.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-numpy.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-tensorflow.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-python.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-opencv.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-langchain.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-pandas.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-numpy.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-tensorflow.svg" alt="" style="width:24px;height:24px"></span>
             </div>
           </div>
           <div class="tk-card tk-card--glass">
             <span class="tk-card__sheen" aria-hidden="true"></span>
             <p class="tk-card__title">Generative AI</p>
             <div class="tk-card__icons" style="left:calc(50% + 0.5px);width:161px;transform:translateX(-50%)">
-              <span class="tk-chip"><img src="assets/sa/tk-openai.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-claude.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-gemini.svg" alt="" style="width:30px;height:11px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-midjourney.svg" alt="" style="width:28.72px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-pinecone.svg" alt="" style="width:21.34px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-openai.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-claude.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-gemini.svg" alt="" style="width:30px;height:11px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-midjourney.svg" alt="" style="width:28.72px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-pinecone.svg" alt="" style="width:21.34px;height:24px"></span>
             </div>
           </div>
           <div class="tk-card tk-card--glass">
             <span class="tk-card__sheen" aria-hidden="true"></span>
             <p class="tk-card__title">Web (frontend)</p>
             <div class="tk-card__icons" style="left:31px;width:140px">
-              <span class="tk-chip"><img src="assets/sa/tk-react.png" alt="" style="width:32px;height:28px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-next.png" alt="" style="width:26px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-angular.svg" alt="" style="width:25px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-vue.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-react.png" alt="" style="width:32px;height:28px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-next.png" alt="" style="width:26px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-angular.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-vue.svg" alt="" style="width:25px;height:25px"></span>
             </div>
           </div>
           <div class="tk-card tk-card--glass">
             <span class="tk-card__sheen" aria-hidden="true"></span>
             <p class="tk-card__title">Mobile Libraries</p>
             <div class="tk-card__icons" style="left:50%;width:160px;transform:translateX(-50%)">
-              <span class="tk-chip"><img src="assets/sa/tk-android.svg" alt="" style="width:25px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-ios.svg" alt="" style="width:25px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-kotlin.svg" alt="" style="width:25px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-rn.svg" alt="" style="width:25px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-unity.svg" alt="" style="width:23.96px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-flutter.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-android.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-ios.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-kotlin.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-rn.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-unity.svg" alt="" style="width:23.96px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-flutter.svg" alt="" style="width:25px;height:25px"></span>
             </div>
           </div>
           <div class="tk-card tk-card--glass">
             <span class="tk-card__sheen" aria-hidden="true"></span>
             <p class="tk-card__title">Server-Side Libraries</p>
             <div class="tk-card__icons" style="left:calc(50% + 0.5px);width:161px;transform:translateX(-50%)">
-              <span class="tk-chip"><img class="blend" src="assets/sa/tk-node.png" alt="" style="width:32px;height:21px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-python.svg" alt="" style="width:24px;height:24px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-java.svg" alt="" style="width:25px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-php.svg" alt="" style="width:25px;height:25px"></span>
-              <span class="tk-chip"><img src="assets/sa/tk-rust.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" class="blend" src="assets/sa/tk-node.png" alt="" style="width:32px;height:21px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-python.svg" alt="" style="width:24px;height:24px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-java.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-php.svg" alt="" style="width:25px;height:25px"></span>
+              <span class="tk-chip"><img loading="lazy" decoding="async" src="assets/sa/tk-rust.svg" alt="" style="width:25px;height:25px"></span>
             </div>
           </div>
         </div>
@@ -462,11 +478,11 @@
           <span class="tm__right">
             <span class="tm__panel">
               <span class="tm__tile">
-                <span class="tm__glyph g-ux"><img src="assets/sa/tm-ux.svg" alt=""></span>
+                <span class="tm__glyph g-ux"><img loading="lazy" decoding="async" src="assets/sa/tm-ux.svg" alt=""></span>
               </span>
               <span class="tm__desc">Extend your IT department with skilled and experienced programmers of any tech stack.</span>
             </span>
-            <span class="tm__plus"><img src="assets/sa/tm-plus.svg" alt=""></span>
+            <span class="tm__plus"><img loading="lazy" decoding="async" src="assets/sa/tm-plus.svg" alt=""></span>
           </span>
         </button>
         <button class="tm" type="button" aria-expanded="false">
@@ -474,11 +490,11 @@
           <span class="tm__right">
             <span class="tm__panel">
               <span class="tm__tile">
-                <span class="tm__glyph g-web"><img src="assets/sa/tm-web.svg" alt=""></span>
+                <span class="tm__glyph g-web"><img loading="lazy" decoding="async" src="assets/sa/tm-web.svg" alt=""></span>
               </span>
               <span class="tm__desc">Extend your IT department with skilled and experienced programmers of any tech stack.</span>
             </span>
-            <span class="tm__plus"><img src="assets/sa/tm-plus.svg" alt=""></span>
+            <span class="tm__plus"><img loading="lazy" decoding="async" src="assets/sa/tm-plus.svg" alt=""></span>
           </span>
         </button>
         <button class="tm" type="button" aria-expanded="false">
@@ -486,11 +502,11 @@
           <span class="tm__right">
             <span class="tm__panel">
               <span class="tm__tile">
-                <span class="tm__glyph g-app"><img src="assets/sa/tm-app.svg" alt=""></span>
+                <span class="tm__glyph g-app"><img loading="lazy" decoding="async" src="assets/sa/tm-app.svg" alt=""></span>
               </span>
               <span class="tm__desc">Extend your IT department with skilled and experienced programmers of any tech stack.</span>
             </span>
-            <span class="tm__plus"><img src="assets/sa/tm-plus.svg" alt=""></span>
+            <span class="tm__plus"><img loading="lazy" decoding="async" src="assets/sa/tm-plus.svg" alt=""></span>
           </span>
         </button>
         <button class="tm" type="button" aria-expanded="false">
@@ -498,11 +514,11 @@
           <span class="tm__right">
             <span class="tm__panel">
               <span class="tm__tile">
-                <span class="tm__glyph g-data"><img src="assets/sa/tm-data.svg" alt=""></span>
+                <span class="tm__glyph g-data"><img loading="lazy" decoding="async" src="assets/sa/tm-data.svg" alt=""></span>
               </span>
               <span class="tm__desc">Extend your IT department with skilled and experienced programmers of any tech stack.</span>
             </span>
-            <span class="tm__plus"><img src="assets/sa/tm-plus.svg" alt=""></span>
+            <span class="tm__plus"><img loading="lazy" decoding="async" src="assets/sa/tm-plus.svg" alt=""></span>
           </span>
         </button>
         <button class="tm" type="button" aria-expanded="false">
@@ -510,11 +526,11 @@
           <span class="tm__right">
             <span class="tm__panel">
               <span class="tm__tile">
-                <span class="tm__glyph g-pm"><img src="assets/sa/tm-pm.svg" alt=""></span>
+                <span class="tm__glyph g-pm"><img loading="lazy" decoding="async" src="assets/sa/tm-pm.svg" alt=""></span>
               </span>
               <span class="tm__desc">Extend your IT department with skilled and experienced programmers of any tech stack.</span>
             </span>
-            <span class="tm__plus"><img src="assets/sa/tm-plus.svg" alt=""></span>
+            <span class="tm__plus"><img loading="lazy" decoding="async" src="assets/sa/tm-plus.svg" alt=""></span>
           </span>
         </button>
         <button class="tm" type="button" aria-expanded="false">
@@ -522,11 +538,11 @@
           <span class="tm__right">
             <span class="tm__panel">
               <span class="tm__tile">
-                <span class="tm__glyph g-analyst"><img src="assets/sa/tm-analyst.svg" alt=""></span>
+                <span class="tm__glyph g-analyst"><img loading="lazy" decoding="async" src="assets/sa/tm-analyst.svg" alt=""></span>
               </span>
               <span class="tm__desc">Extend your IT department with skilled and experienced programmers of any tech stack.</span>
             </span>
-            <span class="tm__plus"><img src="assets/sa/tm-plus.svg" alt=""></span>
+            <span class="tm__plus"><img loading="lazy" decoding="async" src="assets/sa/tm-plus.svg" alt=""></span>
           </span>
         </button>
       </div>
@@ -537,7 +553,7 @@
     <section class="sa-ben" id="benefits">
       <div class="design-frame design-frame--fill">
       <!-- decorative line art: export frame 2294:4510 from Figma to this path -->
-      <img class="sa-ben__art" src="assets/sa/bn-sketch.svg" alt=""
+      <img loading="lazy" decoding="async" class="sa-ben__art" src="assets/sa/bn-sketch.svg" alt=""
            onerror="this.style.display='none'">
 
       <div class="sa-ben__inner">
@@ -550,9 +566,9 @@
 
         <div class="wp" id="benefits-card">
           <div class="wp__bg" aria-hidden="true">
-          <img class="is-active" src="assets/sa/bn-1.png" alt="" data-bg="0">
-          <img src="assets/sa/bn-2.png" alt="" data-bg="1">
-          <img src="assets/sa/bn-3.png" alt="" data-bg="2">
+          <img loading="lazy" decoding="async" class="is-active" src="assets/sa/bn-1.png" alt="" data-bg="0">
+          <img loading="lazy" decoding="async" src="assets/sa/bn-2.png" alt="" data-bg="1">
+          <img loading="lazy" decoding="async" src="assets/sa/bn-3.png" alt="" data-bg="2">
           </div>
 
           <div class="wp__cols">
@@ -581,10 +597,10 @@
 
           <div class="wp__arrows">
             <button class="wp__arrow wp__arrow--prev" type="button" aria-label="Previous benefit">
-              <img src="assets/sa/bn-arrow-a.svg" alt="">
+              <img loading="lazy" decoding="async" src="assets/sa/bn-arrow-a.svg" alt="">
             </button>
             <button class="wp__arrow wp__arrow--next" type="button" aria-label="Next benefit">
-              <img src="assets/sa/bn-arrow-b.svg" alt="">
+              <img loading="lazy" decoding="async" src="assets/sa/bn-arrow-b.svg" alt="">
             </button>
           </div>
         </div>
@@ -597,14 +613,14 @@
       <div class="design-frame sa-hire__frame">
       <div class="sa-hire__left">
         <p class="sa-hire__title"><span>Looking to</span><br><span>Hire</span> <em>Extra Force</em>?</p>
-        <img class="sa-hire__rocket" src="assets/sa/hf-rocket.svg" alt="">
+        <img loading="lazy" decoding="async" class="sa-hire__rocket" src="assets/sa/hf-rocket.svg" alt="">
       </div>
 
       <div class="sa-hire__right">
         <p class="sa-hire__text">Entrust your future product to Hackerkernel: we&rsquo;ll combine elaborated business proposition with diligently written code, strong architecture and cybersecurity, intuitive UI/UX and full customization either to your business or your demanding client.</p>
         <button class="pill-btn sa-hire__btn" type="button">
           <span class="pill-btn__label">Hire a Developer</span>
-          <span class="pill-btn__circle"><img src="assets/sa/arrow.svg" alt=""></span>
+          <span class="pill-btn__circle"><img loading="lazy" decoding="async" src="assets/sa/arrow.svg" alt=""></span>
         </button>
       </div>
       </div>
@@ -668,13 +684,13 @@
         <div class="sa-contact__ctas">
           <button class="pill-btn sa-contact__btn" type="submit">
             <span class="pill-btn__label">Book Free Call</span>
-            <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+            <span class="pill-btn__circle"><img loading="lazy" decoding="async" src="assets/arrow-btn.svg" alt=""></span>
           </button>
 
           <a class="sa-learn" href="index.html#about">
             <span class="sa-learn__row">
               <span>Learn More About Us</span>
-              <span class="sa-learn__dot"><img src="assets/arrow-btn.svg" alt=""></span>
+              <span class="sa-learn__dot"><img loading="lazy" decoding="async" src="assets/arrow-btn.svg" alt=""></span>
             </span>
             <span class="sa-learn__rule"></span>
           </a>
@@ -683,7 +699,7 @@
 
       <!-- decorative rocket line art: export frame 2278:4775 from Figma to this path -->
       <div class="sa-contact__art">
-        <img src="assets/sa/ct-rocket.svg" alt="" onerror="this.style.display='none'">
+        <img loading="lazy" decoding="async" src="assets/sa/ct-rocket.svg" alt="" onerror="this.style.display='none'">
       </div>
       </div>
     </section>
@@ -694,7 +710,7 @@
         <div class="footer__top">
           <div class="footer__brand">
             <a class="logo" href="index.html">
-              <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+              <img loading="lazy" decoding="async" class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
               <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
             </a>
             <p class="footer__tagline">Discover the power of our secure Services</p>
@@ -734,7 +750,7 @@
         <div class="footer__bar">
           <p>copyright 2026 Hackerkernel All Rights Reserved</p>
           <p class="footer__cookies">This page uses cookies. See cookies details here
-            <img src="assets/footer-underline.svg" alt="">
+            <img loading="lazy" decoding="async" src="assets/footer-underline.svg" alt="">
           </p>
         </div>
       </div>
@@ -747,7 +763,7 @@
   <div class="menu-overlay" id="menu-overlay" role="dialog" aria-modal="true" aria-label="Main menu" aria-hidden="true">
 
     <div class="menu-overlay__left">
-      <img class="menu-overlay__bg" src="assets/menu-bg.png" alt="" aria-hidden="true">
+      <img loading="lazy" decoding="async" class="menu-overlay__bg" src="assets/menu-bg.png" alt="" aria-hidden="true">
 
       <nav class="menu-links" aria-label="Main menu">
         <div class="menu-links__primary">
@@ -787,7 +803,7 @@
 
         <button class="pill-btn" type="button">
           <span class="pill-btn__label">Get In Touch</span>
-          <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+          <span class="pill-btn__circle"><img loading="lazy" decoding="async" src="assets/arrow-btn.svg" alt=""></span>
         </button>
       </div>
 
@@ -796,6 +812,51 @@
         <a href="#usa">USA</a>
       </div>
     </div>
+  </div>
+
+  <!-- ================= Mobile navigation drawer (≤768px) =================
+       The same component the home page uses, markup and all: `.m-nav` is
+       `display:none` in the base sheet and only switched on inside the
+       ≤768px query, and Script.js binds it to `.navbar .nav-burger`. It
+       sits outside .page-shell so nothing can clip it. -->
+  <div class="m-nav" id="m-nav" aria-hidden="true">
+    <div class="m-nav__scrim" data-mnav-close></div>
+
+    <aside class="m-nav__panel" role="dialog" aria-modal="true" aria-label="Main menu">
+      <div class="m-nav__head">
+        <a class="logo" href="index.html">
+          <img loading="lazy" decoding="async" class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+          <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+        </a>
+
+        <button class="m-nav__close" type="button" aria-label="Close menu" data-mnav-close>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <nav class="m-nav__links" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="ai-solution.html">Ai Solutions</a>
+        <a href="salesforce.html">Salesforce</a>
+        <a href="case-study.html">Case Studies</a>
+        <a href="career.html">Career</a>
+        <a href="#contact">Contact Us</a>
+      </nav>
+
+      <div class="m-nav__foot">
+        <button class="pill-btn m-nav__cta" type="button" id="m-nav-talk">
+          <span class="pill-btn__label">Let's Talk Business</span>
+          <span class="pill-btn__circle"><img loading="lazy" decoding="async" src="assets/arrow-btn.svg" alt=""></span>
+        </button>
+
+        <div class="m-nav__socials">
+          <a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script src="Script.js"></script>
