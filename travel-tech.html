@@ -842,6 +842,10 @@
     </div>
   </div>
 
+  <!-- The ≤768px navigation — burger and drawer both — is one shared
+       component built into every page by menu.js. Loaded ahead of Script.js
+       so the menu still works if anything in that file fails. -->
+  <script src="menu.js"></script>
   <script src="Script.js"></script>
 </body>
 </html>

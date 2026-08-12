@@ -425,13 +425,19 @@
      Everything visual keys off distance-from-centre, which is written onto
      each card as data-pos: CSS reads it for the height ramp, the quote reveal
      and the fade. Cards declare data-kind="video" (plays its clip in place)
-     or "quote" (a still whose written review expands). */
+     or "quote" (a still whose written review expands).
+
+     The stride is measured off the rail rather than held as a constant. On
+     desktop that measures the 204 card + 32 gap the constant used to name, so
+     nothing about this changes; below 1024 the stylesheet restyles the same
+     markup into a centre-mode slider with a different card, and the stride
+     follows it instead of having to be repeated here. */
   var tvView = document.getElementById('test-vids');
   var tvTrack = document.getElementById('tvid-track');
 
   if (tvView && tvTrack) {
-    var TV_STEP = 236;          /* 204 card + 32 gap */
-    var TV_HALF = 102;          /* half a card */
+    var tvStep = 236;           /* 204 card + 32 gap, re-measured below */
+    var tvHalf = 102;           /* half a card */
     var TV_COPIES = 3;
     var TV_HOLD = 5200;         /* dwell before the rail advances itself */
     var TV_GRAB = 5;            /* px of travel before a press counts as a drag */
@@ -466,10 +472,30 @@
     var tvTimer = null;
     var tvIdle = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    /* The whole track rather than one card: a card's offsetWidth is rounded to
+       whole pixels, and below 768 the card is sized in vw, so that rounding
+       would compound over fifteen strides and walk the active card off the
+       centre line. The track's own box is fractional and holds n cards and
+       n-1 gaps exactly. Its translate does not affect the measurement — the
+       cards' scale below 1024 does not either, being a transform on the
+       children. On desktop this resolves to exactly 236 / 102. */
+    var tvMeasure = function () {
+      var span = tvTrack.getBoundingClientRect().width;
+      var n = tvCards.length;
+      if (!span || !n) return;
+
+      var box = window.getComputedStyle(tvTrack);
+      var gap = parseFloat(box.columnGap);
+      if (isNaN(gap)) gap = parseFloat(box.gap) || 0;
+
+      tvStep = (span + gap) / n;
+      tvHalf = (tvStep - gap) / 2;
+    };
+
     var tvRender = function (animate) {
       tvTrack.style.transition = animate ? '' : 'none';
       tvTrack.style.transform = 'translateX(' +
-        (tvView.clientWidth / 2 - (tvAt * TV_STEP + TV_HALF) + tvShift) + 'px)';
+        (tvView.clientWidth / 2 - (tvAt * tvStep + tvHalf) + tvShift) + 'px)';
 
       for (var i = 0; i < tvCards.length; i++) {
         var away = Math.abs(i - tvAt);
@@ -623,7 +649,7 @@
       tvView.classList.remove('is-dragging');
 
       /* round the travel to whole cards, but let a short flick still count */
-      var steps = Math.round(-tvShift / TV_STEP);
+      var steps = Math.round(-tvShift / tvStep);
       if (!steps && Math.abs(tvShift) > 45) steps = tvShift < 0 ? 1 : -1;
 
       /* tvGo clears tvShift itself, after its rebase has used it */
@@ -651,7 +677,9 @@
     if (tvPrev) tvPrev.addEventListener('click', function () { tvGo(-1); });
     if (tvNext) tvNext.addEventListener('click', function () { tvGo(1); });
 
-    window.addEventListener('resize', function () { tvRender(false); });
+    /* the card is sized in vw below 768, so the stride has to be re-read
+       before the rail is re-centred */
+    window.addEventListener('resize', function () { tvMeasure(); tvRender(false); });
 
     /* off-screen the rail neither advances nor keeps a clip running */
     if (window.IntersectionObserver) {
@@ -661,8 +689,14 @@
       }, { threshold: 0.2 }).observe(tvView);
     }
 
+    tvMeasure();
     tvRender(false);
     tvQueue();
+
+    /* the posters decide the card's own width on mobile only indirectly, but
+       webfonts and a late layout pass can still land after this ran — one
+       re-measure on load keeps the centre line honest */
+    window.addEventListener('load', function () { tvMeasure(); tvRender(false); });
   }
 
   /* ---------- Slide-in menu: burger morphs into the cross ---------- */
@@ -770,6 +804,11 @@
       }
     };
 
+    /* the shared mobile drawer (menu.js) is the only route to this form below
+       768, where the side tab is off-canvas — this is the handle it reaches
+       for, and its absence is how that drawer knows the page has no form */
+    window.hkOpenTalk = setTalk;
+
     talkTab.addEventListener('click', function () {
       setTalk(!talkForm.classList.contains('is-open'));
     });
@@ -845,65 +884,9 @@
     if (chatForm) chatForm.addEventListener('submit', function (e) { e.preventDefault(); });
   }
 
-  /* ---------- Mobile navigation drawer (≤768px) ----------
-     The home page has no .menu-overlay of its own: on mobile every nav link
-     and action collapses into this one panel, opened from the header burger.
-     Both the markup and the CSS are inert above the breakpoint, so nothing
-     here can reach the desktop layout. */
-  var mNav = document.getElementById('m-nav');
-  var mBurger = document.querySelector('.navbar .nav-burger');
-
-  if (mNav && mBurger) {
-    var mPanel = mNav.querySelector('.m-nav__panel');
-
-    var setMNav = function (open) {
-      mNav.classList.toggle('is-open', open);
-      mNav.setAttribute('aria-hidden', open ? 'false' : 'true');
-      mBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
-      mBurger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-      document.body.classList.toggle('is-mnav-open', open);
-
-      if (open && mPanel) mPanel.scrollTop = 0;
-      else mBurger.focus({ preventScroll: true });
-    };
-
-    mBurger.addEventListener('click', function () {
-      setMNav(!mNav.classList.contains('is-open'));
-    });
-
-    /* the scrim and the ✕ both carry data-mnav-close */
-    Array.prototype.forEach.call(mNav.querySelectorAll('[data-mnav-close]'), function (el) {
-      el.addEventListener('click', function () { setMNav(false); });
-    });
-
-    /* follow the link, then let the panel close behind it — in-page anchors
-       would otherwise scroll under a drawer that is still covering them */
-    Array.prototype.forEach.call(mNav.querySelectorAll('a'), function (link) {
-      link.addEventListener('click', function () { setMNav(false); });
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && mNav.classList.contains('is-open')) setMNav(false);
-    });
-
-    /* The drawer is the only way to the enquiry form on mobile. Opening it on
-       a timer lets the panel finish sliding out first, and puts the call past
-       the click that triggered it — the form's own outside-click handler would
-       otherwise see this button as "outside" and shut it again immediately. */
-    var mTalk = document.getElementById('m-nav-talk');
-    if (mTalk && typeof setTalk === 'function') {
-      mTalk.addEventListener('click', function () {
-        setMNav(false);
-        setTimeout(function () { setTalk(true); }, 340);
-      });
-    }
-
-    /* rotating to a desktop width with the drawer open would strand the
-       scroll lock on a body that no longer has a panel over it */
-    window.addEventListener('resize', function () {
-      if (window.innerWidth > 768 && mNav.classList.contains('is-open')) setMNav(false);
-    });
-  }
+  /* The mobile navigation drawer lives in menu.js — one component shared by
+     every page, rather than a block here that only fires on the pages whose
+     markup happens to carry the panel. */
 
   /* ---------- Job details: "Apply For This Position" modal ---------- */
   var applyBtn = document.getElementById('jd-apply');

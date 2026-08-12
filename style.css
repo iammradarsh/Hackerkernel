@@ -2347,7 +2347,10 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
    the one that plays, its neighbours step down, and everything further out
    dissolves into the edge gradients. JS writes the distance-from-centre onto
    each card as data-pos, so the whole ramp below is position-driven — no card
-   carries a size of its own. */
+   carries a size of its own.
+
+   Below 1024 this same markup is restyled into a centre-mode slider; see the
+   "Testimonials — centre-mode rail" block further down. */
 .test-vids {
   position: absolute;
   left: 86px;
@@ -11205,6 +11208,218 @@ body.is-apply-open {
 }
 
 /* ===========================================================
+   SHARED MOBILE NAVIGATION (max-width: 768px)
+   ===========================================================
+   Which of the site's navigations the viewport gets. Not scoped
+   to a page: menu.js builds the same burger and the same drawer
+   into every document, so there is nothing here to vary - and a
+   page-scoped copy of this block is exactly how the mobile menu
+   drifted apart in the first place.
+
+   The panel's own styling is further down, in the `.m-nav*`
+   rules inside the home page's 768 query. Those selectors have
+   always been unscoped, so they already dress whichever page
+   carries the markup.
+   =========================================================== */
+
+/* the drawer is built into every page; this is what keeps it out
+   of the desktop render */
+.m-nav { display: none; }
+.lt-form__close { display: none; }
+
+@media (max-width: 768px) {
+
+  /* Both desktop navigations stand down. The inline link row has no room
+     beside the wordmark, and the split-panel overlay is a 57.8% / 42.2%
+     two-pane screen whose copy is parked at left:120px - it stops working
+     well before the layouts around it do. */
+  .nav-links,
+  .burger,
+  .menu-overlay { display: none; }
+
+  /* assets/menu-icon.svg holds both states of the Figma icon, but its two red
+     menu bars are drawn outside the 40x40 viewBox and the clipPath cuts them
+     off - all that survives is the white cross of the *open* state. The bars
+     are drawn here rather than shipping a corrected asset, which is also why
+     menu.js gives the button no <img> to hide. */
+  .nav-burger {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .nav-burger::before,
+  .nav-burger::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    width: 26px;
+    height: 2.5px;
+    border-radius: 1.25px;
+    background: var(--primary-color);
+  }
+
+  .nav-burger::before { top: 15px; }
+  .nav-burger::after { top: 26px; }
+}
+
+/* ===========================================================
+   Testimonials - centre-mode rail (max-width: 1024px)
+   ===========================================================
+   Below 1024 the coverflow becomes a centre-mode slider: the
+   active card sits at full size on the centre line and the stage
+   is exactly two cards plus two gaps wide, which puts each stage
+   edge through the *centre* of the neighbouring card - so half of
+   the previous and half of the next testimonial peek in, at any
+   card size, with no second number to keep in sync.
+
+   Deliberately sized so nothing outside the rail moves: the card
+   keeps the desktop rail's 366px height, so the section height,
+   the arrow row, the rule and the review wall below all stay on
+   their Figma coordinates. Only the rail restyles.
+
+   Scoped `.home` because only index.html carries this markup, and
+   capped at 1024 so the desktop coverflow above it is untouched.
+   The ≤768 block further down refines these numbers for phones;
+   it must stay after this one to win.
+   =========================================================== */
+@media (max-width: 1024px) {
+  .home .test-sec {
+    --tv-card-w: 258px;
+    --tv-card-h: 366px;
+    --tv-gap: 24px;
+    --tv-radius: 14px;
+    --tv-peek: 0.88;                /* neighbours sit back from the active card */
+  }
+
+  .home .test-vids {
+    left: 50%;
+    right: auto;
+    width: min(100% - 172px, calc((var(--tv-card-w) + var(--tv-gap)) * 2));
+    height: var(--tv-card-h);
+    transform: translateX(-50%);
+  }
+
+  /* the stage edge is the cut now - a 200px fade would eat the whole peek */
+  .home .test-vids::before,
+  .home .test-vids::after { display: none; }
+
+  .home .test-vids__track {
+    gap: var(--tv-gap);
+    align-items: center;            /* cards scale about the centre line */
+    height: 100%;
+  }
+
+  /* one box for every card: distance from centre decides how it is drawn,
+     so the rail can never end up with two "active" cards */
+  .home .tvid,
+  .home .tvid[data-pos='0'],
+  .home .tvid[data-pos='1'] {
+    width: var(--tv-card-w);
+    height: var(--tv-card-h);
+  }
+
+  .home .tvid {
+    border-radius: var(--tv-radius);
+    opacity: 0.72;
+    transform: scale(var(--tv-peek));
+    filter: none;
+    transition: transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1),
+                opacity 0.45s ease,
+                box-shadow 0.4s ease;
+  }
+
+  .home .tvid[data-pos='0'] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .home .tvid[data-pos='2'],
+  .home .tvid[data-pos='3'] {
+    opacity: 0.55;
+    filter: none;
+  }
+
+  .home .tvid__poster,
+  .home .tvid__video { border-radius: var(--tv-radius); }
+
+  .home .tvid__shade {
+    height: 46%;
+    border-radius: 0 0 var(--tv-radius) var(--tv-radius);
+  }
+
+  .home .tvid__meta {
+    left: 20px;
+    right: 20px;
+    bottom: 16px;
+    width: auto;
+  }
+
+  /* the play button owns the bottom-right corner of a video card */
+  .home .tvid[data-kind='video'] .tvid__meta { right: 74px; }
+
+  .home .tvid__name { font-size: 14px; line-height: 19px; }
+  .home .tvid__role { font-size: 11.5px; line-height: 16px; }
+
+  /* a peek is cut down its middle, so its review would be half a sentence -
+     the copy and the play control belong to the facing card alone */
+  .home .tvid[data-pos='1'] .tvid__quote,
+  .home .tvid[data-pos='1'] .tvid__more,
+  .home .tvid.is-expanded[data-pos='1'] .tvid__quote {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .home .tvid[data-pos='0'] .tvid__quote,
+  .home .tvid[data-pos='0'] .tvid__more {
+    max-height: 19px;
+    opacity: 1;
+  }
+
+  .home .tvid[data-pos='0'] .tvid__quote {
+    width: auto;
+    font-size: 11.5px;
+    line-height: 19px;
+  }
+
+  .home .tvid.is-expanded[data-pos='0'] .tvid__quote { max-height: 110px; }
+
+  .home .tvid__play {
+    right: 16px;
+    bottom: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    transition: background 0.25s ease, transform 0.25s ease, opacity 0.3s ease;
+  }
+
+  .home .tvid:not([data-pos='0']) .tvid__play {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .home .tvid__ico { width: 22px; height: 22px; }
+
+  /* parked just outside the stage rather than at the panel edge, so they
+     read as this rail's controls and stay clear of the half-cut peeks */
+  .home .test-sec__arrows {
+    left: 50%;
+    right: auto;
+    width: min(100% - 32px, calc((var(--tv-card-w) + var(--tv-gap)) * 2 + 200px));
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .home .tvid,
+  .home .tvid__play { transition-duration: 0.01ms; }
+}
+
+/* ===========================================================
    HOME - MOBILE (max-width: 768px)
    ===========================================================
    Everything below this line is scoped two ways and cannot reach
@@ -11212,21 +11427,18 @@ body.is-apply-open {
 
      * `.home` - only index.html carries it, so the other pages
        keep whatever they had.
-     * `@media (max-width: 768px)` - the one exception is the
-       mobile drawer's `display:none` base, which has to exist
-       outside the query so the panel never renders on desktop.
+     * `@media (max-width: 768px)`.
 
    The desktop home page is a stack of fixed-height sections whose
    children are absolutely positioned on Figma coordinates. Mobile
    undoes exactly that: each section becomes `height:auto` and a
    flex column, and its children return to the flow. Nothing here
    changes a value that applies above the breakpoint.
-   =========================================================== */
 
-/* the drawer's markup is always in the page; this is what keeps it
-   out of the desktop render */
-.m-nav { display: none; }
-.lt-form__close { display: none; }
+   The `.m-nav*` rules in this block are the exception to the
+   `.home` scoping: they are the shared drawer's own styling and
+   are deliberately left unscoped.
+   =========================================================== */
 
 @media (max-width: 768px) {
 
@@ -11279,38 +11491,6 @@ body.is-apply-open {
     height: 62px;
     padding-top: 10px;
   }
-
-  .home .nav-links { display: none; }
-
-  /* assets/menu-icon.svg holds both states of the Figma icon, but its two red
-     menu bars are drawn outside the 40x40 viewBox and the clipPath cuts them
-     off — all that survives is the white cross of the *open* state. The other
-     pages never hit this because their .burger draws its bars in CSS, so this
-     one does the same rather than shipping a corrected asset. */
-  .home .nav-burger {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-  }
-
-  .home .nav-burger img { display: none; }
-
-  .home .nav-burger::before,
-  .home .nav-burger::after {
-    content: '';
-    position: absolute;
-    left: 9px;
-    width: 26px;
-    height: 2.5px;
-    border-radius: 1.25px;
-    background: var(--primary-color);
-  }
-
-  .home .nav-burger::before { top: 15px; }
-  .home .nav-burger::after { top: 26px; }
 
   /* the mark alone is 40px tall; the link around it still needs a full target */
   .home .logo {
@@ -11910,11 +12090,17 @@ body.is-apply-open {
   }
 
   /* ---------- Testimonials ----------
-     The coverflow rail stamps the five cards out three times over so it can
-     loop; the outer two copies are the ones Script.js marks aria-hidden, so
-     hiding those leaves exactly one of each card to stack. Tapping a card
-     still centres and plays it - that logic is index-based, not geometric. */
+     The ≤1024 block above already turned the rail into a centre-mode
+     slider; this only re-proportions it for a phone. The card is sized in
+     vw so the peek narrows to a sliver either side instead of the half-card
+     a tablet gets, and the section itself returns to the flow. The slide,
+     the loop and the tap-a-peek-to-centre behaviour are untouched. */
   .home .test-sec {
+    --tv-card-w: min(64vw, 280px);
+    --tv-card-h: calc(min(64vw, 280px) / 0.708);
+    --tv-gap: 10px;
+    --tv-peek: 0.9;
+
     height: auto;
     display: flex;
     flex-direction: column;
@@ -11943,68 +12129,66 @@ body.is-apply-open {
     font-size: clamp(15px, 4vw, 20px);
   }
 
+  /* Same two-cards-plus-two-gaps stage, minus the desktop side gutter: on a
+     phone the panel is narrower than that, so it collapses to full bleed and
+     the peek narrows with it, which is the intent. The `position: relative`
+     block at the end of this query clears the ≤1024 offsets; the translate
+     it does not know about has to be cleared here. */
   .home .test-vids {
-    position: static;
-    height: auto;
-    overflow: visible;
-    padding: 0 var(--shell-gutter);
-    cursor: default;
-    touch-action: auto;
+    width: min(100%, calc((var(--tv-card-w) + var(--tv-gap)) * 2));
+    margin-inline: auto;            /* the stage stops short of full bleed on
+                                       the wider phones — keep it centred */
+    padding: 0;
+    transform: none;
+    cursor: grab;
+    touch-action: pan-y;
   }
 
-  .home .test-vids::before,
-  .home .test-vids::after { display: none; }
+  /* the quote card is the only one carrying body copy, and at this width it
+     needs two lines rather than the one a tablet fits */
+  .home .tvid[data-pos='0'] .tvid__quote,
+  .home .tvid[data-pos='0'] .tvid__more { max-height: 38px; }
 
-  .home .test-vids__track {
-    position: static;
-    flex-direction: column;
-    align-items: stretch;
-    height: auto;
-    gap: 16px;
-    transform: none !important;
-  }
-
-  .home .test-vids__track .tvid[aria-hidden='true'] { display: none; }
-
-  .home .test-vids__track .tvid {
-    width: 100%;
-    height: clamp(300px, 82vw, 380px);
-    cursor: pointer;
-  }
-
-  /* stacked, every card is "the centre one" - no reason to clip the quote */
-  .home .test-vids__track .tvid .tvid__quote {
-    width: auto;
-    max-height: 200px;
-    opacity: 1;
-    white-space: normal;
+  .home .tvid[data-pos='0'] .tvid__quote {
     font-size: 12px;
+    white-space: normal;
   }
 
-  .home .test-vids__track .tvid .tvid__more { display: none; }
-
-  /* the quote is always open here, so the card needs more shade under it
-     than the 144px the collapsed desktop card gets by */
-  .home .test-vids__track .tvid__shade { height: 62%; }
+  .home .tvid.is-expanded[data-pos='0'] .tvid__quote { max-height: 120px; }
 
   .home .tvid__meta {
-    left: 18px;
-    right: 74px;
-    bottom: 16px;
-    width: auto;
-  }
-
-  .home .tvid__name { font-size: 15px; line-height: 1.4; }
-  .home .tvid__role { font-size: 12px; line-height: 1.4; white-space: normal; }
-
-  .home .tvid__play {
+    left: 16px;
     right: 16px;
-    bottom: 16px;
-    width: 44px;
-    height: 44px;
   }
 
-  .home .test-sec__arrows { display: none; }
+  .home .tvid[data-kind='video'] .tvid__meta { right: 70px; }
+
+  .home .tvid__role { white-space: normal; }
+
+  .home .tvid__play { right: 14px; }
+
+  /* no room beside a near-full-width card, so the controls sit under it */
+  .home .test-sec__arrows {
+    position: static;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    transform: none;
+  }
+
+  .home .test-sec__arrows .arrow-btn {
+    width: 52px;
+    height: 52px;
+  }
+
+  .home .test-sec__arrows .arrow-btn img {
+    left: 14px;
+    top: 14px;
+    width: 24px;
+    height: 24px;
+  }
 
   .home .test-sec__rule {
     position: static;
@@ -12335,6 +12519,13 @@ body.is-apply-open {
   }
 
   .m-nav__links a:active { color: var(--primary-color); }
+
+  /* menu.js marks the page the reader is already on — the list is long
+     enough that "you are here" is worth saying */
+  .m-nav__links a[aria-current="page"] {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
 
   .m-nav__foot {
     display: flex;
@@ -12739,40 +12930,8 @@ body.is-chatbot-open { overflow: hidden; }
     padding-top: 10px;
   }
 
-  /* the split-panel overlay is a 57.8% / 42.2% two-pane screen whose copy
-     is parked at left:120px - there is no room for either pane here. The
-     drawer takes over, so its trigger stands down with it. */
-  .ab-page .burger,
-  .ab-page .menu-overlay { display: none; }
-
-  /* assets/menu-icon.svg holds both states of the Figma icon, but its two
-     red menu bars are drawn outside the 40x40 viewBox and the clipPath cuts
-     them off - all that survives is the white cross of the *open* state.
-     Same fix the home page uses: draw the bars in CSS. */
-  .ab-page .nav-burger {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-  }
-
-  .ab-page .nav-burger img { display: none; }
-
-  .ab-page .nav-burger::before,
-  .ab-page .nav-burger::after {
-    content: '';
-    position: absolute;
-    left: 9px;
-    width: 26px;
-    height: 2.5px;
-    border-radius: 1.25px;
-    background: var(--primary-color);
-  }
-
-  .ab-page .nav-burger::before { top: 15px; }
-  .ab-page .nav-burger::after { top: 26px; }
+  /* the header swap - overlay out, drawer in - is in SHARED MOBILE
+     NAVIGATION, above; it is the same on every page */
 
   /* the mark alone is 40px tall; the link around it still needs a full target */
   .ab-page .logo {
@@ -13397,36 +13556,8 @@ body.is-chatbot-open { overflow: hidden; }
     padding-top: 10px;
   }
 
-  .sa-page .burger,
-  .sa-page .menu-overlay { display: none; }
-
-  /* assets/menu-icon.svg draws its two red bars outside the 40x40 viewBox
-     and the clipPath cuts them off - same fix the other pages use: draw
-     the bars in CSS. */
-  .sa-page .nav-burger {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-  }
-
-  .sa-page .nav-burger img { display: none; }
-
-  .sa-page .nav-burger::before,
-  .sa-page .nav-burger::after {
-    content: '';
-    position: absolute;
-    left: 9px;
-    width: 26px;
-    height: 2.5px;
-    border-radius: 1.25px;
-    background: var(--primary-color);
-  }
-
-  .sa-page .nav-burger::before { top: 15px; }
-  .sa-page .nav-burger::after { top: 26px; }
+  /* the header swap - overlay out, drawer in - is in SHARED MOBILE
+     NAVIGATION, above; it is the same on every page */
 
   /* the mark alone is 40px tall; the link around it still needs a full target */
   .sa-page .logo {
@@ -14300,36 +14431,8 @@ body.is-chatbot-open { overflow: hidden; }
     padding-top: 10px;
   }
 
-  .sf-page .burger,
-  .sf-page .menu-overlay { display: none; }
-
-  /* assets/menu-icon.svg draws its two red bars outside the 40x40 viewBox
-     and the clipPath cuts them off - same fix the other pages use: draw
-     the bars in CSS. */
-  .sf-page .nav-burger {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-  }
-
-  .sf-page .nav-burger img { display: none; }
-
-  .sf-page .nav-burger::before,
-  .sf-page .nav-burger::after {
-    content: '';
-    position: absolute;
-    left: 9px;
-    width: 26px;
-    height: 2.5px;
-    border-radius: 1.25px;
-    background: var(--primary-color);
-  }
-
-  .sf-page .nav-burger::before { top: 15px; }
-  .sf-page .nav-burger::after { top: 26px; }
+  /* the header swap - overlay out, drawer in - is in SHARED MOBILE
+     NAVIGATION, above; it is the same on every page */
 
   /* the mark alone is 40px tall; the link around it still needs a full target */
   .sf-page .logo {
@@ -14410,7 +14513,11 @@ body.is-chatbot-open { overflow: hidden; }
     transform: none;
     /* the fixed 62px bar floats over this hero - .cs-page opts out of the
        navbar's flow spacer, so the clearance has to live here */
-    padding: 96px 0 40px;
+    padding: 96px 0 0;
+    /* a column so the photograph can be ordered below the copy - see the
+       photograph note further down */
+    display: flex;
+    flex-direction: column;
   }
 
   /* the grid plate hangs 621px off the left edge of a 1244 frame; at this
@@ -14496,4 +14603,1095 @@ body.is-chatbot-open { overflow: hidden; }
     width: clamp(64px, 19vw, 100px);
     height: clamp(64px, 19vw, 100px);
   }
+}
+
+/* ===========================================================
+   AI SOLUTIONS - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About, Staff Augmentation
+   and Salesforce sheets are:
+
+     * `.ai-page` - only ai-solution.html carries it, so its
+       .cs-page siblings keep the desktop composition.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint.
+
+   Last in the file on purpose: every block on this page is a
+   fixed-height section whose children sit on absolute Figma
+   coordinates inside a centred 1244 frame, and undoing that means
+   re-declaring `position`, `left/top`, `width` and `transform` on
+   selectors set further up - these have to be the declarations
+   that win.
+
+   The two additions to ai-solution.html - the `.nav-burger` and
+   the `.m-nav` drawer - are both display:none in the base sheet,
+   so they exist in the markup without reaching desktop.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset, every `padding: 0 var(--shell-gutter)` below -
+     without touching one of those selectors. */
+  body.ai-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .ai-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .ai-page .wrap section[id],
+  .ai-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The header swap - split-panel overlay out, `.m-nav` drawer in - is in
+     SHARED MOBILE NAVIGATION, above; it is the same on every page. Only
+     the bar's own metrics are page work. */
+  .ai-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .ai-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .ai-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ai-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* the side tab is a second, competing entry point to the enquiry form -
+     on mobile the drawer's CTA owns it, so the tab stands down */
+  .ai-page .talk-tab { display: none; }
+
+  /* ---------- Enquiry form: full-screen sheet ----------
+     With the side tab gone the card has no handle, so the ✕ added to the
+     markup is switched on here and here only. */
+  .ai-page .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .ai-page .lt-form__card {
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .ai-page .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .ai-page .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .ai-page .lt-form__title { font-size: 26px; }
+
+  .ai-page .lt-form__submit {
+    min-height: 44px;
+    padding: 0 24px;
+  }
+
+  /* ---------- Hero ----------
+     The 816px stage becomes an auto-height column: the photograph, the
+     fade and the grid plate stay absolute behind it, the copy block and
+     everything inside it comes back into the flow. */
+  .ai-page .ai-hero { height: auto; }
+
+  .ai-page .ai-hero .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    /* the fixed 62px bar floats over this hero - .cs-page opts out of the
+       navbar's flow spacer, so the clearance has to live here */
+    padding: 96px 0 0;
+    /* a column so the photograph can be ordered below the copy - see the
+       photograph note further down */
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- The photograph ----------
+     assets/ai/hero-brain.png is a subject on a *solid white* ground, and the
+     desktop composition hides that: the frame is wide enough for the white to
+     become the hero's background with the brain out to the right of the copy.
+     Neither holds at this width. Covering the panel crops to the empty white
+     half of the frame, and fading it back only turns that half into a pale
+     slab with a visible edge - which is the white block on the right.
+
+     So the ground is removed rather than hidden. `multiply` drops white to
+     nothing against the shell, leaving the hand and the brain; the image is
+     then sized to the lower two-thirds and anchored right, clear of the
+     title and the lede. The frame's `transform` is already `none` here, so
+     nothing isolates the blend from the section behind it. */
+  .ai-page .ai-hero__photo {
+    position: static;
+    order: 1;
+    width: 100%;
+    height: 230px;
+    margin-top: 28px;
+    object-position: 66% 24%;
+    mix-blend-mode: multiply;
+  }
+
+  /* the grid plate hangs 621px off the left edge of a 1244 frame; at this
+     width it simply backs the section */
+  .ai-page .ai-hero__grid {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* z-index, not DOM order: the photo, the fade and the grid are all
+     absolute siblings inside the same frame, and the copy has to out-paint
+     the fade's white wash at the foot of the block */
+  .ai-page .ai-hero__copy {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: flex-start;
+  }
+
+  /* the red rule sat outside the text box on negative offsets; in the
+     column it becomes a plain left accent on the flow */
+  .ai-page .ai-hero__eyebrow {
+    position: static;
+    height: auto;
+    padding: 2px 0 2px 12px;
+    font-size: clamp(16px, 4.6vw, 22px);
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  /* 54px nowrap over two <br> lines - "for Modern Businesses" alone is
+     wider than the panel, so the nowrap has to go with it */
+  .ai-page .ai-hero__title {
+    position: static;
+    font-size: clamp(30px, 8.4vw, 46px);
+    line-height: 1.1;
+    white-space: normal;
+  }
+
+  .ai-page .ai-hero__lede {
+    position: static;
+    width: auto;
+    max-width: 46ch;
+    font-size: 14px;
+    line-height: 1.55;
+    transform: none;
+  }
+
+  /* `relative`, not `static`: .pill-btn__circle is the absolute white sweep
+     inside this button, so the button has to stay its containing block -
+     `static` sends the disc and its arrow off to the copy column's corner */
+  .ai-page .ai-hero__btn {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    min-height: 44px;
+  }
+
+  /* ---------- The two frosted cards ----------
+     A 244 + 240 row will not fit a 320px panel, so the pair stacks and each
+     card takes the column width. */
+  .ai-page .ai-hero__cards {
+    position: static;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    height: auto;
+  }
+
+  .ai-page .gl-card,
+  .ai-page .gl-card--blue {
+    width: 100%;
+    padding: 18px;
+  }
+
+  /* the frosted 20% white reads as nothing over the photograph at this
+     size; the blur stays, the plate is carried a little further */
+  .ai-page .gl-card { background: rgba(255, 255, 255, 0.55); }
+
+  /* "Custom AI Development" is wider than a 320px panel once it is padded */
+  .ai-page .gl-card__head p {
+    font-size: 15px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .ai-page .gl-card__text {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Process ----------
+     Every part of this section - the head, the carousel (.pl-*), the
+     dashed node diagram and the isometric stack - is the Staff
+     Augmentation component with different copy, so this is that page's
+     reflow re-scoped rather than a second design. It is copied instead
+     of shared because that block is written at 1024 and this page is
+     specified at 768; one selector list spanning both would drag this
+     page's tablet band along with it.
+
+     `column-reverse` lifts the layer stack above the carousel that drives
+     it, so the thing being animated is on screen with its controls. */
+  .ai-page .sa-proc { height: auto; }
+
+  /* the frame is the 1244 measuring stick the Figma coordinates are pinned
+     to; at this width there is nothing to centre on, so it becomes a plain
+     flow column and the children below are un-absoluted into it */
+  .ai-page .sa-proc .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 34px 0 40px;
+  }
+
+  .ai-page .sa-proc__head {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .ai-page .sa-proc__headcol {
+    position: static;
+    width: auto;
+    gap: 12px;
+  }
+
+  .ai-page .sa-proc__title {
+    position: static;
+    width: auto;
+    margin-top: 0;
+    font-size: clamp(26px, 7.2vw, 34px);
+    white-space: normal;
+  }
+
+  .ai-page .sa-proc__lede {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    font-size: clamp(14px, 3.9vw, 16px);
+    line-height: 1.5;
+  }
+
+  .ai-page .sa-proc__steps {
+    position: static;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 24px;
+    width: auto;
+    height: auto;
+    border-top: 0;
+  }
+
+  .ai-page .pl-panel {
+    position: static;
+    width: auto;
+    height: auto;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+    border-right: 0;
+  }
+
+  /* Script.js steps the track by a hard-coded 382px (302 slide + 80 gap),
+     so the slide keeps its width and the viewport is sized to one slide
+     rather than the track being re-measured. */
+  .ai-page .pl-viewport {
+    position: static;
+    width: 302px;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .ai-page .pl-track {
+    height: auto;
+    padding: 0 0 6px;
+  }
+
+  .ai-page .pl-slide__num { font-size: 42px; }
+  .ai-page .pl-slide__title { font-size: 24px; }
+  .ai-page .pl-slide__text { font-size: 15px; }
+
+  .ai-page .pl-controls {
+    position: static;
+    justify-content: space-between;
+    gap: 0;
+    width: 302px;
+    max-width: 100%;
+    margin: 18px auto 0;
+  }
+
+  .ai-page .pl-arrow {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* the chips and their dashed connectors are a 732px composition; the
+     stack survives on its own, re-centred on the two variables the whole
+     diagram measures from.
+
+     `relative`, not `static`: .pl-stack is placed off those two variables
+     and needs this box to be what they measure. */
+  .ai-page .pl-diagram {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: 280px;
+    --pl-stack-cx: 50%;
+    --pl-stack-cy: 50%;
+  }
+
+  .ai-page .pl-col { display: none; }
+
+  /* ---------- Technologies ----------
+     Same component as the staffing page's tech block: an orbit
+     illustration with the capability cards floated over it. */
+  .ai-page .sa-tech { height: auto; }
+
+  .ai-page .sa-tech .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 34px 0 40px;
+  }
+
+  .ai-page .sa-tech__head {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .ai-page .sa-tech__headcol {
+    position: static;
+    width: auto;
+    gap: 12px;
+  }
+
+  /* 40px nowrap - "Technologies We Use" is wider than the panel on its
+     own, so the nowrap goes with the size */
+  .ai-page .sa-tech__title {
+    position: static;
+    width: auto;
+    margin-top: 0;
+    font-size: clamp(26px, 7.2vw, 34px);
+    white-space: normal;
+  }
+
+  /* this page sets the lede two sizes larger than the staffing one; the
+     ceiling comes down with it rather than the whole scale being reset */
+  .ai-page .ai-tech .sa-tech__lede {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    font-size: clamp(15px, 4.1vw, 18px);
+    line-height: 1.5;
+  }
+
+  /* the orbit frame is centred on the panel here rather than pinned to the
+     content gutter, so that centring is undone with the rest of it */
+  .ai-page .sa-skills {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+    transform: none;
+  }
+
+  /* 24 orbit fragments on a 1132x637 stage, most of them placed by inline
+     percentages of that stage - none of it reads at this width */
+  .ai-page .sa-orbit { display: none; }
+
+  /* the cards keep their 204px width: every chip row inside them is placed
+     by an inline `left`/`width` measured against it. Three of them wrap to
+     a centred 1 + 2 or 1 + 1 + 1 stack on their own. */
+  .ai-page .sa-skills__cards {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    transform: none;
+  }
+
+  /* with the orbit gone the glass has nothing to refract, so the pane is
+     carried further rather than reading as a grey box */
+  .ai-page .tk-card { background: rgba(255, 255, 255, 0.6); }
+
+  /* ---------- AI Solutions We Provide ----------
+     The row is title | panel | plus across 1110px. Here the plus is pinned
+     beside the title and the panel drops underneath it, so the open state
+     is a disclosure rather than a widening panel. */
+  .ai-page .sa-teams { height: auto; }
+
+  .ai-page .sa-teams .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 34px 0 40px;
+  }
+
+  .ai-page .sa-teams__head {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .ai-page .sa-teams__headcol {
+    position: static;
+    width: auto;
+    gap: 12px;
+  }
+
+  .ai-page .sa-teams__title {
+    position: static;
+    width: auto;
+    margin-top: 0;
+    font-size: clamp(26px, 7.2vw, 34px);
+    white-space: normal;
+  }
+
+  .ai-page .sa-teams__lede {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    font-size: clamp(14px, 3.9vw, 16px);
+    line-height: 1.5;
+  }
+
+  /* the 18px gap between rows goes with the stack: each row already carries
+     its own rule and 18px of padding, and doubling that reads as a gap in
+     the list rather than a divided list */
+  .ai-page .sa-teams__list {
+    position: static;
+    width: auto;
+    margin: 0 var(--shell-gutter);
+    gap: 0;
+  }
+
+  /* `relative`, not `static`: .tm__plus is pinned to this row below */
+  .ai-page .tm {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 18px 52px 18px 0;
+  }
+
+  /* the 18px nudge reads as a hover affordance on a pointer device */
+  .ai-page .tm:not(.is-open):hover { padding-left: 0; }
+
+  /* 28px nowrap - "Computer Vision Solutions" is wider than the panel */
+  .ai-page .tm__title {
+    font-size: clamp(20px, 5.4vw, 24px);
+    white-space: normal;
+  }
+
+  .ai-page .tm__right { display: block; }
+
+  .ai-page .tm__plus {
+    position: absolute;
+    right: 0;
+    top: 18px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .ai-page .tm__plus img {
+    left: 9px;
+    top: 9px;
+  }
+
+  /* border-box is global, so the padding has to collapse with the height -
+     otherwise the closed panel is still 32px tall */
+  .ai-page .tm__panel {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+    transition: max-height 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+                padding 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+                opacity 0.3s ease,
+                background-color 0.45s ease;
+  }
+
+  .ai-page .tm.is-open .tm__panel {
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    padding: 16px 0 0;
+    opacity: 1;
+    background: rgba(244, 244, 244, 0);
+  }
+
+  /* `relative`, not `static`: the glyph inside is centred against this box,
+     so dropping it out of the positioned flow throws the icon into the row.
+     This page's g-flow glyph is four fragments on percentage insets of the
+     same box, which makes it the one that breaks loudest. */
+  .ai-page .tm__tile,
+  .ai-page .tm.is-open .tm__tile {
+    position: relative;
+    display: block;
+    left: auto;
+    top: auto;
+    width: 64px;
+    height: 64px;
+  }
+
+  .ai-page .tm__desc,
+  .ai-page .tm.is-open .tm__desc {
+    position: static;
+    display: block;
+    left: auto;
+    top: auto;
+    width: auto;
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.45;
+    transform: none;
+  }
+
+  /* ---------- AI Automation & Workflow ----------
+     Not a Staff Augmentation component - this block is this page's own, so
+     it gets its own reflow. The four cards are a butted 1110px row, each a
+     277.5x327.8 stage with the number, title and copy on absolute offsets
+     inside it; the row stacks and each card becomes a flow column. */
+  .ai-page .ai-auto { height: auto; }
+
+  .ai-page .ai-auto .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 34px 0 40px;
+  }
+
+  .ai-page .ai-auto__head {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .ai-page .ai-auto__headcol {
+    position: static;
+    gap: 12px;
+  }
+
+  .ai-page .ai-auto__title {
+    font-size: clamp(26px, 7.2vw, 34px);
+    white-space: normal;
+  }
+
+  /* bottom-aligned against the heading column on desktop; in the stack it
+     is simply the paragraph under it */
+  .ai-page .ai-auto__lede {
+    position: static;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    font-size: clamp(15px, 4.1vw, 18px);
+    line-height: 1.5;
+  }
+
+  /* the cards butt up against each other in the row - the notch and the
+     leftward shadow are what separate them. Stacked, neither reads, so the
+     stack is spaced and the shadow is turned to face down. */
+  .ai-page .ai-auto__cards {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    width: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .ai-page .au-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+    padding: 18px;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.07));
+  }
+
+  /* a lift with nothing beside it to lift away from, and on a touch screen
+     it is left stuck on the last card tapped */
+  .ai-page .au-card:hover { transform: none; }
+
+  /* `relative` + z-index, not `static`: .au-card__shape is the inset:0
+     clipped block this copy sits on, so the copy has to out-paint it.
+
+     `!important` on the width because these three carry inline Figma
+     widths - 194px, 205px, 186px, 159px - measured against a 277.5px card.
+     Left alone they would set four different measures down one column. */
+  .ai-page .au-card__num,
+  .ai-page .au-card__title,
+  .ai-page .au-card__text {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: auto !important;
+  }
+
+  .ai-page .au-card__num { font-size: 38px; }
+  .ai-page .au-card__title { font-size: 17px; }
+
+  .ai-page .au-card__text {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  /* ---------- Case Files ----------
+     The one block on this page built as Figma auto-layout rather than
+     absolute offsets: the frame is already a flex column and the grid is
+     already fluid. So there is nothing to un-absolute here - the work is
+     releasing the 1244 measuring stick the frame is caged in, and giving
+     the media box a ratio now that the card no longer has a fixed height
+     to divide up. */
+  .ai-page .ai-cases__frame {
+    left: auto;
+    width: 100%;
+    transform: none;
+    gap: 22px;
+    padding: 0 var(--shell-gutter) 30px;
+  }
+
+  .ai-page .ai-cases__title { font-size: clamp(24px, 6.6vw, 30px); }
+
+  .ai-page .ai-cases__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  /* 565px divided the card into media + body; with the height released the
+     media has nothing to fill, so it stops being the flexible child and
+     takes a ratio of its own */
+  .ai-page .cf-card {
+    gap: 20px;
+    height: auto;
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .ai-page .cf-card__media {
+    flex: 0 0 auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 18px;
+  }
+
+  .ai-page .cf-card__body { gap: 10px; }
+
+  .ai-page .cf-card__title { font-size: clamp(18px, 5vw, 21px); }
+
+  .ai-page .cf-card__text {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  /* three tags on one row need every pixel of a 320px panel; they wrap
+     rather than push the card wider */
+  .ai-page .cf-card__tags { flex-wrap: wrap; }
+
+  /* the pill is 139px of label plus the 44px disc it opens into */
+  .ai-page .ai-cases__more { min-height: 44px; }
+
+  /* ---------- Benefits ----------
+     The three columns stack, and their copy stops hiding behind the active
+     state: on a touch screen there is no hover to reveal it, and a stack
+     has the room a 370px-wide column did not. */
+  .ai-page .sa-ben { height: auto; }
+
+  .ai-page .sa-ben .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 34px 0 40px;
+  }
+
+  /* line art pinned at left:807px of a 1244 frame - off the panel entirely
+     at this width */
+  .ai-page .sa-ben__art { display: none; }
+
+  .ai-page .sa-ben__inner {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .ai-page .sa-ben__head {
+    width: auto;
+    height: auto;
+  }
+
+  .ai-page .sa-ben__headcol { gap: 16px; }
+
+  .ai-page .sa-ben__title {
+    width: auto;
+    font-size: clamp(26px, 7.2vw, 34px);
+  }
+
+  /* `relative`, not `static`: .wp__bg is inset:0 on this card, and without a
+     containing block here the photo backs the whole section instead */
+  .ai-page .wp {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin-top: 26px;
+  }
+
+  .ai-page .wp__cols {
+    position: static;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+  }
+
+  /* `flex: 1 0 0` divided a 1110px row; in a column its zero basis takes the
+     copy out of the container's intrinsic height and every panel collapses
+     to its own padding */
+  .ai-page .wp-col {
+    flex: 0 0 auto;
+    height: auto;
+    padding: 22px 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    /* the copy is always on show here, so every panel needs the ground the
+       active one had - the active state stays the darker of the two */
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .ai-page .wp-col.is-active { background: rgba(0, 0, 0, 0.7); }
+
+  .ai-page .wp-col:last-child { border-bottom: 0; }
+
+  .ai-page .wp-col__body {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .ai-page .wp-col__num { font-size: 34px; }
+  .ai-page .wp-col__title { font-size: 22px; }
+
+  /* the reveal is a hover transition on desktop; with all three open it is
+     the transform and the fade that have to go, not just the opacity */
+  .ai-page .wp-col__text,
+  .ai-page .wp-col.is-active .wp-col__text {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+    opacity: 1;
+    transform: none;
+  }
+
+  .ai-page .wp__arrows {
+    position: static;
+    justify-content: center;
+    padding: 18px 0 22px;
+  }
+
+  .ai-page .wp__arrow {
+    width: 48px;
+    height: 48px;
+  }
+
+  .ai-page .wp__arrow img {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* ---------- Ready to Automate ----------
+     A two-column band - headline left, copy and button right - inside a
+     .design-frame rather than a --fill one, so releasing the 1244 width is
+     what turns the row into a stack. */
+  .ai-page .sa-hire {
+    height: auto;
+    margin-top: 34px;
+  }
+
+  .ai-page .sa-hire__frame {
+    left: auto;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    height: auto;
+    padding: 30px var(--shell-gutter);
+    transform: none;
+  }
+
+  .ai-page .sa-hire__left {
+    width: auto;
+    gap: 12px;
+  }
+
+  /* the <br> keeps the two lines; the nowrap is what would overflow -
+     "Ready to Automate Your" alone is wider than the panel at 41px */
+  .ai-page .sa-hire__title {
+    font-size: clamp(24px, 6.6vw, 32px);
+    white-space: normal;
+  }
+
+  .ai-page .sa-hire__right {
+    width: 100%;
+    gap: 16px;
+    padding: 0;
+  }
+
+  /* 436px on this page rather than the staffing page's own measure */
+  .ai-page .sa-hire__text {
+    width: auto;
+    font-size: clamp(15px, 4.1vw, 17px);
+  }
+
+  .ai-page .ai-cta__btn { min-height: 44px; }
+
+  /* ---------- Contact ---------- */
+  .ai-page .sa-contact {
+    height: auto;
+    margin-top: 34px;
+  }
+
+  .ai-page .sa-contact .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 34px 0 40px;
+  }
+
+  /* the rocket is parked in the 550px of frame the 594px form leaves to its
+     right - there is no such column here */
+  .ai-page .sa-contact__art { display: none; }
+
+  .ai-page .sa-contact__form {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .ai-page .sa-contact__title {
+    font-size: clamp(28px, 7.6vw, 38px);
+    white-space: normal;
+  }
+
+  /* two fields to a row across 594px; one to a row here */
+  .ai-page .sa-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ai-page .sa-field {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  /* 12px in a text field is under the 16px iOS Safari zooms the whole
+     viewport to reach, and it does not zoom back out on blur */
+  .ai-page .sa-input input,
+  .ai-page .sa-input textarea { font-size: 16px; }
+
+  /* the second row places its three radios at left:0/176/359 of a 440px
+     strip - here they wrap like the first row does */
+  .ai-page .sa-source__row,
+  .ai-page .sa-source__row--fixed {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+  }
+
+  .ai-page .sa-source__row--fixed .sa-radio {
+    position: static;
+    left: auto;
+    top: auto;
+  }
+
+  .ai-page .sa-radio {
+    align-items: center;
+    min-height: 24px;
+  }
+
+  .ai-page .sa-contact__ctas {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    margin-top: 26px;
+  }
+
+  /* ---------- Footer ----------
+     The 371px band holds a 278px absolute inner pinned 60px down; both
+     numbers are a one-row layout, so the band goes auto and the inner
+     comes into the flow with its own padding. */
+  .ai-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .ai-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .ai-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .ai-page .footer__brand { height: auto; }
+
+  .ai-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  /* three link columns side by side, set `nowrap` so the desktop row can
+     never break mid-label - both have to go together */
+  .ai-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .ai-page .footer__col,
+  .ai-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  /* the list gap goes to the links themselves: 44px of target each, rather
+     than 24px links with space between them */
+  .ai-page .footer__col ul { gap: 0; }
+
+  .ai-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .ai-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned to a desktop text length */
+  .ai-page .footer__cookies img { display: none; }
 }

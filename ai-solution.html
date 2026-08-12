@@ -17,6 +17,13 @@
   <!-- ================= Let's Talk Business — slide-in form ================= -->
   <aside class="lt-form" id="talk-form" aria-hidden="true" aria-label="Get in touch">
     <form class="lt-form__card" novalidate>
+      <!-- ≤768px the side tab stands down, so the card would be left without
+           its own handle. `.lt-form__close` is display:none in the base
+           sheet, so it never renders on desktop. -->
+      <button class="lt-form__close" type="button" id="talk-close" aria-label="Close form">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
       <p class="lt-form__title">Get In Touch</p>
 
       <div class="lt-form__scroll">
@@ -111,6 +118,9 @@
           <span></span>
           <span></span>
         </button>
+
+        <!-- the ≤768px burger is appended here by menu.js, together with the
+             drawer it opens — see that file for the shared component -->
       </div>
     </header>
 
@@ -859,6 +869,10 @@
     </div>
   </div>
 
+  <!-- The ≤768px navigation — burger and drawer both — is one shared
+       component built into every page by menu.js. Loaded ahead of Script.js
+       so the menu still works if anything in that file fails. -->
+  <script src="menu.js"></script>
   <script src="Script.js"></script>
 </body>
 </html>
