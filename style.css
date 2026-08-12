@@ -3584,16 +3584,21 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 
 /* open state reproduces the 9 -> 30.125 cross drawn in the Figma icon.
    The bar behind it is white while the menu is open, so the cross keeps the
-   brand red rather than flipping to white. */
-.is-menu-open .burger span {
+   brand red rather than flipping to white.
+
+   Keyed to `is-cross` on the button, not to `is-menu-open` on <body>: the
+   panel takes 0.6s and this morph 0.45s, so a state the click sets would run
+   the two out of step. Script.js flips `is-cross` on the panel's transitionend
+   in both directions, which leaves folding and unfolding as mirror images. */
+.burger.is-cross span {
   left: 5.063px;
   top: 18.75px;
   width: 29.875px;
   background: var(--primary-color);
 }
 
-.is-menu-open .burger span:nth-child(1) { transform: rotate(45deg); }
-.is-menu-open .burger span:nth-child(2) { transform: rotate(-45deg); }
+.burger.is-cross span:nth-child(1) { transform: rotate(45deg); }
+.burger.is-cross span:nth-child(2) { transform: rotate(-45deg); }
 
 /* Keep the navbar (logo + burger) above the panel while it is open, on a
    solid white bar. The progressive-blur veil is switched off here: it samples
@@ -5510,14 +5515,20 @@ body.is-menu-open .talk-tab {
   height: 258px;
 }
 
+/* The rail runs in from 40px left of the stop grid. Without the lead-in the
+   line started on the same x as the active dot, so all that showed left of
+   the marker was a 7px stub and the rule read as cut off at the gutter. The
+   lead-in is small enough to keep 60-odd px of panel clear on its left, so
+   the end of the line is visible rather than clipped. */
 .jr__line {
   position: absolute;
-  left: 0;
+  left: -40px;
   top: 157px;
-  width: 4474px;
+  width: 4514px;
   height: 2px;
   border-radius: 100px;
   background: #fff;
+  opacity: 1;
 }
 
 /* ── The rail ──
@@ -5546,8 +5557,8 @@ body.is-menu-open .talk-tab {
   height: 258px;
   padding: 0;
   text-align: left;
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-              visibility 0s linear 0s;
+  opacity: 1;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* The big slot sits 80px left of the grid, so the stop taking it steps that
@@ -5566,6 +5577,7 @@ body.is-menu-open .talk-tab {
   font-weight: 400;
   line-height: 1.2;
   color: #fff;
+  opacity: 1;
   white-space: nowrap;
   transition: font-size 0.55s cubic-bezier(0.22, 1, 0.36, 1),
               bottom 0.55s cubic-bezier(0.22, 1, 0.36, 1);
@@ -5640,15 +5652,13 @@ body.is-menu-open .talk-tab {
   white-space: nowrap;
 }
 
-/* Years already told keep shrinking as they go, and fade once they are past
-   the head of the rail. visibility follows the fade so they leave the tab
-   order instead of sitting invisibly over the active year. */
+/* Years already told shrink back to a plain stop and slide out of the frame
+   at full strength - no dissolve. A past stop ends up at rail x -175, which
+   is left of the panel edge, so it is gone from view on its own and never
+   sits half-lit over the active year. Only its click target is dropped. */
 .jr__year.is-past {
-  opacity: 0;
-  visibility: hidden;
+  opacity: 1;
   pointer-events: none;
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-              visibility 0s linear 0.5s;
 }
 
 .jr__arrows {
@@ -13362,4 +13372,1127 @@ body.is-chatbot-open { overflow: hidden; }
 
   /* the underline flourish is pinned to a desktop text length */
   .ab-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   STAFF AUGMENTATION - HEADER SWAP (max-width: 768px)
+
+   The split-panel overlay is a two-pane screen whose copy is parked
+   at left:120px, so it stops working before the layout does. It is
+   swapped for the `.m-nav` drawer here and here only - the reflow
+   below runs to 1024, but the overlay is fine for the whole of that
+   band, so the two breakpoints are deliberately not the same number.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  body.sa-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  .sa-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  .sa-page .burger,
+  .sa-page .menu-overlay { display: none; }
+
+  /* assets/menu-icon.svg draws its two red bars outside the 40x40 viewBox
+     and the clipPath cuts them off - same fix the other pages use: draw
+     the bars in CSS. */
+  .sa-page .nav-burger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .sa-page .nav-burger img { display: none; }
+
+  .sa-page .nav-burger::before,
+  .sa-page .nav-burger::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    width: 26px;
+    height: 2.5px;
+    border-radius: 1.25px;
+    background: var(--primary-color);
+  }
+
+  .sa-page .nav-burger::before { top: 15px; }
+  .sa-page .nav-burger::after { top: 26px; }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .sa-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .sa-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .sa-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+}
+
+/* ===========================================================
+   STAFF AUGMENTATION - REFLOW (max-width: 1024px)
+
+   Scoped the same way the home and About sheets are:
+
+     * every selector starts `.sa-page`
+     * one max-width query
+
+   so nothing below this line is read above the breakpoint and the
+   desktop composition is untouched.
+
+   1024 rather than 768: every section on this page is a fixed-height
+   block whose children sit on absolute Figma coordinates inside a
+   centred 1244 frame, and that frame is wider than the panel at any
+   window under ~1295. Below 1025 the crop eats the sections' own
+   67px inset and the heads, the hero copy and the benefit columns
+   all lose their left and right edges - the band is not a smaller
+   desktop, it is a broken one.
+
+   Undoing the frame means re-declaring `position`, `left/top`,
+   `width` and `transform` on selectors set further up, so these have
+   to be the declarations that win - hence the position at the end.
+   The tablet layer after this one puts back the two-up rows that
+   only the wide half of the band has room for.
+   =========================================================== */
+@media (max-width: 1024px) {
+
+  .sa-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .sa-page .wrap section[id],
+  .sa-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- The design frames ----------
+     Each section's frame is the 1244 measuring stick its Figma
+     coordinates are pinned to; at this width there is no frame to
+     centre on, so every one becomes a plain flow column and the
+     children below are un-absoluted into it. */
+  .sa-page .sa-hero .design-frame--fill,
+  .sa-page .sa-proc .design-frame--fill,
+  .sa-page .sa-tech .design-frame--fill,
+  .sa-page .sa-teams .design-frame--fill,
+  .sa-page .sa-ben .design-frame--fill,
+  .sa-page .sa-contact .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .sa-page .sa-hero .design-frame--fill,
+  .sa-page .sa-proc .design-frame--fill,
+  .sa-page .sa-tech .design-frame--fill,
+  .sa-page .sa-teams .design-frame--fill {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* ---------- Hero ---------- */
+  .sa-page .sa-hero { height: auto; }
+
+  /* the fixed 62px bar floats over this hero - .cs-page opts out of the
+     navbar's flow spacer, so the clearance has to live here */
+  .sa-page .sa-hero .design-frame--fill { padding: 84px 0 32px; }
+
+  /* the grid plate hangs 621px off the left edge of a 1244 frame; at this
+     width it simply backs the section */
+  .sa-page .sa-hero__grid {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* three blobs pinned in percentages of a 632px hero - they land over the
+     copy at any width this side of the breakpoint */
+  .sa-page .sa-hero__blobs { display: none; }
+
+  .sa-page .sa-hero__copy {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: auto;
+    margin: 0 var(--shell-gutter);
+    gap: 22px;
+    transform: none;
+  }
+
+  /* the titlebox is a 154px stage for two absolutely placed lines; in the
+     column it is a plain two-row stack */
+  .sa-page .sa-hero__titlebox { height: auto; }
+
+  .sa-page .sa-hero__titleinner {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: auto;
+    height: auto;
+  }
+
+  .sa-page .sa-hero__eyebrow {
+    position: static;
+    align-self: flex-start;
+    height: auto;
+    padding: 2px 0 2px 12px;
+    font-size: clamp(16px, 4.6vw, 20px);
+    line-height: 1.2;
+  }
+
+  /* 54px nowrap over two <br> lines - "IT Staff Augmentation" alone is
+     wider than the panel, so the nowrap has to go with it */
+  .sa-page .sa-hero__title {
+    position: static;
+    font-size: clamp(30px, 8.4vw, 44px);
+    line-height: 1.1;
+    white-space: normal;
+  }
+
+  .sa-page .sa-hero__cards {
+    flex-direction: column;
+    gap: 14px;
+    height: auto;
+  }
+
+  .sa-page .sa-card {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .sa-page .sa-card__text {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .sa-page .sa-badges {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    margin: 0 var(--shell-gutter);
+    gap: 20px;
+    align-items: center;
+    transform: none;
+  }
+
+  /* ---------- Process ----------
+     `column-reverse` lifts the layer stack above the carousel that drives
+     it, so the thing being animated is on screen with its controls. */
+  .sa-page .sa-proc { height: auto; }
+  .sa-page .sa-proc .design-frame--fill { padding: 34px 0 40px; }
+
+  .sa-page .sa-proc__head,
+  .sa-page .sa-tech__head,
+  .sa-page .sa-teams__head {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .sa-page .sa-proc__headcol,
+  .sa-page .sa-tech__headcol,
+  .sa-page .sa-teams__headcol {
+    position: static;
+    width: auto;
+    gap: 12px;
+  }
+
+  .sa-page .sa-proc__title,
+  .sa-page .sa-tech__title,
+  .sa-page .sa-teams__title {
+    position: static;
+    width: auto;
+    margin-top: 0;
+    font-size: clamp(26px, 7.2vw, 34px);
+    white-space: normal;
+  }
+
+  .sa-page .sa-proc__lede,
+  .sa-page .sa-tech__lede,
+  .sa-page .sa-teams__lede {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    font-size: clamp(14px, 3.9vw, 16px);
+  }
+
+  .sa-page .sa-proc__steps {
+    position: static;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 24px;
+    width: auto;
+    height: auto;
+    border-top: 0;
+  }
+
+  .sa-page .pl-panel {
+    position: static;
+    width: auto;
+    height: auto;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+    border-right: 0;
+  }
+
+  /* Script.js steps the track by a hard-coded 382px (302 slide + 80 gap),
+     so the slide keeps its width and the viewport is sized to one slide
+     rather than the track being re-measured. */
+  .sa-page .pl-viewport {
+    position: static;
+    width: 302px;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .sa-page .pl-track {
+    height: auto;
+    padding: 0 0 6px;
+  }
+
+  .sa-page .pl-slide__num { font-size: 42px; }
+  .sa-page .pl-slide__title { font-size: 24px; }
+  .sa-page .pl-slide__text { font-size: 15px; }
+
+  .sa-page .pl-controls {
+    position: static;
+    justify-content: space-between;
+    gap: 0;
+    width: 302px;
+    max-width: 100%;
+    margin: 18px auto 0;
+  }
+
+  .sa-page .pl-arrow {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* the chips and their dashed connectors are a 732px composition; the
+     stack survives on its own, re-centred on the two variables the whole
+     diagram measures from */
+  /* `relative`, not `static`: .pl-stack is placed off the two variables
+     below and needs this box to be what they measure */
+  .sa-page .pl-diagram {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: 280px;
+    --pl-stack-cx: 50%;
+    --pl-stack-cy: 50%;
+  }
+
+  .sa-page .pl-col { display: none; }
+
+  /* ---------- Technologies ---------- */
+  .sa-page .sa-tech { height: auto; }
+  .sa-page .sa-tech .design-frame--fill { padding: 34px 0 40px; }
+
+  .sa-page .sa-skills {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  /* 24 orbit fragments on a 1132x637 stage, most of them placed by inline
+     percentages of that stage - none of it reads at this width */
+  .sa-page .sa-orbit { display: none; }
+
+  /* the cards keep their 204px width: every chip row inside them is placed
+     by an inline `left`/`width` measured against it */
+  .sa-page .sa-skills__cards {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    transform: none;
+  }
+
+  .sa-page .tk-card { background: rgba(255, 255, 255, 0.6); }
+
+  /* ---------- Augmented Teams ----------
+     The row is title | panel | plus across 1110px. Here the plus is pinned
+     beside the title and the panel drops underneath it, so the open state
+     is a disclosure rather than a widening panel. */
+  .sa-page .sa-teams { height: auto; }
+  .sa-page .sa-teams .design-frame--fill { padding: 34px 0 40px; }
+
+  .sa-page .sa-teams__list {
+    position: static;
+    width: auto;
+    margin: 0 var(--shell-gutter);
+    gap: 0;
+  }
+
+  .sa-page .tm {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 18px 52px 18px 0;
+  }
+
+  /* the 18px nudge reads as a hover affordance on a pointer device */
+  .sa-page .tm:not(.is-open):hover { padding-left: 0; }
+
+  .sa-page .tm__title {
+    font-size: clamp(20px, 5.4vw, 24px);
+    white-space: normal;
+  }
+
+  .sa-page .tm__right { display: block; }
+
+  .sa-page .tm__plus {
+    position: absolute;
+    right: 0;
+    top: 18px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .sa-page .tm__plus img {
+    left: 9px;
+    top: 9px;
+  }
+
+  /* border-box is global, so the padding has to collapse with the height -
+     otherwise the closed panel is still 32px tall */
+  .sa-page .tm__panel {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+    transition: max-height 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+                padding 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+                opacity 0.3s ease,
+                background-color 0.45s ease;
+  }
+
+  .sa-page .tm.is-open .tm__panel {
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    padding: 16px 0 0;
+    opacity: 1;
+    background: rgba(244, 244, 244, 0);
+  }
+
+  /* `relative`, not `static`: the glyph inside is centred against this box,
+     so dropping it out of the positioned flow throws the icon into the row */
+  .sa-page .tm__tile,
+  .sa-page .tm.is-open .tm__tile {
+    position: relative;
+    display: block;
+    left: auto;
+    top: auto;
+    width: 64px;
+    height: 64px;
+  }
+
+  .sa-page .tm__desc,
+  .sa-page .tm.is-open .tm__desc {
+    position: static;
+    display: block;
+    left: auto;
+    top: auto;
+    width: auto;
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.45;
+    transform: none;
+  }
+
+  /* ---------- Benefits ----------
+     The three columns stack, and their copy stops hiding behind the active
+     state: on a touch screen there is no hover to reveal it, and a stack
+     has the room a 370px-wide column did not. */
+  .sa-page .sa-ben { height: auto; }
+  .sa-page .sa-ben .design-frame--fill { padding: 34px 0 40px; }
+
+  .sa-page .sa-ben__art { display: none; }
+
+  .sa-page .sa-ben__inner {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .sa-page .sa-ben__head {
+    width: auto;
+    height: auto;
+  }
+
+  .sa-page .sa-ben__headcol { gap: 16px; }
+
+  .sa-page .sa-ben__title {
+    width: auto;
+    font-size: clamp(26px, 7.2vw, 34px);
+  }
+
+  /* `relative`, not `static`: .wp__bg is inset:0 on this card, and without a
+     containing block here the photo backs the whole section instead */
+  .sa-page .wp {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin-top: 26px;
+  }
+
+  .sa-page .wp__cols {
+    position: static;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+  }
+
+  /* `flex: 1 0 0` divided a 1110px row; in a column its zero basis takes the
+     copy out of the container's intrinsic height and every panel collapses
+     to its own padding */
+  .sa-page .wp-col {
+    flex: 0 0 auto;
+    height: auto;
+    padding: 22px 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    /* the copy is always on show here, so every panel needs the ground the
+       active one had - the active state stays the darker of the two */
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .sa-page .wp-col.is-active { background: rgba(0, 0, 0, 0.7); }
+
+  .sa-page .wp-col:last-child { border-bottom: 0; }
+
+  .sa-page .wp-col__body {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .sa-page .wp-col__num { font-size: 34px; }
+  .sa-page .wp-col__title { font-size: 22px; }
+
+  .sa-page .wp-col__text,
+  .sa-page .wp-col.is-active .wp-col__text {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+    opacity: 1;
+    transform: none;
+  }
+
+  .sa-page .wp__arrows {
+    position: static;
+    justify-content: center;
+    padding: 18px 0 22px;
+  }
+
+  .sa-page .wp__arrow {
+    width: 48px;
+    height: 48px;
+  }
+
+  .sa-page .wp__arrow img {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* ---------- Hire Extra Force ---------- */
+  .sa-page .sa-hire {
+    height: auto;
+    margin-top: 34px;
+  }
+
+  .sa-page .sa-hire__frame {
+    left: auto;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    height: auto;
+    padding: 30px var(--shell-gutter);
+    transform: none;
+  }
+
+  .sa-page .sa-hire__left {
+    width: auto;
+    gap: 12px;
+  }
+
+  /* the <br> keeps the two lines; the nowrap is what would overflow */
+  .sa-page .sa-hire__title {
+    font-size: clamp(24px, 6.6vw, 32px);
+    white-space: normal;
+  }
+
+  .sa-page .sa-hire__rocket {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 4px;
+  }
+
+  .sa-page .sa-hire__right {
+    width: 100%;
+    gap: 16px;
+    padding: 0;
+  }
+
+  .sa-page .sa-hire__text {
+    width: auto;
+    font-size: clamp(15px, 4.1vw, 17px);
+  }
+
+  /* ---------- Contact ---------- */
+  .sa-page .sa-contact {
+    height: auto;
+    margin-top: 34px;
+  }
+
+  .sa-page .sa-contact .design-frame--fill { padding: 34px 0 40px; }
+
+  .sa-page .sa-contact__art { display: none; }
+
+  .sa-page .sa-contact__form {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .sa-page .sa-contact__title {
+    font-size: clamp(28px, 7.6vw, 38px);
+    white-space: normal;
+  }
+
+  .sa-page .sa-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .sa-page .sa-field {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  /* the second row places its three radios at left:0/176/359 of a 440px
+     strip - here they wrap like the first row does */
+  .sa-page .sa-source__row,
+  .sa-page .sa-source__row--fixed {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+  }
+
+  .sa-page .sa-source__row--fixed .sa-radio {
+    position: static;
+    left: auto;
+    top: auto;
+  }
+
+  .sa-page .sa-radio {
+    align-items: center;
+    min-height: 24px;
+  }
+
+  .sa-page .sa-contact__ctas {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    margin-top: 26px;
+  }
+
+  /* ---------- Footer ---------- */
+  .sa-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .sa-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .sa-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .sa-page .footer__brand { height: auto; }
+
+  .sa-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  .sa-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .sa-page .footer__col,
+  .sa-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  .sa-page .footer__col ul { gap: 0; }
+
+  .sa-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .sa-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned to a desktop text length */
+  .sa-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   STAFF AUGMENTATION - TABLET (769px - 1024px)
+
+   The reflow above runs the whole band, so this layer only puts back
+   what the extra room pays for: the panel keeps its desktop inset and
+   a 48px gutter, and the stacks that were column-only because 320px
+   had no second column go back to two-up.
+
+   What stays stacked is deliberate. The teams accordion needs
+   title + 500px panel + plus on one line, and the benefits band needs
+   three readable columns; neither fits the 637px of content this band
+   opens with, so both keep the disclosure and the stack rather than
+   working at one end of the band and breaking at the other.
+   =========================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  body.sa-page {
+    --shell-gutter: 48px;
+  }
+
+  /* ---------- Hero: copy column, cards back in a row ---------- */
+  .sa-page .sa-hero .design-frame--fill { padding: 92px 0 44px; }
+
+  .sa-page .sa-hero__copy {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .sa-page .sa-hero__title { font-size: 46px; }
+  .sa-page .sa-hero__eyebrow { font-size: 24px; }
+
+  .sa-page .sa-hero__cards {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .sa-page .sa-card { width: 50%; }
+
+  .sa-page .sa-badges { justify-content: flex-start; }
+
+  /* ---------- Heads: title left, lede right ---------- */
+  .sa-page .sa-proc__head,
+  .sa-page .sa-tech__head,
+  .sa-page .sa-teams__head {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  .sa-page .sa-proc__headcol,
+  .sa-page .sa-tech__headcol,
+  .sa-page .sa-teams__headcol {
+    flex: 0 1 44%;
+  }
+
+  .sa-page .sa-proc__lede,
+  .sa-page .sa-tech__lede,
+  .sa-page .sa-teams__lede {
+    flex: 0 1 50%;
+    margin-top: 4px;
+  }
+
+  .sa-page .sa-proc__title,
+  .sa-page .sa-tech__title,
+  .sa-page .sa-teams__title { font-size: 36px; }
+
+  /* ---------- Process: carousel and stack side by side ----------
+     378 + 190 of stack still fits the 637px this band opens with, so
+     the two panes stay next to each other the way the design has them;
+     only the chips and their connectors - a 732px composition - stay
+     out. The border moves back to the divider between the two. */
+  .sa-page .sa-proc__steps {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .sa-page .pl-panel {
+    flex: 0 0 378px;
+    padding-top: 0;
+    border-top: 0;
+    border-right: 1px solid var(--hairline);
+  }
+
+  .sa-page .pl-viewport { margin: 0; }
+  .sa-page .pl-controls { margin: 18px 0 0; }
+
+  .sa-page .pl-diagram {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: auto;
+    min-height: 340px;
+  }
+
+  /* ---------- Technologies ----------
+     capped at three 204px cards so the five wrap 3 + 2 for the whole
+     band; left to itself the row fits a fourth card at the wide end and
+     orphans the fifth */
+  .sa-page .sa-skills__cards {
+    gap: 20px;
+    max-width: 692px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Contact: the field rows pair up again ---------- */
+  .sa-page .sa-row {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .sa-page .sa-field { width: auto; flex: 1 0 0; }
+
+  .sa-page .sa-contact__title { font-size: 42px; }
+
+  /* ---------- Hire ---------- */
+  .sa-page .sa-hire__title { font-size: 36px; }
+
+  .sa-page .sa-hire__text {
+    max-width: 620px;
+    font-size: 19px;
+  }
+
+  /* ---------- Footer: the three link columns fit again ---------- */
+  .sa-page .footer__cols {
+    flex-direction: row;
+    gap: 40px;
+    white-space: nowrap;
+  }
+
+  .sa-page .footer__col,
+  .sa-page .footer__col--wide { width: auto; }
+
+  .sa-page .footer__bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* ===========================================================
+   SALESFORCE - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About and Staff Augmentation
+   sheets are:
+
+     * `.sf-page` - only salesforce.html carries it, so its
+       .cs-page siblings keep the desktop composition.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint.
+
+   Last in the file on purpose: every block on this page is a
+   fixed-height section whose children sit on absolute Figma
+   coordinates inside a centred 1244 frame, and undoing that means
+   re-declaring `position`, `left/top`, `width` and `transform` on
+   selectors set further up - these have to be the declarations
+   that win.
+
+   The two additions to salesforce.html - the `.nav-burger` and
+   the `.m-nav` drawer - are both display:none in the base sheet,
+   so they exist in the markup without reaching desktop.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset, every `padding: 0 var(--shell-gutter)` below -
+     without touching one of those selectors. */
+  body.sf-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .sf-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .sf-page .wrap section[id],
+  .sf-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The split-panel overlay is a 57.8% / 42.2% two-pane screen whose copy
+     is parked at left:120px - there is no room for either pane here. The
+     drawer takes over, so its trigger stands down with it. */
+  .sf-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  .sf-page .burger,
+  .sf-page .menu-overlay { display: none; }
+
+  /* assets/menu-icon.svg draws its two red bars outside the 40x40 viewBox
+     and the clipPath cuts them off - same fix the other pages use: draw
+     the bars in CSS. */
+  .sf-page .nav-burger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .sf-page .nav-burger img { display: none; }
+
+  .sf-page .nav-burger::before,
+  .sf-page .nav-burger::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    width: 26px;
+    height: 2.5px;
+    border-radius: 1.25px;
+    background: var(--primary-color);
+  }
+
+  .sf-page .nav-burger::before { top: 15px; }
+  .sf-page .nav-burger::after { top: 26px; }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .sf-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .sf-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .sf-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* the side tab is a second, competing entry point to the enquiry form -
+     on mobile the drawer's CTA owns it, so the tab stands down */
+  .sf-page .talk-tab { display: none; }
+
+  /* ---------- Enquiry form: full-screen sheet ----------
+     With the side tab gone the card has no handle, so the ✕ added to the
+     markup is switched on here and here only. */
+  .sf-page .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .sf-page .lt-form__card {
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .sf-page .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .sf-page .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .sf-page .lt-form__title { font-size: 26px; }
+
+  .sf-page .lt-form__submit {
+    min-height: 44px;
+    padding: 0 24px;
+  }
+
+  /* ---------- Hero ----------
+     The 816px stage becomes an auto-height column: the photograph, the
+     fade and the grid plate stay absolute behind it, the copy block and
+     everything inside it comes back into the flow. */
+  .sf-page .sf-hero { height: auto; }
+
+  .sf-page .sf-hero .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    /* the fixed 62px bar floats over this hero - .cs-page opts out of the
+       navbar's flow spacer, so the clearance has to live here */
+    padding: 96px 0 40px;
+  }
+
+  /* the grid plate hangs 621px off the left edge of a 1244 frame; at this
+     width it simply backs the section */
+  .sf-page .sf-hero__grid {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* z-index, not DOM order: the photo, the fade and the grid are all
+     absolute siblings inside the same frame, and the copy has to out-paint
+     the fade's white wash at the foot of the block */
+  .sf-page .sf-hero__copy {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: flex-start;
+  }
+
+  /* the blue rule sat outside the text box on negative offsets; in the
+     column it becomes a plain left accent on the flow */
+  .sf-page .sf-hero__eyebrow {
+    position: static;
+    height: auto;
+    padding: 2px 0 2px 12px;
+    font-size: clamp(16px, 4.6vw, 22px);
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  /* 54px nowrap over two <br> lines - "Salesforce Development" alone is
+     wider than the panel, so the nowrap has to go with it */
+  .sf-page .sf-hero__title {
+    position: static;
+    font-size: clamp(30px, 8.4vw, 46px);
+    line-height: 1.1;
+    white-space: normal;
+  }
+
+  /* the lede was vertically centred on a 168px baseline; in the flow the
+     half-line lift has nothing to centre against */
+  .sf-page .sf-hero__lede {
+    position: static;
+    width: auto;
+    max-width: 46ch;
+    font-size: clamp(14px, 3.8vw, 16px);
+    line-height: 1.45;
+    transform: none;
+  }
+
+  /* relative, not static: .pill-btn__circle is absolutely positioned against
+     this button, and a static button would hand it .sf-hero__copy instead -
+     the white sweep would then stretch across the whole copy column and
+     paint out the lede */
+  .sf-page .sf-hero__btn {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 175px;
+    max-width: 100%;
+    height: 48px;
+  }
+
+  /* the 332px box existed to force a 3 + 3 wrap under the desktop copy
+     column; here the badges wrap on their own, and they shrink so three
+     still fit a 320px panel rather than pushing a scrollbar */
+  .sf-page .sf-certs {
+    position: static;
+    width: auto;
+    gap: 12px;
+  }
+
+  .sf-page .sf-certs img {
+    width: clamp(64px, 19vw, 100px);
+    height: clamp(64px, 19vw, 100px);
+  }
 }

@@ -680,21 +680,70 @@
       document.documentElement.style.setProperty('--sbw', (w > 0 ? w : 0) + 'px');
     };
 
+    /* One variable drives the panel and the burger, so the cross can never
+       disagree with the panel about which state the menu is in.
+
+       The icon waits for the panel in *both* directions: `is-cross` on the
+       burger is only ever flipped by the panel's own transitionend, never by
+       the click. Bars fold into the cross after the panel has arrived, and the
+       cross unfolds back into bars after it has left — the same 0.45s morph,
+       the same easing, the same 0.6s wait ahead of it, so opening and closing
+       are mirror images. Gate one side on the click and the other on the
+       panel, as this did before, and the two directions no longer match.
+
+       `is-menu-open` on <body> is the separate question of whether the menu is
+       *on screen* — open or still sliding out. The navbar's z-index over the
+       panel, the veil being off and the scroll lock all hang off it, so it
+       goes on at the click and comes off only once the panel has gone. */
+    var MENU_SLIDE = 600; /* .menu-overlay transform, in ms */
+    var menuOpen = false;
+    var menuSettleTimer = null;
+
+    var settleMenu = function () {
+      window.clearTimeout(menuSettleTimer);
+      menuSettleTimer = null;
+
+      /* the panel is at rest; the icon may now start its own morph */
+      burger.classList.toggle('is-cross', menuOpen);
+
+      if (menuOpen) return; /* re-opened mid-close — the open look stands */
+      gutter(false);
+      document.body.classList.remove('is-menu-open');
+    };
+
     var setMenu = function (open) {
-      gutter(open);
-      document.body.classList.toggle('is-menu-open', open);
+      if (open === menuOpen) return;
+      menuOpen = open;
+
       overlay.classList.toggle('is-open', open);
       overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
       burger.setAttribute('aria-expanded', open ? 'true' : 'false');
       burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+
+      if (open) {
+        gutter(true);
+        document.body.classList.add('is-menu-open');
+      }
+
+      /* transitionend is the trigger; the timer is only the safety net for
+         the cases where it never fires — a background tab, or a panel the
+         browser decides is already where it was asked to go */
+      window.clearTimeout(menuSettleTimer);
+      menuSettleTimer = window.setTimeout(settleMenu, MENU_SLIDE + 60);
     };
 
+    /* the panel also transitions `visibility`, and its children run their own
+       transitions that bubble — only the panel's transform settles the menu */
+    overlay.addEventListener('transitionend', function (e) {
+      if (e.target === overlay && e.propertyName === 'transform') settleMenu();
+    });
+
     burger.addEventListener('click', function () {
-      setMenu(!overlay.classList.contains('is-open'));
+      setMenu(!menuOpen);
     });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('is-open')) setMenu(false);
+      if (e.key === 'Escape' && menuOpen) setMenu(false);
     });
 
     /* follow a link, then let the panel close behind it */
