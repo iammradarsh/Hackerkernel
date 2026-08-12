@@ -65,7 +65,7 @@
 
   /* design frame = 1280, content wrapper = 1244, inner grid = 1040 */
   --wrap: 1244px;
-  --inner: 1040px;
+  --inner: 1095px;
 
   /* the grey panel floats inside a white page frame */
   --shell-inset: 18px;
