@@ -355,6 +355,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   color: var(--text-color);
   white-space: nowrap;
   font-family: var(--font-poppins);
+  font-weight: 400;
 }
 
 /* the vertical padding is the 2.5.8 target: the line box alone is ~20px, and
