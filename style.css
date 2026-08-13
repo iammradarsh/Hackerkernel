@@ -14603,6 +14603,733 @@ body.is-chatbot-open { overflow: hidden; }
     width: clamp(64px, 19vw, 100px);
     height: clamp(64px, 19vw, 100px);
   }
+
+  /* ---------- The Future of Work ----------
+     The 940px stage carried three absolutely-positioned layers: the head
+     row, the 440x385 gear stage at top:378, and four notes parked on the
+     coordinates that put each one beside its own gear. None of those
+     offsets survive a 320-430px panel, so the frame becomes a column:
+     head, diagram, then the notes as a labelled list in gear order
+     (Einstein, Data, Trust-red, Trust-blue). */
+  .sf-page .sf-fw {
+    height: auto;
+    /* the cloud band still hangs off the section bottom, so the column
+       has to clear its full height */
+    padding: 48px 0 120px;
+  }
+
+  .sf-page .sf-fw .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* the band is one 1280-wide artwork read through two edge windows; it
+     halves cleanly - artwork, height and both crop offsets - so the
+     middle stays white behind the diagram instead of closing up */
+  .sf-page .sf-fw__cloud { height: 115px; }
+  .sf-page .sf-fw__cloud img { width: 640px; }
+
+  .sf-page .sf-fw__cloud--left { width: 42%; }
+  .sf-page .sf-fw__cloud--left img { left: -1px; }
+
+  .sf-page .sf-fw__cloud--right { width: 32%; }
+  .sf-page .sf-fw__cloud--right img { left: -439px; }
+
+  /* head: the badge/title column and the lede were a space-between row
+     on a 152px baseline - one column, no baseline to sit on */
+  .sf-page .sf-fw__head {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .sf-page .sf-fw__headcol { gap: 14px; }
+
+  /* 40px nowrap over two <br> lines - "CRM + AI + Data + Trust." alone
+     overruns the panel, so the nowrap goes with the size */
+  .sf-page .sf-fw__title {
+    font-size: clamp(24px, 6.6vw, 34px);
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .sf-page .sf-fw__lede {
+    width: auto;
+    max-width: 52ch;
+    font-size: clamp(14px, 3.8vw, 16px);
+    line-height: 1.5;
+  }
+
+  /* the stage is one rigid 440x385 unit - every connector meets its gear
+     teeth on a fixed offset, so it scales as a whole rather than reflows.
+     transform leaves the pre-scale height in the flow, hence the negative
+     margin; the gutter is dropped so the artwork gets the full panel. */
+  .sf-page .fw-diagram {
+    --fw-scale: .8;
+    position: relative;
+    left: auto;
+    top: auto;
+    align-self: center;
+    transform: scale(var(--fw-scale));
+    transform-origin: top center;
+    margin-bottom: calc(385px * (var(--fw-scale) - 1));
+  }
+
+  /* the notes stop being callouts and become the list the diagram is now
+     only illustrating - each keeps its gear's colour as a left accent */
+  .sf-page .fw-note {
+    position: static;
+    left: auto;
+    top: auto;
+    width: auto;
+    gap: 4px;
+    padding-left: 12px;
+    border-left: 2px solid;
+    font-size: clamp(14px, 3.9vw, 16px);
+    line-height: 1.45;
+    margin: 0 var(--shell-gutter);
+  }
+
+  /* the notes stack, so the column gap is the only spacing they need */
+  .sf-page .fw-note + .fw-note { margin-top: -10px; }
+
+  /* the hard breaks were cut to the 237px callout box */
+  .sf-page .fw-note__text br { display: none; }
+
+  .sf-page .fw-note--einstein   { border-color: #7a6fde; }
+  .sf-page .fw-note--data       { border-color: #81ca01; }
+  .sf-page .fw-note--trust-red  { border-color: #fe3d40; }
+  .sf-page .fw-note--trust-blue { border-color: #207fe8; }
+
+  /* ---------- CRM Development Solutions ----------
+     Desktop stacks the two glass panels ON the orbit: .sa-skills is a
+     1132x637 stage, the orbit fills it on inset:0, and .sf-cloudcards
+     floats over it on z-index 2. At panel width the panels can no longer
+     sit on the artwork without burying it, so the stage splits in two -
+     a fixed orbit band, then the panels in the flow underneath. */
+  .sf-page .sf-crm {
+    height: auto;
+    padding: 48px 0 56px;
+  }
+
+  .sf-page .sf-crm .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .sf-page .sf-crm__head {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .sf-page .sf-crm__headcol { gap: 14px; }
+
+  .sf-page .sf-crm__title {
+    width: auto;
+    font-size: clamp(24px, 6.6vw, 34px);
+    line-height: 1.2;
+  }
+
+  .sf-page .sf-crm__lede {
+    width: auto;
+    max-width: 52ch;
+    font-size: clamp(14px, 3.8vw, 16px);
+    line-height: 1.5;
+  }
+
+  /* the stage keeps a relative box so the orbit can stay absolute inside
+     it; padding-top is the band the orbit is cropped into, and the panels
+     start below it */
+  .sf-page .sf-crm__skills {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    padding-top: 165px;
+    transform: none;
+    overflow: hidden;
+  }
+
+  /* the orbit is ~40 SVG fragments on 1132x637 coordinates, several of
+     them on percentage insets - it only holds together at that size, so
+     it keeps the box and scales as one piece. translateY(-215px) runs
+     before the scale, lifting the empty top of the stage out of the band
+     so the rings and the cloud land in it. */
+  .sf-page .sa-orbit {
+    --orb-scale: .38;
+    inset: auto;
+    left: 50%;
+    top: 0;
+    width: 1132px;
+    height: 637px;
+    margin-left: -566px;
+    transform: scale(var(--orb-scale)) translateY(-215px);
+    transform-origin: top center;
+  }
+
+  /* side by side at 1068px wide; one column here */
+  .sf-page .sf-cloudcards {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin: 0 var(--shell-gutter);
+    transform: none;
+  }
+
+  .sf-page .sf-cc {
+    align-items: stretch;
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  /* `!important` because both grids carry an inline Figma width - 433px
+     and 425px - measured against the desktop panel. auto-fit rather than
+     a fixed count: two columns while the panel affords 128px each, one
+     below that, without a second breakpoint. */
+  .sf-page .sf-cc__grid {
+    width: auto !important;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    gap: 10px 8px;
+  }
+
+  /* nowrap was safe on a 433px row; in a ~130px cell "Platform &
+     Ecosystem" has to be allowed to take a second line */
+  .sf-page .sf-cc__item {
+    padding: 2px 4px;
+    gap: 6px;
+    font-size: clamp(13px, 3.6vw, 15px);
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  /* ---------- Salesforce Solutions & Services (01-04) ----------
+     The same .ai-auto component ai-solution.html carries, so this is the
+     same reflow its block runs - repeated rather than shared because each
+     page's block is self-contained, and scoped to .sf-serv so it cannot
+     reach an .ai-auto on any other page.
+
+     The four cards are a butted 1110px row, each a 277.5x327.8 stage with
+     the number, title and copy on absolute offsets inside it; the row
+     stacks and each card becomes a flow column. */
+  .sf-page .sf-serv { height: auto; }
+
+  .sf-page .sf-serv .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 34px 0 40px;
+  }
+
+  .sf-page .sf-serv .ai-auto__head {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .sf-page .sf-serv .ai-auto__headcol {
+    position: static;
+    gap: 12px;
+  }
+
+  /* the <br> in "Salesforce Solutions &<br>Services" still breaks where
+     the design asks; dropping nowrap only lets the rest reflow under it */
+  .sf-page .sf-serv .ai-auto__title {
+    font-size: clamp(26px, 7.2vw, 34px);
+    white-space: normal;
+  }
+
+  /* bottom-aligned against the heading column on desktop; in the stack it
+     is simply the paragraph under it */
+  .sf-page .sf-serv .ai-auto__lede {
+    position: static;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    font-size: clamp(15px, 4.1vw, 18px);
+    line-height: 1.5;
+  }
+
+  /* the cards butt up against each other in the row - the notch and the
+     leftward shadow are what separate them. Stacked, neither reads, so the
+     stack is spaced and the shadow is turned to face down. */
+  .sf-page .sf-serv .ai-auto__cards {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    width: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .sf-page .sf-serv .au-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+    padding: 18px;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.07));
+  }
+
+  /* a lift with nothing beside it to lift away from, and on a touch screen
+     it is left stuck on the last card tapped */
+  .sf-page .sf-serv .au-card:hover { transform: none; }
+
+  /* `relative` + z-index, not `static`: .au-card__shape is the inset:0
+     clipped block this copy sits on, so the copy has to out-paint it.
+
+     `!important` on the width because these carry inline Figma widths -
+     194px, 205px, 186px, 159px - measured against a 277.5px card. Left
+     alone they would set four different measures down one column. */
+  .sf-page .sf-serv .au-card__num,
+  .sf-page .sf-serv .au-card__title,
+  .sf-page .sf-serv .au-card__text {
+    position: relative;
+    z-index: 1;
+    left: auto;
+    top: auto;
+    width: auto !important;
+  }
+
+  .sf-page .sf-serv .au-card__num { font-size: 38px; }
+  .sf-page .sf-serv .au-card__title { font-size: 17px; }
+  .sf-page .sf-serv .au-card__text { font-size: 14px; line-height: 1.45; }
+
+  /* ---------- Case Files ----------
+     The one block on this page built as Figma auto-layout rather than
+     absolute offsets: the frame is already a flex column and the grid is
+     already fluid. So there is nothing to un-absolute here - the work is
+     releasing the 1244 measuring stick the frame is caged in, and giving
+     the media box a ratio now that the card no longer has a fixed height
+     to divide up.
+
+     The .ai-cases__* selectors are the shared component; only the section
+     class and the Load More pill differ from ai-solution.html. */
+  .sf-page .sf-cases .ai-cases__frame {
+    left: auto;
+    width: 100%;
+    transform: none;
+    gap: 22px;
+    padding: 0 var(--shell-gutter) 30px;
+  }
+
+  /* the two lines are short enough that the nowrap pair still fits a
+     320px panel, so only the size comes down */
+  .sf-page .sf-cases .ai-cases__title { font-size: clamp(24px, 6.6vw, 30px); }
+
+  .sf-page .sf-cases .ai-cases__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  /* 565px divided the card into media + body; with the height released the
+     media has nothing to fill, so it stops being the flexible child and
+     takes a ratio of its own */
+  .sf-page .sf-cases .cf-card {
+    gap: 20px;
+    height: auto;
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .sf-page .sf-cases .cf-card__media {
+    flex: 0 0 auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 18px;
+  }
+
+  .sf-page .sf-cases .cf-card__body { gap: 10px; }
+
+  .sf-page .sf-cases .cf-card__title { font-size: clamp(18px, 5vw, 21px); }
+
+  .sf-page .sf-cases .cf-card__text {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  /* three tags on one row need every pixel of a 320px panel; they wrap
+     rather than push the card wider */
+  .sf-page .sf-cases .cf-card__tags { flex-wrap: wrap; }
+
+  /* the pill is 139px of label plus the 44px disc it opens into */
+  .sf-page .sf-cases__more { min-height: 44px; }
+
+  /* ---------- Benefits ----------
+     The three columns stack, and their copy stops hiding behind the active
+     state: on a touch screen there is no hover to reveal it, and a stack
+     has the room to simply show it. The arrows stay - they still drive the
+     backdrop swap in Script.js - but they come in off their 954px offset. */
+  .sf-page .sf-ben { height: auto; }
+
+  .sf-page .sf-ben .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 34px 0 40px;
+  }
+
+  /* line art pinned at left:807px of a 1244 frame - off the panel entirely
+     at this width */
+  .sf-page .sf-ben__art { display: none; }
+
+  .sf-page .sf-ben .sa-ben__inner {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .sf-page .sf-ben .sa-ben__head {
+    width: auto;
+    height: auto;
+  }
+
+  .sf-page .sf-ben .sa-ben__headcol { gap: 16px; }
+
+  /* the three <br> breaks - "Benefits of Our / Salesforce Solutions /
+     ( Business Growth )" - are the design's own, so only the 414px
+     measure and the size come off */
+  .sf-page .sf-ben .sa-ben__title {
+    width: auto;
+    font-size: clamp(26px, 7.2vw, 34px);
+  }
+
+  /* `relative`, not `static`: .wp__bg is inset:0 on this card, and without a
+     containing block here the photo backs the whole section instead */
+  .sf-page .sf-ben .wp {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin-top: 26px;
+  }
+
+  .sf-page .sf-ben .wp__cols {
+    position: static;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+  }
+
+  /* the scrim moves from the columns to the card. Per-column grounds band
+     against the arrows strip below them - that strip is not a column, so it
+     kept only the 0.28 base wash and the photo read bright under it while
+     the copy above sat on 0.45. One wash over the whole card instead, and
+     the columns tint rather than ground. */
+  .sf-page .sf-ben .wp__bg::after { background: rgba(0, 0, 0, 0.58); }
+
+  /* `flex: 1 0 0` divided a 1110px row; in a column its zero basis takes the
+     copy out of the container's intrinsic height and every panel collapses
+     to its own padding */
+  .sf-page .sf-ben .wp-col {
+    flex: 0 0 auto;
+    height: auto;
+    padding: 22px 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    /* the card carries the wash now, so the columns go back to clear and
+       the active one is a tint on top of it rather than a second ground */
+    background: rgba(0, 0, 0, 0);
+  }
+
+  .sf-page .sf-ben .wp-col.is-active { background: rgba(0, 0, 0, 0.28); }
+
+  .sf-page .sf-ben .wp-col:last-child { border-bottom: 0; }
+
+  .sf-page .sf-ben .wp-col__body {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .sf-page .sf-ben .wp-col__num { font-size: 34px; }
+  .sf-page .sf-ben .wp-col__title { font-size: 22px; }
+
+  /* the reveal is a hover transition on desktop; with all three open it is
+     the transform and the fade that have to go, not just the opacity */
+  .sf-page .sf-ben .wp-col__text,
+  .sf-page .sf-ben .wp-col.is-active .wp-col__text {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+    opacity: 1;
+    transform: none;
+  }
+
+  .sf-page .sf-ben .wp__arrows {
+    position: static;
+    justify-content: center;
+    padding: 18px 0 22px;
+  }
+
+  .sf-page .sf-ben .wp__arrow {
+    width: 48px;
+    height: 48px;
+  }
+
+  .sf-page .sf-ben .wp__arrow img {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* ---------- Ready to Transform ----------
+     A two-column band - headline left, copy and button right - inside a
+     .design-frame rather than a --fill one, so releasing the 1244 width is
+     what turns the row into a stack. */
+  .sf-page .sf-cta {
+    height: auto;
+    margin-top: 34px;
+  }
+
+  .sf-page .sf-cta .sa-hire__frame {
+    left: auto;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    height: auto;
+    padding: 30px var(--shell-gutter);
+    transform: none;
+  }
+
+  .sf-page .sf-cta .sa-hire__left { gap: 12px; }
+
+  /* the <br> keeps the two lines; the nowrap is what would overflow -
+     "Ready to Transform Your" alone is wider than the panel at 41px */
+  .sf-page .sf-cta .sa-hire__title {
+    font-size: clamp(24px, 6.6vw, 32px);
+    white-space: normal;
+  }
+
+  .sf-page .sf-cta .sa-hire__right {
+    width: 100%;
+    gap: 16px;
+    padding: 0;
+  }
+
+  /* 436px on this page rather than the staffing page's own 537px measure */
+  .sf-page .sf-cta .sa-hire__text {
+    width: auto;
+    font-size: clamp(15px, 4.1vw, 17px);
+  }
+
+  /* 181px of label plus the disc it opens into */
+  .sf-page .sf-cta__btn { min-height: 44px; }
+
+  /* ---------- Contact ----------
+     The 667px band is a 594px form absolutely placed at left:67, with the
+     rocket filling the 550px of frame left beside it. The form comes into
+     the flow at panel width and the artwork has no column to sit in. */
+  .sf-page .sa-contact {
+    height: auto;
+    margin-top: 34px;
+  }
+
+  .sf-page .sa-contact .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 34px 0 40px;
+  }
+
+  /* the rocket is parked in the 550px of frame the 594px form leaves to its
+     right - there is no such column here */
+  .sf-page .sa-contact__art { display: none; }
+
+  .sf-page .sa-contact__form {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  /* two nowrap lines at 46px - "We'll Build It." alone overruns the panel */
+  .sf-page .sa-contact__title {
+    font-size: clamp(28px, 7.6vw, 38px);
+    white-space: normal;
+  }
+
+  /* two fields to a row across 594px; one to a row here */
+  .sf-page .sa-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .sf-page .sa-field {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  /* 12px in a text field is under the 16px iOS Safari zooms the whole
+     viewport to reach, and it does not zoom back out on blur */
+  .sf-page .sa-input input,
+  .sf-page .sa-input textarea { font-size: 16px; }
+
+  /* the second row places its three radios at left:0/176/359 of a 440px
+     strip - here they wrap like the first row does */
+  .sf-page .sa-source__row,
+  .sf-page .sa-source__row--fixed {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+  }
+
+  .sf-page .sa-source__row--fixed .sa-radio {
+    position: static;
+    left: auto;
+    top: auto;
+  }
+
+  .sf-page .sa-radio {
+    align-items: center;
+    min-height: 24px;
+  }
+
+  /* the CTA pair was a right-aligned strip pinned at top:522 of the form
+     box - the form is auto-height now, so there is no 522 to pin to */
+  .sf-page .sa-contact__ctas {
+    position: static;
+    left: auto;
+    top: auto;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    margin-top: 26px;
+  }
+
+  /* ---------- Footer ----------
+     The 371px band holds a 278px absolute inner pinned 60px down; both
+     numbers are a one-row layout, so the band goes auto and the inner
+     comes into the flow with its own padding. The inner already reads
+     --shell-gutter, which body.sf-page re-based to 20px at the top of
+     this block, so its edges follow the panel without being touched. */
+  .sf-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .sf-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .sf-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* 176px was the height that squared the brand against the link row */
+  .sf-page .footer__brand { height: auto; }
+
+  .sf-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  /* three link columns side by side, set `nowrap` so the desktop row can
+     never break mid-label - both have to go together */
+  .sf-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .sf-page .footer__col,
+  .sf-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  /* the list gap goes to the links themselves: 44px of target each, rather
+     than 24px links with space between them */
+  .sf-page .footer__col ul { gap: 0; }
+
+  .sf-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .sf-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned at left:160.89px, a desktop text
+     length - it lands mid-sentence once the line wraps */
+  .sf-page .footer__cookies img { display: none; }
+}
+
+/* Below ~372px the 0.8 stage is wider than the panel it sits in; the
+   diagram is the only fixed-width thing left on the page, so it is the
+   only thing this step re-measures. */
+@media (max-width: 380px) {
+  .sf-page .fw-diagram { --fw-scale: .68; }
 }
 
 /* ===========================================================
@@ -15694,4 +16421,944 @@ body.is-chatbot-open { overflow: hidden; }
 
   /* the underline flourish is pinned to a desktop text length */
   .ai-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   CAREER - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About, Staff Augmentation,
+   Salesforce and AI Solutions sheets are:
+
+     * `.cr-page` - only career.html carries it, so its .jd-page
+       sibling keeps the desktop composition even though the two
+       share the hero's paper and glow rules.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint.
+
+   Last in the file on purpose: the hero is a fixed-height section
+   whose children sit on absolute Figma coordinates inside a centred
+   1244 frame, and undoing that means re-declaring `position`,
+   `left/top` and `width` on selectors set further up - these have
+   to be the declarations that win.
+
+   NAVIGATION IS NOT REPEATED HERE. menu.js builds the same
+   `.nav-burger` and `.m-nav` drawer into career.html as into every
+   other page, and SHARED MOBILE NAVIGATION - unscoped, further up -
+   is what hides `.burger` / `.menu-overlay` and dresses them. Only
+   the bar's own height and the logo inside it are page work.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset - without touching one of those selectors. */
+  body.cr-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .cr-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .cr-page .wrap section[id],
+  .cr-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The header swap - inline links and the split-panel overlay out,
+     `.m-nav` drawer in - is in SHARED MOBILE NAVIGATION, above; it is
+     the same on every page. */
+  .cr-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .cr-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .cr-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cr-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* ---------- Hero ----------
+     Three absolute layers on a 558px stage: grid paper hung at left:-620
+     so only its right half reaches the panel, a warm glow at left:601, and
+     the signboard at left:307. The board carries every word of the hero as
+     vector artwork, so it cannot be reflowed - it is sized to the panel and
+     the other two layers are re-aimed at it.
+
+     `overflow: hidden` is safe here only because the paper stops
+     overhanging below - see the paper rule. */
+  .cr-page .cr-hero {
+    height: auto;
+    overflow: hidden;
+  }
+
+  .cr-page .cr-hero .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    /* the fixed 62px bar floats over this hero - .cr-page opts out of the
+       navbar's flow spacer, so the clearance has to live here */
+    padding: 92px 0 28px;
+  }
+
+  /* 1244 wide at left:-620 and 877 tall in a 558 box: half of it hangs off
+     the panel and the rest overhangs the section, which the white band
+     below paints over. Neither trick survives here, so the ruling simply
+     backs the hero. The radial fade is inset:0 and follows it. */
+  .cr-page .cr-hero__paper {
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* pinned at left:601 of a 1244 frame - off the panel entirely. It is the
+     board's backlight, so it re-centres on the board and every one of its
+     five numbers scales by .62 together: shrinking the frame alone would
+     leave a 769px blur bleeding past the panel edge. */
+  .cr-page .cr-hero__glow {
+    left: 50%;
+    top: 96px;
+    width: 262px;
+    height: 257px;
+    margin-left: -131px;
+  }
+
+  .cr-page .cr-hero__glow img {
+    left: -92px;
+    top: -93px;
+    width: 477px;
+    height: 473px;
+  }
+
+  /* the artwork is the copy, so it scales rather than reflows - width to
+     the panel, height from the 639.228 x 410.464 ratio */
+  .cr-page .cr-hero__board {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+  }
+
+  .cr-page .cr-hero__board img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---------- Open positions ----------
+     A fixed 3 x 346 track set - the row count is part of the design rather
+     than something that follows the viewport - holding 346x244 cards whose
+     every element is on an absolute offset inside them. One column here,
+     and each card becomes a flow column with two things left absolute:
+     the department label in its top-right corner and the arrow in its
+     bottom-right one, both of which are corner furniture rather than
+     part of the stack. */
+  .cr-page .cr-jobs {
+    padding: 28px var(--shell-gutter) 36px;
+  }
+
+  .cr-page .cr-jobs__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  /* the hairline stays left-only, as on desktop: the paper texture and its
+     radial fade are what give each card its ground, not a box rule */
+  .cr-page .job-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    width: auto;
+    height: auto;
+    padding: 18px 17px 22px;
+  }
+
+  /* 346x244 hard-coded to the desktop card */
+  .cr-page .job-card__paper {
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* the orange wash under the tags. On desktop only the blob's top edge
+     clears a 244px card, so it reads as a faint tint; against an
+     auto-height card there is no fixed edge for it to peek over and it
+     turns into a solid #F2994A band. Dropped rather than re-aimed - the
+     paper texture and its radial fade are ground enough here. */
+  .cr-page .job-card__blob { display: none; }
+
+  .cr-page .job-card__icon {
+    position: relative;
+    left: auto;
+    top: auto;
+  }
+
+  /* stays absolute: top:48 still centres it against the 76px icon, which
+     keeps its size and is now the first item in the flow at the same
+     18px offset */
+  .cr-page .job-card__dept {
+    font-size: clamp(13px, 3.6vw, 15px);
+  }
+
+  /* the 56px right pad is the arrow's corner - it keeps a wrapped tag row
+     from running under it */
+  .cr-page .job-card__body {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    padding-right: 56px;
+    gap: 14px;
+  }
+
+  /* the two spans are separate flex lines, so the design's break point
+     survives. `normal` is the truncation fix: the card is overflow:hidden,
+     so a nowrap span wider than the panel is silently clipped rather than
+     scrolled - "Human Resource" at 24px is 175px against 226px of content
+     at a 320px viewport, close enough that it has to be allowed to wrap. */
+  .cr-page .job-card__title {
+    font-size: clamp(19px, 5.4vw, 24px);
+    white-space: normal;
+  }
+
+  /* the three pills totalled the body's 211.258px exactly; freed of that
+     measure they wrap rather than push the card wider */
+  .cr-page .job-card__tags {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 6px;
+  }
+
+  /* 9.851px is a Figma-exact size, not a legible one on a phone */
+  .cr-page .job-card__tags span {
+    height: 26px;
+    padding: 0 12px;
+    font-size: clamp(10px, 2.9vw, 11px);
+  }
+
+  /* left:285/top:200 are 346x244 coordinates; re-aimed at the corner and
+     opened out to a 44px target */
+  .cr-page .job-card__go {
+    left: auto;
+    right: 17px;
+    top: auto;
+    bottom: 18px;
+    width: 44px;
+    height: 44px;
+  }
+
+  /* on a touch screen the nudge is left stuck on the last card tapped */
+  .cr-page .job-card__go:hover { transform: none; }
+
+  /* ---------- Footer ----------
+     The same shared footer every other page carries, so this is the same
+     reflow their blocks run. The 371px band holds a 278px absolute inner
+     pinned 60px down; both numbers are a one-row layout, so the band goes
+     auto and the inner comes into the flow with its own padding. The
+     inner already reads --shell-gutter, which body.cr-page re-based to
+     20px at the top of this block, so its edges follow the panel without
+     being touched. */
+  .cr-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .cr-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .cr-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* 176px was the height that squared the brand against the link row */
+  .cr-page .footer__brand { height: auto; }
+
+  .cr-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  /* three link columns side by side, set `nowrap` so the desktop row can
+     never break mid-label - both have to go together, or "Staff
+     Augumentation" pushes the panel wider than the viewport */
+  .cr-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .cr-page .footer__col,
+  .cr-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  /* the list gap goes to the links themselves: 44px of target each, rather
+     than 24px links with space between them */
+  .cr-page .footer__col ul { gap: 0; }
+
+  .cr-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .cr-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned at left:160.89px, a desktop text
+     length - it lands mid-sentence once the line wraps */
+  .cr-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   JOB DETAILS - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About, Staff Augmentation,
+   Salesforce, AI Solutions and Career sheets are:
+
+     * `.jd-page` - only job-details.html carries it, so the
+       `.cr-page` sibling it shares the hero paper and glow rules
+       with keeps the desktop composition untouched.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint.
+
+   Last in the file on purpose: the hero board hangs every one of
+   its children on absolute Figma coordinates inside a 971 x 647.755
+   box, and undoing that means re-declaring `position`, `left/top`
+   and `width` on selectors set further up - these have to be the
+   declarations that win. It also has to out-rank the `max-width:
+   700px` apply-modal query, which is earlier in the sheet.
+
+   NAVIGATION IS NOT REPEATED HERE. menu.js builds the same
+   `.nav-burger` and `.m-nav` drawer into job-details.html as into
+   every other page, and SHARED MOBILE NAVIGATION - unscoped,
+   further up - is what hides `.burger` / `.menu-overlay` and
+   dresses them. Only the bar's own height and the logo inside it
+   are page work.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset - without touching one of those selectors. */
+  body.jd-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .jd-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to - "Share Job" points at #more-jobs */
+  .jd-page .wrap section[id],
+  .jd-page .wrap aside[id],
+  .jd-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The header swap - inline links and the split-panel overlay out,
+     `.m-nav` drawer in - is in SHARED MOBILE NAVIGATION, above; it is
+     the same on every page. */
+  .jd-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .jd-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .jd-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .jd-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* ---------- Hero ----------
+     A 648px stage carrying three absolute layers: the grid paper hung at
+     left:-620, a warm glow at left:661, and the billboard at left:136.
+
+     Unlike the Career signboard - which is one flat piece of vector art and
+     so can only be scaled - this board is a PNG plate with live text and two
+     live buttons pinned on top of it. Scaling it would take the 42px title
+     to 13px at a 320px viewport, so the board reflows instead: the artwork
+     stands down and the plate is redrawn in CSS around a flow column.
+
+     `overflow: hidden` is safe here only because the paper stops
+     overhanging below - see the paper rule. */
+  .jd-page .jd-hero {
+    height: auto;
+    overflow: hidden;
+  }
+
+  .jd-page .jd-hero .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    /* the fixed 62px bar floats over this hero - .jd-page opts out of the
+       navbar's flow spacer, so the clearance has to live here. The extra
+       over the Career page's 92px is the hanging poles' 46px. */
+    padding: 96px 0 30px;
+  }
+
+  /* 1244 wide at left:-620 and 877 tall in a 648 box: half of it hangs off
+     the panel and the rest overhangs the section, which the white body
+     below paints over. Neither trick survives here, so the ruling simply
+     backs the hero. The radial fade is inset:0 and follows it. */
+  .jd-page .jd-hero__paper {
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* pinned at left:661 of a 1244 frame - off the panel entirely. It is the
+     board's backlight, so it re-centres on the board and every one of its
+     five numbers scales by .62 together: shrinking the frame alone would
+     leave a 769px blur bleeding past the panel edge. */
+  .jd-page .jd-hero__glow {
+    left: 50%;
+    top: 110px;
+    width: 262px;
+    height: 257px;
+    margin-left: -131px;
+  }
+
+  .jd-page .jd-hero__glow img {
+    left: -92px;
+    top: -93px;
+    width: 477px;
+    height: 473px;
+  }
+
+  /* ---------- the billboard ----------
+     971 x 647.755 of absolute coordinates become one flow column inset by
+     the panel gutter. The plate the PNG drew is redrawn here: the tiled
+     face as two repeating rules over the artwork's own top-to-bottom
+     gradient, so the board keeps its texture at any width. */
+  .jd-page .jd-board {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: auto;
+    height: auto;
+    margin: 0 var(--shell-gutter);
+    padding: 22px 18px 20px;
+    border-radius: 14px;
+    background:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.038) 0 1px, transparent 1px 34px),
+      repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.038) 0 1px, transparent 1px 34px),
+      linear-gradient(180deg, #2c2d2d 0%, #202021 100%);
+  }
+
+  /* the two poles the plate hangs from. They are part of the artwork on
+     desktop and rise off the top of the frame; here they are 46px of the
+     hero's top padding, at the 30% / 70% the PNG puts them at. */
+  .jd-page .jd-board::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 46px;
+    background:
+      linear-gradient(#2a2b2b, #2a2b2b) 30% 0 / 7px 100% no-repeat,
+      linear-gradient(#2a2b2b, #2a2b2b) 70% 0 / 7px 100% no-repeat;
+  }
+
+  /* the plate, its poles and the white Apply Now panel are one PNG sized to
+     the desktop box - all three are rebuilt above */
+  .jd-page .jd-board__bg { display: none; }
+
+  .jd-page .jd-board__badge {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .jd-page .jd-board__badgeicon {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+  }
+
+  .jd-page .jd-board__badgeicon img {
+    left: 2.25px;
+    top: 2.25px;
+    width: 25.5px;
+    height: 25.5px;
+  }
+
+  .jd-page .jd-board__badgetext {
+    font-size: clamp(19px, 5.4vw, 26px);
+  }
+
+  /* A 649 x 48.7 gradient bar holding one nowrap row, the three facts split
+     by dots. The row cannot hold a line below ~430px, and dot-separated text
+     wraps badly - the separator is left stranded at the end of the line. So
+     the dots go and the facts become chips, which is the tag idiom the More
+     Jobs cards on this same page already use. The bar itself is then only a
+     row of chips, and its gradient would fence them in for no reason. */
+  .jd-page .jd-board__meta {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    background: none;
+  }
+
+  .jd-page .jd-board__metarow {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .jd-page .jd-board__metarow span {
+    padding: 5px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 20px;
+    font-size: clamp(10px, 2.9vw, 12px);
+  }
+
+  .jd-page .jd-board__metarow i { display: none; }
+
+  /* left:calc(50% - 227.5px) is half of the desktop title's own width -
+     a centring trick that only holds while the line cannot wrap */
+  .jd-page .jd-board__title {
+    position: relative;
+    left: auto;
+    top: auto;
+    padding: 2px 0 4px;
+    font-size: clamp(24px, 7.2vw, 38px);
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+  }
+
+  /* Apply Now and Share Job sat on the white sub-plate baked into the PNG,
+     one taking its fill from the artwork and one painting its own. With the
+     artwork gone they carry their own plates: full-width rows on the board,
+     48px of target each, label left and icon right. */
+  .jd-page .jd-board__act {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+    min-height: 48px;
+    padding: 4px 6px 4px 16px;
+    border-radius: 8px;
+    text-align: left;
+  }
+
+  .jd-page .jd-board__act--apply { background: #fff; }
+  .jd-page .jd-board__act--share { background: #e8e9e8; }
+
+  /* -8px of the 16px gap: the two rows are one control block, the way the
+     white plate's two halves read on desktop */
+  .jd-page .jd-board__act--share { margin-top: -8px; }
+
+  .jd-page .jd-board__actlabel {
+    position: relative;
+    left: auto;
+    top: auto;
+    font-size: clamp(15px, 4.2vw, 20px);
+  }
+
+  .jd-page .jd-board__acticon {
+    position: relative;
+    right: auto;
+    top: auto;
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+  }
+
+  /* ---------- Body ----------
+     A 1035px two-column row - 661 of copy beside the 354 More Jobs rail -
+     centred in the panel. The 1035 is the one number on this page that can
+     force a horizontal scroll, so it is the first thing to go: the row
+     becomes a column inset by the panel gutter, copy first and the rail
+     under it. The rail's own internals are the next block down. */
+  .jd-page .jd-body { padding-bottom: 24px; }
+
+  .jd-page .jd-body__inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: auto;
+    margin-inline: 0;
+    padding: 0 var(--shell-gutter);
+  }
+
+  .jd-page .jd-main {
+    width: auto;
+    gap: 16px;
+  }
+
+  /* 30px of padding is a third of the card's width at a 320px viewport */
+  .jd-page .jd-card {
+    gap: 14px;
+    padding: 20px 18px;
+  }
+
+  .jd-page .jd-card__title {
+    font-size: clamp(19px, 5.2vw, 24px);
+  }
+
+  /* 18/22 is a 1.22 ratio set for a 601px measure; at ~245px the lines are
+     short enough that they need the extra leading to stay readable */
+  .jd-page .jd-card__text,
+  .jd-page .jd-card__list {
+    font-size: clamp(14px, 3.9vw, 17px);
+    line-height: 1.55;
+  }
+
+  /* the discs are part of the design, so the indent shrinks rather than
+     the list going flush */
+  .jd-page .jd-card__list { padding-left: 20px; }
+
+  .jd-page .jd-card__list li + li { margin-top: 12px; }
+
+  /* ---------- More Jobs rail ----------
+     A 354px rail of 330 x 148 cards, each one four absolute offsets inside
+     that box. Freed of the rail's width the cards go full-bleed and become
+     flow columns with two things left absolute: the age in the top-right
+     corner and the arrow in the bottom-right one, both corner furniture
+     rather than part of the stack - the same reflow the Career page's
+     .job-card runs. */
+  .jd-page .jd-aside {
+    width: auto;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .jd-page .jd-aside__head { padding: 0 2px; }
+
+  .jd-page .jd-aside__title {
+    font-size: clamp(19px, 5.2vw, 24px);
+  }
+
+  .jd-page .jd-aside__list { gap: 12px; }
+
+  /* the min-height is the arrow's clearance, not a look: once the tags fit on
+     one line the card falls to ~86px, and a 44px control 14px off the bottom
+     then rides up into the age sitting 18px off the top */
+  .jd-page .mini-job {
+    width: auto;
+    height: auto;
+    min-height: 104px;
+    padding: 16px;
+  }
+
+  /* The two corners are reserved per line rather than by padding the whole
+     body: a flat 56px right pad leaves 144px of a 320px viewport's card,
+     and the first two pills need 182 - they would break one-per-line and
+     take the card to three rows of tags. So the title clears the age, the
+     city pill clears the arrow, and the row between them gets the card's
+     full width. */
+  .jd-page .mini-job__body {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    gap: 10px;
+  }
+
+  /* `nowrap` on a 330px card was safe; against a 232px one at a 320px
+     viewport it is silently clipped, the card being overflow:hidden.
+     The right pad is the age's corner. */
+  .jd-page .mini-job__title {
+    padding-right: 76px;
+    font-size: clamp(14px, 3.9vw, 16px);
+    white-space: normal;
+  }
+
+  /* the duration pill under the type pill, then the city on its own line:
+     three pills totalling 172px of a 330px card. Wrapping them as one row
+     lets the card decide where the break falls. */
+  .jd-page .mini-job__tags {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .jd-page .mini-job__tagrow {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* 83px and 77px are the widths the design gives these two - the pills
+     size to their own text here */
+  .jd-page .mini-job__tag {
+    height: 26px;
+    padding: 0 12px;
+    font-size: clamp(10px, 2.9vw, 11px);
+  }
+
+  .jd-page .mini-job__tag--type,
+  .jd-page .mini-job__tag--place {
+    width: auto;
+    padding: 0 12px;
+  }
+
+  /* the city is always the last pill, so reserving the arrow's column on it
+     alone is what keeps the two apart on whichever line they end up sharing */
+  .jd-page .mini-job__tag--place { margin-right: 56px; }
+
+  .jd-page .mini-job__age {
+    left: auto;
+    right: 16px;
+    top: 18px;
+  }
+
+  /* left:262/top:88 are 330x148 coordinates; re-aimed at the corner and
+     opened out to a 44px target */
+  .jd-page .mini-job__go {
+    left: auto;
+    right: 14px;
+    top: auto;
+    bottom: 14px;
+    width: 44px;
+    height: 44px;
+  }
+
+  /* on a touch screen the nudge is left stuck on the last card tapped */
+  .jd-page .mini-job__go:hover { transform: none; }
+
+  /* ---------- Apply For This Position ----------
+     The card already has an unscoped `max-width: 700px` block further up
+     that stacks the two-up rows. These rules are scoped and 68px wider, so
+     they carry the 701-768 band the older query leaves on two columns, and
+     they add what a phone needs on top of the stacking: 48px controls, a
+     drop zone that is a target rather than an 84px strip of 8px type, and
+     a 16px input.
+
+     The modal is a <body> child, outside .page-shell - `.jd-page` still
+     reaches it because the class is on <body> itself. */
+  .jd-page .jm-modal { padding: 16px; }
+
+  .jd-page .jm-card {
+    gap: 22px;
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .jd-page .jm-card__title {
+    font-size: clamp(19px, 5.4vw, 24px);
+    white-space: normal;
+  }
+
+  .jd-page .jm-fields { gap: 18px; }
+
+  /* Name | Email and Phone | Resume were two-up at 748px of card */
+  .jd-page .jm-row {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .jd-page .jm-field { width: 100%; }
+
+  .jd-page .jm-input {
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  /* 16px is not a size choice: iOS Safari zooms the viewport on focus for
+     anything under it, and there is no way back out of that zoom by scroll */
+  .jd-page .jm-input input { font-size: 16px; }
+
+  /* an 84px box of 10px and 8px type is neither readable nor a target */
+  .jd-page .jm-drop {
+    gap: 4px;
+    height: auto;
+    min-height: 116px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .jd-page .jm-drop__lead { font-size: clamp(12px, 3.4vw, 14px); }
+  .jd-page .jm-drop__hint { font-size: clamp(10px, 2.9vw, 11px); }
+  .jd-page .jm-drop__file { font-size: clamp(11px, 3.1vw, 12px); }
+
+  /* on a touch screen the hover wash sticks to the last box tapped */
+  .jd-page .jm-drop:hover {
+    border-color: #f1a0a5;
+    background: rgba(255, 232, 168, 0.12);
+  }
+
+  .jd-page .jm-drop.is-dragover {
+    border-color: var(--primary-color);
+    background: rgba(255, 232, 168, 0.28);
+  }
+
+  /* both actions share the row rather than sitting right-aligned at their
+     own 105 and 120px - each is then half the card and a full target */
+  .jd-page .jm-actions {
+    gap: 10px;
+    justify-content: stretch;
+  }
+
+  .jd-page .jm-close {
+    flex: 1 1 0;
+    width: auto;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  /* the pill's 44px disc is right-anchored, so it holds its corner as the
+     button grows to its half of the row */
+  .jd-page .jm-next {
+    flex: 1 1 0;
+    width: auto;
+    justify-content: flex-start;
+    padding-left: 16px;
+  }
+
+  .jd-page .jm-next .pill-btn__label { font-size: 13px; }
+
+  /* ---------- Footer ----------
+     The same shared footer every other page carries, so this is the same
+     reflow their blocks run. The 371px band holds a 278px absolute inner
+     pinned 60px down; both numbers are a one-row layout, so the band goes
+     auto and the inner comes into the flow with its own padding. The
+     inner already reads --shell-gutter, which body.jd-page re-based to
+     20px at the top of this block, so its edges follow the panel without
+     being touched. */
+  .jd-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .jd-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .jd-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* 176px was the height that squared the brand against the link row */
+  .jd-page .footer__brand { height: auto; }
+
+  .jd-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  /* three link columns side by side, set `nowrap` so the desktop row can
+     never break mid-label - both have to go together, or "Staff
+     Augumentation" pushes the panel wider than the viewport */
+  .jd-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .jd-page .footer__col,
+  .jd-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  /* the list gap goes to the links themselves: 44px of target each, rather
+     than 24px links with space between them */
+  .jd-page .footer__col ul { gap: 0; }
+
+  .jd-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .jd-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned at left:160.89px, a desktop text
+     length - it lands mid-sentence once the line wraps */
+  .jd-page .footer__cookies img { display: none; }
 }
