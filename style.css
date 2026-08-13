@@ -17362,3 +17362,1204 @@ body.is-chatbot-open { overflow: hidden; }
      length - it lands mid-sentence once the line wraps */
   .jd-page .footer__cookies img { display: none; }
 }
+
+/* ===========================================================
+   INDUSTRY DETAIL (FOOD) - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About, Staff Augmentation,
+   Salesforce, AI Solutions, Career and Job Details sheets are:
+
+     * `.id-page` - only industry-detail.html carries it. The body
+       also carries `.cs-page`, but nothing in this file scopes
+       mobile rules to `.cs-page`, so that class only supplies the
+       desktop opt-out from the navbar's flow spacer.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint, so the desktop render is
+       untouched.
+
+   Last in the file on purpose: every section on this page hangs
+   its children on absolute Figma coordinates inside a centred
+   1244 `.design-frame--fill`, and undoing that means re-declaring
+   `position`, `left/top`, `width` and `transform` on selectors set
+   further up - these have to be the declarations that win.
+
+   NAVIGATION IS NOT REPEATED HERE. menu.js builds the same
+   `.nav-burger` and `.m-nav` drawer into industry-detail.html as
+   into every other page, and SHARED MOBILE NAVIGATION - unscoped,
+   further up - is what hides `.burger` / `.menu-overlay` and
+   dresses them. Only the bar's own height and the logo inside it
+   are page work.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset - without touching one of those selectors. */
+  body.id-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .id-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .id-page .wrap section[id],
+  .id-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The header swap - the split-panel overlay out, `.m-nav` drawer in -
+     is in SHARED MOBILE NAVIGATION, above; it is the same on every page. */
+  .id-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .id-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .id-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .id-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* ---------- Hero ----------
+     A 632px stage carrying three absolute layers: the grid plate hung at
+     left:-621, the app render at left:658 and the copy column at left:111.
+
+     It becomes an auto-height column. The grid plate stays absolute behind
+     everything - it is wallpaper, not content - while the copy and the
+     render come back into the flow, copy first: the headline is what the
+     reader came for, and a 496px render above it would push it off screen.
+
+     `overflow: hidden` on the section is what lets the plate stay wider
+     than the panel without opening a horizontal scrollbar. */
+  .id-page .id-hero {
+    height: auto;
+    overflow: hidden;
+  }
+
+  .id-page .id-hero .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    /* the fixed 62px bar floats over this hero - .id-page opts out of the
+       navbar's flow spacer through .cs-page, so the clearance lives here.
+       The 20px sides are the gutter the .design-frame no longer supplies. */
+    padding: 92px 20px 36px;
+  }
+
+  /* 1244 wide at left:-621 in a 632 box: half of it hangs off the panel and
+     the radial vignette is sized in pixels around that centre. Both are
+     desktop measurements, so the plate is re-hung on the section's own
+     centre line and the vignette re-stated in percentages - it now fades
+     from the middle of whatever height the column happens to be. */
+  .id-page .id-hero__grid {
+    left: 50%;
+    top: 0;
+    width: 150%;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  .id-page .id-hero__grid-fade {
+    background: radial-gradient(
+      62% 46% at 50% 44%,
+      rgba(244, 244, 244, 0) 0%,
+      rgba(244, 244, 244, 1) 100%
+    );
+  }
+
+  /* copy above the render, both back in the flow */
+  .id-page .id-hero__copy {
+    position: relative;
+    left: auto;
+    top: auto;
+    z-index: 1;
+    order: 1;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .id-page .id-hero__art {
+    position: relative;
+    left: auto;
+    top: auto;
+    order: 2;
+    display: block;
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  /* ---------- Hero type ----------
+     Every line is nowrap at desktop, sized for a 469px column. The clamps
+     below re-scale them against the viewport and the nowrap comes off
+     wherever a phrase is longer than one word. */
+  .id-page .id-hero__stack { gap: 10px; }
+
+  .id-page .id-hero__eyebrow {
+    font-size: clamp(17px, 4.8vw, 22px);
+    white-space: normal;
+  }
+
+  .id-page .id-hero__line1 {
+    font-size: clamp(32px, 9.5vw, 46px);
+    white-space: normal;
+  }
+
+  /* "deliver literally" is a script word beside a roman one - at 320px the
+     pair does not fit on one line at any legible size, so the row is allowed
+     to break between them rather than being scaled until it does */
+  .id-page .id-hero__line2 {
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: clamp(8px, 2.5vw, 14px);
+    row-gap: 0;
+  }
+
+  .id-page .id-hero__line2 em { font-size: clamp(52px, 16vw, 76px); }
+
+  .id-page .id-hero__line2 > span { font-size: clamp(32px, 9.5vw, 46px); }
+
+  .id-page .id-hero__lede {
+    width: 100%;
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.45;
+  }
+
+  /* the pill is already 48px tall - only the fixed 159px has to go, so the
+     label can keep its own padding at any type size */
+  .id-page .id-hero__btn { width: auto; }
+
+  /* ---------- Shared note card ----------
+     `.id-note` is used twice: the two boxed cards in "Let's Know About" and
+     the two cards in "Our Expertise". Reflowed once, here, rather than
+     re-stated under each section - a second copy is how two instances of the
+     same component drift apart.
+
+     Everything the desktop card measures for a 478px column comes off: the
+     fixed text width, the nowrap heading, the 32px side padding. The left
+     hairline stays - it is the card's whole visual signature. */
+  .id-page .id-note {
+    width: 100%;
+    padding: 20px 18px;
+  }
+
+  /* the mirrored variant is Expertise's second row, where the card sits to
+     the LEFT of its artwork and reads right-aligned against it. Stacked,
+     there is nothing to mirror against, so it reads like its sibling. */
+  .id-page .id-note--right {
+    border-right: 0;
+    border-left: 1.986px solid var(--hairline);
+  }
+
+  .id-page .id-note--right .id-note__body { align-items: flex-start; }
+  .id-page .id-note--right .id-note__text { text-align: left; }
+
+  .id-page .id-note__body { gap: 12px; }
+
+  /* a heading of two or three lines beside the icon, rather than one line
+     running off the panel */
+  .id-page .id-note__head { align-items: center; }
+
+  .id-page .id-note__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .id-page .id-note__icon img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .id-page .id-note__title {
+    font-size: clamp(17px, 4.8vw, 21px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .id-page .id-note__text {
+    width: 100%;
+    font-size: clamp(14.5px, 4vw, 17px);
+    line-height: 1.5;
+  }
+
+  /* ---------- Let's Know About ----------
+     A 654px stage with the BiteBliss render hung at left:-367 (905 wide, so
+     most of it hangs off the panel) and a 520px card column at left:597.
+
+     Both come back into the flow as one column. `.id-know__col` is a
+     positioning wrapper with nothing to position any more, so it is taken
+     out of the box tree with `display: contents` - that promotes the title
+     and the card stack to siblings of the render, which is the only way to
+     order them heading / render / cards from this markup. Reading the
+     heading before the product shot is worth the one trick. */
+  .id-page .id-know { height: auto; }
+
+  .id-page .id-know .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 40px 20px 44px;
+  }
+
+  .id-page .id-know__col {
+    display: contents;
+  }
+
+  /* the <br> after "Let's Know About" is left in - it is a sensible break
+     point at any width; the rest of the line wraps on its own */
+  .id-page .id-know__title {
+    order: 1;
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .id-page .id-know__art {
+    order: 2;
+    position: relative;
+    left: auto;
+    top: auto;
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .id-page .id-know__cards {
+    order: 3;
+    width: 100%;
+    gap: 16px;
+  }
+
+  /* ---------- Section heading furniture ----------
+     The badge + title pair opens Expertise, Work, Services, Why Choose Us
+     and Benefits. `.sec-badge` is a site-wide component, so the trim is
+     scoped to this page rather than edited at source. */
+  .id-page .sec-badge {
+    padding: 5px 10px;
+    font-size: 15px;
+  }
+
+  .id-page .sec-head__top { gap: 12px; }
+
+  .id-page .id-sec-title {
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  /* ---------- Our Expertise ----------
+     A 718px stage holding a heading at left:102 and a 1040 x 456 grid at
+     top:214. Inside that grid the two rows are absolutely placed against
+     opposite edges - row one against the left, row two against the right
+     at top:252 - so each card sits beside its artwork on alternating sides.
+
+     Stacked there are no sides to alternate between, so the grid becomes a
+     plain column and both rows read the same way: artwork, then card. */
+  .id-page .id-exp { height: auto; }
+
+  .id-page .id-exp .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 44px 20px 48px;
+  }
+
+  .id-page .id-exp__head {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    padding: 0;
+  }
+
+  .id-page .id-exp__grid {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    height: auto;
+  }
+
+  .id-page .id-exp__row {
+    position: relative;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    width: 100%;
+  }
+
+  /* the second row is pinned to the grid's right edge and its markup is
+     card-then-artwork to match. Both undone: the row hangs off nothing now,
+     and `order` puts its artwork back on top like its sibling's. */
+  .id-page .id-exp__row--rev { right: auto; }
+
+  .id-page .id-exp__row--rev .id-exp__art { order: 1; }
+  .id-page .id-exp__row--rev .id-note { order: 2; }
+
+  /* the per-row width overrides (216px / 242.25px) are single-class rules,
+     so this two-class selector outranks them without !important */
+  .id-page .id-exp__art {
+    align-self: center;
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+  }
+
+  /* ---------- Work + Services wrapper ----------
+     Both sections open with the same centred `__inner` column and the same
+     `.id-sec-head` / `.id-work__title` pair - the Services markup reuses
+     the Work title class outright. Un-pinned once so the two cannot drift. */
+  .id-page .id-work__inner,
+  .id-page .id-serv__inner {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    gap: 28px;
+    transform: none;
+  }
+
+  .id-page .id-sec-head {
+    width: 100%;
+    padding: 0;
+  }
+
+  .id-page .id-work__title {
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  /* ---------- Explore The Work Has Done by Us ----------
+     Three 317 x 252 cards in a 1040 row. The card is not a box with a
+     picture in it - the PNG is shipped pre-masked with a notch cut out of
+     its bottom-left corner, and the badge is parked IN that notch at
+     left:-12.21, hanging off the card's own edge. Every child is placed on
+     a coordinate inside that 317 x 252 box.
+
+     So the card is not re-laid-out, it is scaled: `aspect-ratio` locks the
+     317:252 box and every child coordinate is restated as a percentage of
+     it. Because the ratio is fixed, horizontal and vertical percentages
+     resolve to the same scale factor - the badge stays the exact shape it
+     was exported at, and the notch stays under it at any width. */
+  .id-page .id-work { height: auto; }
+
+  .id-page .id-work .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 44px 20px 48px;
+  }
+
+  .id-page .id-work__cards {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .id-page .id-pf {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    aspect-ratio: 317 / 252;
+  }
+
+  /* the mask and the ::before copy inside it are both sized 100% 100%, so
+     they follow the box down without a second number to keep in sync */
+  .id-page .id-pf__img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .id-page .id-pf__badge {
+    left: -3.852%;
+    top: 86.389%;
+    width: 13.799%;
+    height: 17.762%;
+  }
+
+  .id-page .id-pf__badge--hover {
+    left: -8.376%;
+    top: 80.901%;
+    width: 22.848%;
+    height: 28.740%;
+  }
+
+  .id-page .id-pf__body {
+    left: 5.776%;
+    top: 7.266%;
+    width: 80.869%;
+    gap: clamp(10px, 4.5vw, 18.311px);
+  }
+
+  .id-page .id-pf__body > img {
+    width: 5.38%;
+    height: auto;
+  }
+
+  .id-page .id-pf__body p {
+    font-size: clamp(15px, 5.6vw, 20.35px);
+  }
+
+  /* ---------- Use cases / service cards ----------
+     Six 346 x 244 cards in two hand-written rows of three. The rows are a
+     desktop layout device, not content, so they are dissolved with
+     `display: contents` and all six cards become items of one grid - the
+     wrap then decides how many fit instead of the markup deciding it.
+
+     `auto-fit` with a 130px floor gives 2 columns from 360px up and 3 from
+     roughly 440px of panel; `min(100%, 130px)` is what stops the floor from
+     forcing a 130px track wider than the panel at 320px, where it drops to
+     one column instead of overflowing. The 520px cap keeps it from reaching
+     a fourth column at the top of the band. */
+  .id-page .id-serv { height: auto; }
+
+  .id-page .id-serv .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 44px 20px 48px;
+  }
+
+  .id-page .id-serv__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+    gap: 12px;
+    align-self: center;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .id-page .id-serv__row { display: contents; }
+
+  /* the card stops being a 346 x 244 stage with an absolutely placed stack
+     inside it and becomes a padded box - the left hairline is the only part
+     of its framing that carries over */
+  .id-page .id-svc {
+    width: auto;
+    height: auto;
+    padding: 18px 14px;
+  }
+
+  .id-page .id-svc__body,
+  .id-page .id-svc--blob .id-svc__body {
+    position: relative;
+    left: auto;
+    top: auto;
+    gap: 14px;
+    width: 100%;
+  }
+
+  /* the icon box stays square, so every inset below can be a percentage of
+     it and the three trimmed exports keep their exact placement */
+  .id-page .id-svc__icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .id-page .id-svc__icon img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .id-page .id-svc__icon .id-ic-truck { left: 11.250%; top: 19.581%; width: 77.501%; height: 60.833%; }
+  .id-page .id-svc__icon .id-ic-app   { left: 11.251%; top:  9.171%; width: 79.584%; height: 79.584%; }
+  .id-page .id-svc__icon .id-ic-menu  { left: 15.418%; top:  7.080%; width: 69.168%; height: 85.831%; }
+
+  /* !important is the only lever here: these widths (193/200/252/230px) are
+     inline `style` attributes in the markup, and they cannot simply be
+     deleted - "Restaurant Management System" carries no <br> and relies on
+     its 252px to wrap at all on desktop. */
+  .id-page .id-svc__title {
+    width: 100% !important;
+    font-size: clamp(14px, 3.8vw, 18px);
+    line-height: 1.3;
+  }
+
+  /* the decorative wash is 527 wide and hung at top:177 of a 244 card, both
+     desktop measurements. Restated against the card's own width so it still
+     bleeds out of the bottom-left corner at any tile size; `.id-svc` already
+     clips it. */
+  .id-page .id-svc__blob {
+    top: 62%;
+    width: 152%;
+    height: auto;
+  }
+
+  .id-page .id-svc__blob img {
+    width: 86.2%;
+    height: auto;
+  }
+
+  /* ---------- Why Choose Hackerkernel ----------
+     A 670px dark band with a heading at left:70 and three 358 x 322 glass
+     cards at top:252. Inside each card the copy is pinned at top:33 and a
+     290px shot is hung at top:168 - 168 + 290 overruns the 322 card, so the
+     picture bleeds off the bottom and the card's own overflow crops it.
+
+     Unlike the portfolio card this one is NOT scaled to fit: its copy is
+     live text at 24px sized against a 358px card, and shrinking the box
+     would leave the type at 24px inside a 260px one. The card reflows into
+     a flow column instead - copy, then shot - and the shot keeps running to
+     the bottom edge, so the bleed survives as a fact of the layout rather
+     than as a coordinate. */
+  .id-page .id-why {
+    height: auto;
+    margin-top: 24px;
+  }
+
+  .id-page .id-why .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 44px 20px 48px;
+  }
+
+  .id-page .id-why__head {
+    position: relative;
+    left: auto;
+    top: auto;
+    gap: 14px;
+    width: 100%;
+    padding: 0;
+  }
+
+  .id-page .id-why__title {
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .id-page .id-why__cards {
+    position: relative;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: 100%;
+  }
+
+  /* no bottom padding: the shot is meant to reach the card's edge, and the
+     24px radius plus the card's own overflow round it off there */
+  .id-page .id-why__card {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    height: auto;
+    padding: 22px 18px 0;
+  }
+
+  /* the three copies differ only in the left inset and the fixed width they
+     were measured at - both are desktop-only, so all three collapse to one */
+  .id-page .id-why__text,
+  .id-page .id-why__text--1,
+  .id-page .id-why__text--2,
+  .id-page .id-why__text--3 {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    font-size: clamp(17px, 4.8vw, 22px);
+    line-height: 1.3;
+    white-space: normal;
+  }
+
+  .id-page .id-why__shot,
+  .id-page .id-why__shot--2,
+  .id-page .id-why__shot--3 {
+    position: relative;
+    left: auto;
+    top: auto;
+    align-self: center;
+    width: 100%;
+    max-width: 290px;
+    height: auto;
+    margin-top: 18px;
+    transform: none;
+  }
+
+  /* each shot keeps the crop it was framed at - square, except the third,
+     which is a 290 x 188 letterbox */
+  .id-page .id-why__shot,
+  .id-page .id-why__shot--2 { aspect-ratio: 1; }
+
+  .id-page .id-why__shot--3 { aspect-ratio: 290 / 188; }
+
+  /* the second shot is reframed on desktop by hanging its image above the
+     box at 134% tall; object-position does the same job with the image back
+     in the box, where `height: 100%` can resolve against the ratio */
+  .id-page .id-why__shot--2 img {
+    position: relative;
+    top: auto;
+    width: 100%;
+    height: 100%;
+    object-position: 50% 35%;
+  }
+
+  /* ---------- Benefits ----------
+     A 670px stage: a rail-and-labels tab list on the left and a 584 x 338
+     photo stack on the right, at left:88 top:218 in a 1068 row.
+
+     The tabs are KEPT AS TABS rather than folded into an accordion. Two
+     reasons, and neither is a preference: the markup carries labels and
+     photographs only - there is no per-benefit copy for a panel to
+     disclose - and Script.js drives the rail by measuring the rail and the
+     active label with getBoundingClientRect on every move and again on
+     resize. It reads the layout instead of assuming it, so a re-stacked
+     list needs no JavaScript at all; the fill, the dot and the pulse
+     follow whatever these rules lay out.
+
+     The one thing the JS cannot supply is the rail's length: it is 368px
+     because the desktop list is, so it has to be re-measured here. */
+  .id-page .id-ben {
+    height: auto;
+    margin-top: 24px;
+  }
+
+  .id-page .id-ben .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 44px 20px 48px;
+  }
+
+  .id-page .id-ben__head {
+    position: relative;
+    left: auto;
+    top: auto;
+    gap: 14px;
+    width: 100%;
+    padding: 0;
+  }
+
+  .id-page .id-ben__title {
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  /* list above photograph, the order the markup is already in: tapping a
+     stop then updates the picture directly beneath the thumb rather than
+     something that has scrolled off the top */
+  .id-page .id-ben__body {
+    position: relative;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .id-page .id-ben__list {
+    gap: 18px;
+    width: 100%;
+  }
+
+  /* `align-self` is what beats the list's own `align-items: center` - the
+     rail has to run the labels' full height, whatever that turns out to be */
+  .id-page .id-ben__rail {
+    align-self: stretch;
+    height: auto;
+  }
+
+  .id-page .id-ben__labels {
+    gap: 14px;
+    flex: 1 1 auto;
+  }
+
+  /* 34px is the desktop box; 44 is the minimum a thumb can be asked to
+     hit. The pitch changes with it, which is exactly why the JS measures. */
+  .id-page .id-ben__label {
+    height: auto;
+    min-height: 44px;
+    font-size: clamp(15px, 4.2vw, 19px);
+    line-height: 1.25;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .id-page .id-ben__label.is-active,
+  .id-page .id-ben__label.is-active:hover {
+    font-size: clamp(17px, 5vw, 23px);
+  }
+
+  /* full-width photograph, keeping the 584 x 338 crop it was framed at.
+     The images inside are already absolute at 100% x 100%, so the ratio is
+     the only measurement they need. */
+  .id-page .id-ben__art {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 584 / 338;
+  }
+
+  /* ---------- Enquiry form: full-screen sheet ----------
+     The side tab is a second, competing entry point to this form - on
+     mobile the drawer's "Let's Talk Business" CTA owns it, so the tab
+     stands down. menu.js routes that CTA through window.hkOpenTalk, so
+     the drawer opens this sheet rather than following its href.
+
+     With the tab gone the card has no handle, which is what the ✕ added
+     to the markup is for. It is switched on here and here only. */
+  .id-page .talk-tab { display: none; }
+
+  .id-page .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .id-page .lt-form__card {
+    gap: 22px;
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .id-page .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .id-page .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .id-page .lt-form__title { font-size: 26px; }
+
+  /* The inputs are already `width: 100%` and already 51.59px tall - wider
+     than the sheet and taller than 44 - so nothing about them is restated
+     here. Their 16px type is also what keeps iOS Safari from zooming the
+     page on focus, so it is deliberately left alone.
+
+     Only the two controls that miss a thumb-sized target are touched: the
+     checklist rows are 16px text at line-height 1.6, and the submit button
+     is a 98 x 40 desktop pill. */
+  .id-page .lt-check__list { gap: 2px; }
+
+  .id-page .lt-check__row { min-height: 44px; }
+
+  .id-page .lt-form__submit {
+    width: 100%;
+    height: 48px;
+    margin: 14px 0 0;
+    font-size: 16px;
+  }
+
+  /* ---------- Footer ----------
+     The one component on this page shared with all twelve others, which is
+     why every rule below is scoped: `.footer` unscoped would restack the
+     whole site from a query that exists to reflow one page.
+
+     Deliberately the SAME treatment the Staff Augmentation, Salesforce, AI
+     Solutions, Career and Job Details sheets already give it - brand over
+     links, three columns to one, the bar broken in two - rather than a
+     variation. A footer that reflowed differently on one page in thirteen
+     would read as a bug, and this is a copy of a settled answer, not a new
+     one. The desktop 66px gap is the only page-specific number in it. */
+  .id-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .id-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .id-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* 176px was the height that squared the brand against the link row */
+  .id-page .footer__brand { height: auto; }
+
+  .id-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  /* three link columns side by side, set `nowrap` so the desktop row can
+     never break mid-label - both have to go together, or "Staff
+     Augumentation" pushes the panel wider than the viewport */
+  .id-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .id-page .footer__col,
+  .id-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  /* the list gap goes to the links themselves: 44px of target each, rather
+     than 24px links with space between them */
+  .id-page .footer__col ul { gap: 0; }
+
+  .id-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .id-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned at left:160.89px, a desktop text
+     length - it lands mid-sentence once the line wraps */
+  .id-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   CASE STUDY DETAIL (VIDEO - HUMBLE COWS) - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About, Staff Augmentation,
+   Salesforce, AI Solutions, Career, Job Details and Industry
+   Detail sheets are:
+
+     * `.csd-page` - case-study-detail.html and
+       case-study-detail-video.html carry it. The body also carries
+       `.cs-page`, but nothing in this file scopes mobile rules to
+       `.cs-page`, so that class only supplies the desktop opt-out
+       from the navbar's flow spacer.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint, so the desktop render is
+       untouched.
+
+   The video hero is one card carrying five stacked layers on Figma
+   coordinates (still, ghost head, ghost tech/platform footer, veil,
+   crisp caption). Mobile keeps that composition - it is what the
+   design *is* - and only re-hangs each layer off the card's own
+   edges instead of off 69 / 54 / 441 pixel offsets.
+
+   NAVIGATION IS NOT REPEATED HERE. menu.js builds the same
+   `.nav-burger` and `.m-nav` drawer into this page as into every
+   other page, and SHARED MOBILE NAVIGATION - unscoped, further up -
+   is what hides `.burger` / `.menu-overlay` and dresses them. Only
+   the bar's own height and the logo inside it are page work.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset - without touching one of those selectors. */
+  body.csd-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .csd-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .csd-page .wrap section[id],
+  .csd-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The header swap - the split-panel overlay out, `.m-nav` drawer in -
+     is in SHARED MOBILE NAVIGATION, above; it is the same on every page. */
+  .csd-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .csd-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .csd-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .csd-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* the side tab is a second, competing entry point to the enquiry form -
+     on mobile the drawer owns it, so the tab stands down */
+  .csd-page .talk-tab { display: none; }
+
+  /* ---------- Shared section furniture ----------
+     Every `.csd-row` is a two-column band (art beside copy) held apart by a
+     100px gutter. One rule turns all six of them into a single column on the
+     panel's 20px gutter; the sections below only pick the order. */
+  .csd-page .csd-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+    padding: 36px 20px;
+  }
+
+  .csd-page .csd-sec__body {
+    width: 100%;
+    gap: 16px;
+  }
+
+  /* 32px nowrap runs off the panel on "Obstacles Discovered" - the longest
+     title on the page - so the title wraps and the head aligns to the top of
+     the icon rather than to the middle of a two-line heading */
+  .csd-page .csd-sec__head {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .csd-page .csd-sec__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .csd-page .csd-sec__title {
+    font-size: clamp(22px, 6vw, 32px);
+    white-space: normal;
+  }
+
+  .csd-page .csd-sec__sub { font-size: clamp(16px, 4.2vw, 20px); }
+  .csd-page .csd-sec__copy { font-size: clamp(15px, 4vw, 20px); }
+
+  .csd-page .csd-sec__list {
+    margin-left: 22px;
+    font-size: clamp(15px, 4vw, 20px);
+  }
+
+  /* the illustrations are decorative and sized in desktop pixels; they cap at
+     the panel and centre rather than pushing the column wide */
+  .csd-page .csd-sec__art {
+    align-self: center;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+  }
+
+  /* 4px of padding is not a tap target */
+  .csd-page .csd-more {
+    min-height: 44px;
+    padding: 4px 0;
+    font-size: 16px;
+  }
+
+  .csd-page .csd-more__icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* ---------- Hero ----------
+     A 678px stage holding a 573px card pinned at left/right:43, top:77. Both
+     lose their fixed heights: the stage becomes a padded block that clears the
+     62px fixed bar, and the card becomes a fluid, near-square panel that keeps
+     all five of its layers - the still, the ghost head and footer, the veil,
+     and the crisp caption over the top. */
+  .csd-page .csd-top {
+    height: auto;
+    padding: 78px 20px 12px;
+    overflow: hidden;
+  }
+
+  /* the box-line plate is wallpaper: it stays absolute behind the card and is
+     re-hung on the section's own centre line, since left/right:52.113 is a
+     1244-panel measurement */
+  .csd-page .csd-top__grid {
+    left: 50%;
+    right: auto;
+    top: 0;
+    width: 140%;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  /* stated in percentages so the fade follows whatever height the padded
+     stage ends up with */
+  .csd-page .csd-top__grid::after {
+    background: radial-gradient(ellipse 58% 48% at 50% 50%,
+                rgba(244, 244, 244, 0) 0%, rgba(244, 244, 244, 1) 100%);
+  }
+
+  .csd-page .csd-hero,
+  .csd-page .csd-hero--video {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    /* 112vw at 390 is 437 - a portrait card that still leaves the play
+       control and the two caption lines room that reads as generous */
+    min-height: clamp(400px, 112vw, 520px);
+  }
+
+  .csd-page .csd-hero__bg {
+    top: 0;
+    height: 100%;
+  }
+
+  /* ghost layer: blurred behind the veil, exactly as on desktop, so it is
+     re-hung on the card's edges rather than restyled */
+  .csd-page .csd-hero__head {
+    left: 20px;
+    right: 20px;
+    top: 20px;
+    gap: 18px;
+  }
+
+  .csd-page .csd-hero__logo {
+    width: clamp(56px, 16vw, 72px);
+    height: clamp(56px, 16vw, 72px);
+  }
+
+  .csd-page .csd-hero--video .csd-hero__head .csd-hero__name {
+    width: auto;
+    font-size: clamp(30px, 9vw, 44px);
+  }
+
+  .csd-page .csd-hero__eyebrow { font-size: clamp(15px, 4.4vw, 24px); }
+
+  /* the 337px technology column and the 209px pill measure are both desktop
+     wrap points; on the card's width the two columns stack and wrap freely */
+  .csd-page .csd-hero__foot {
+    left: 20px;
+    right: 20px;
+    top: auto;
+    bottom: 20px;
+    flex-direction: column;
+    gap: 14px;
+    height: auto;
+  }
+
+  .csd-page .csd-hero__tech { width: auto; gap: 10px; }
+
+  .csd-page .csd-hero__built {
+    height: auto;
+    gap: 10px;
+  }
+
+  .csd-page .csd-hero__pills { width: auto; }
+
+  /* the play control is the one real target in the hero - it stays well
+     above 44px at every width */
+  .csd-page .csd-hero__play {
+    width: clamp(84px, 26vw, 148px);
+    height: clamp(84px, 26vw, 148px);
+  }
+
+  /* the crisp mark is a second copy of the head's logo and has to track it */
+  .csd-page .csd-hero__logo--front {
+    left: 20px;
+    top: 20px;
+  }
+
+  /* nowrap holds "Humble Cows- Dairy ERP" on one 52px line; the card is
+     350px wide here, so the caption wraps and sits on the bottom edge */
+  .csd-page .csd-hero--video .csd-hero__caption {
+    left: 20px;
+    right: 20px;
+    top: auto;
+    bottom: 22px;
+    white-space: normal;
+  }
+
+  .csd-page .csd-hero__caption .csd-hero__eyebrow {
+    font-size: clamp(13px, 3.6vw, 18px);
+  }
+
+  .csd-page .csd-hero__caption .csd-hero__name {
+    font-size: clamp(22px, 6.4vw, 32px);
+  }
+}
