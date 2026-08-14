@@ -4608,6 +4608,14 @@ body.is-menu-open .talk-tab {
   height: 18px;
 }
 
+/* The two glyphs share that one absolutely-placed box, so swapping which is
+   shown needs no second set of offsets - the breakpoint overrides on
+   `.tm__plus img` keep applying to whichever one is on screen. Rows still
+   carrying a single plus (Staff Augmentation) match neither and are untouched. */
+.tm__ico--open { display: none; }
+.tm.is-open .tm__ico--shut { display: none; }
+.tm.is-open .tm__ico--open { display: block; }
+
 /* ===========================================================
    Staff Augmentation — Technologies We Use
    =========================================================== */
@@ -6716,10 +6724,21 @@ body.is-menu-open .talk-tab {
   pointer-events: none;
 }
 
-/* the hero dissolves into the white process section below it */
+/* the hero dissolves into the white process section below it.
+   Full-bleed rather than `inset: 0`: the fade lives inside the 1244
+   .design-frame, and past ~1280 the shell is wider than that frame — the
+   uncovered band between the frame's right edge and the shell's stayed
+   flat #f4f4f4 while everything inside it faded, which read as a grey
+   slab in the hero's bottom-right corner. The grid plate already carries
+   its own copy of this gradient out past the left edge; this is the same
+   reach on the right. .ai-hero clips the overflow. */
 .ai-hero__fade {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  top: 0;
+  width: 100vw;
+  height: 100%;
+  transform: translateX(-50%);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 68.937%, #fff 100%);
   pointer-events: none;
 }
@@ -7887,28 +7906,6 @@ body.is-menu-open .talk-tab {
 .id-svc__title em {
   font-style: normal;
   color: var(--primary-color);
-}
-
-/* decorative wash — mostly clipped by the card, exactly as in Figma */
-.id-svc__blob {
-  position: absolute;
-  left: calc(50% - 14.07px);
-  top: 177.03px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 527.039px;
-  height: 451.048px;
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-
-.id-svc__blob img {
-  flex: 0 0 auto;
-  width: 454.355px;
-  height: 348.582px;
-  max-width: none;
-  transform: rotate(14.47deg);
 }
 
 /* ── Why Choose Hackerkernel ──────────────────────────────── */
@@ -11519,12 +11516,17 @@ body.is-apply-open {
      Copy, media and the brand rail become three rows. The rail keeps its
      full bleed, so the gutter lives on the two blocks above it rather
      than on the section. */
+  /* 32px is the room the design leaves under the logo rail - on desktop it
+     falls out of the arithmetic (651 tall, rail parked at 511 + 108). Once the
+     rail returns to the flow as the last row it becomes the hero's own bottom
+     padding, or the strip butts straight into the white Services block. */
   .home .hero {
     height: auto;
     display: flex;
     flex-direction: column;
     gap: 26px;
     padding-top: 12px;
+    padding-bottom: 32px;
     overflow: hidden;
   }
 
@@ -11683,12 +11685,16 @@ body.is-apply-open {
      Script.js still folds cards as the arrows are pressed, so the two
      things a fold changes - the card's width and its depth shade - are
      both neutralised here rather than the script being branched. */
+  /* The stack ends on a card that is itself a full-width block with a
+     hairline under it, so the shared 40px closer reads as the section being
+     cut off rather than finished - 72px is the one section that needs more
+     than the page default because it is the only one ending on a rule. */
   .home .services {
     height: auto;
     display: flex;
     flex-direction: column;
     gap: 18px;
-    padding: 34px 0 40px;
+    padding: 34px 0 72px;
   }
 
   /* 368x272 clears the desktop heading; at this width it would sit on it */
@@ -11754,6 +11760,10 @@ body.is-apply-open {
     width: auto;
     height: 1px;
   }
+
+  /* a row separator with no row after it is a line under the section, which
+     is what made the new bottom space read as a gap rather than a margin */
+  .home .services__track .svc-card:last-child::after { display: none; }
 
   /* ---------- AI Solution / Salesforce Solutions ---------- */
   .home .ai-sec {
@@ -12198,8 +12208,18 @@ body.is-apply-open {
 
   /* the review wall keeps both drifting rows - the cards just shrink to fit.
      Script.js measures a pass from the rendered widths, so the seam still
-     lands correctly at this size. */
-  .home .reviews {
+     lands correctly at this size.
+
+     `.csd-page` and `.tv-page` are on every one of these selectors because
+     the case study detail pages and Travel Tech reuse this marquee whole:
+     the same markup, dressed by the same numbers. A page-scoped second copy
+     of the block is how the mobile menu drifted apart, so the component is
+     shared rather than duplicated. Only the band the wall sits in is page
+     work - see the `.csd-tests` rules in the CASE STUDY DETAIL block and the
+     `.tv-test` rules in the TRAVEL TECH block, both at the end of the file. */
+  .home .reviews,
+  .csd-page .reviews,
+  .tv-page .reviews {
     position: relative;
     left: auto;
     right: auto;
@@ -12208,30 +12228,54 @@ body.is-apply-open {
   }
 
   .home .reviews::before,
-  .home .reviews::after { display: none; }
+  .home .reviews::after,
+  .csd-page .reviews::before,
+  .csd-page .reviews::after,
+  .tv-page .reviews::before,
+  .tv-page .reviews::after { display: none; }
 
-  .home .reviews__row { gap: 20px; }
+  .home .reviews__row,
+  .csd-page .reviews__row,
+  .tv-page .reviews__row { gap: 20px; }
 
-  .home .reviews__row--1 { left: -70px; top: 0; }
-  .home .reviews__row--2 { left: -170px; top: 192px; }
+  .home .reviews__row--1,
+  .csd-page .reviews__row--1,
+  .tv-page .reviews__row--1 { left: -70px; top: 0; }
 
-  .home .review {
+  .home .reviews__row--2,
+  .csd-page .reviews__row--2,
+  .tv-page .reviews__row--2 { left: -170px; top: 192px; }
+
+  .home .review,
+  .csd-page .review,
+  .tv-page .review {
     width: 280px;
     height: 172px;
     padding: 22px 18px;
   }
 
-  .home .review__face { padding: 22px 18px; }
+  .home .review__face,
+  .csd-page .review__face,
+  .tv-page .review__face { padding: 22px 18px; }
 
-  .home .review__head > img {
+  .home .review__head > img,
+  .csd-page .review__head > img,
+  .tv-page .review__head > img {
     width: 36px;
     height: 36px;
   }
 
-  .home .review__name { font-size: 16px; }
-  .home .review__body { font-size: 13px; line-height: 1.25; }
+  .home .review__name,
+  .csd-page .review__name,
+  .tv-page .review__name { font-size: 16px; }
 
-  .home .review__mark {
+  .home .review__body,
+  .csd-page .review__body,
+  .tv-page .review__body { font-size: 13px; line-height: 1.25; }
+
+  .home .review__mark,
+  .csd-page .review__mark,
+  .tv-page .review__mark {
     left: auto;
     right: 18px;
     top: 20px;
@@ -17927,21 +17971,6 @@ body.is-chatbot-open { overflow: hidden; }
     line-height: 1.3;
   }
 
-  /* the decorative wash is 527 wide and hung at top:177 of a 244 card, both
-     desktop measurements. Restated against the card's own width so it still
-     bleeds out of the bottom-left corner at any tile size; `.id-svc` already
-     clips it. */
-  .id-page .id-svc__blob {
-    top: 62%;
-    width: 152%;
-    height: auto;
-  }
-
-  .id-page .id-svc__blob img {
-    width: 86.2%;
-    height: auto;
-  }
-
   /* ---------- Why Choose Hackerkernel ----------
      A 670px dark band with a heading at left:70 and three 358 x 322 glass
      cards at top:252. Inside each card the copy is pinned at top:33 and a
@@ -18562,4 +18591,1847 @@ body.is-chatbot-open { overflow: hidden; }
   .csd-page .csd-hero__caption .csd-hero__name {
     font-size: clamp(22px, 6.4vw, 32px);
   }
+
+  /* ---------- Hero: the image treatment ----------
+     The rules above dress the card the two heroes share. What they cannot
+     share is the copy, because the two frames put it in different places:
+     the video hero ghosts `.csd-hero__head` behind the veil and states the
+     title again, small, in `.csd-hero__caption`; the image hero has no
+     caption and no veil, so `__head` IS the crisp title - eyebrow, a 52px
+     name and a 561px lede - with `__foot` carrying technology and platforms.
+
+     Absolutely positioned at top:47.5 and top:441 of a 573px card, that copy
+     runs to roughly twice the card's height once it wraps at 350px, so the
+     two layers would print over each other. Below the breakpoint the image
+     hero releases both into flow and lets the card grow to its contents: the
+     Figma reading order - mark, titles, lede, then technology and platforms
+     on the bottom edge - survives, and the still stays absolute behind it.
+
+     `:not(.csd-hero--video)` keeps every rule here off the video page, which
+     is already laid out and is not being touched. */
+  .csd-page .csd-hero:not(.csd-hero--video) {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    /* the shared floor is sized for the video card's five layers; this one
+       is measured by its own copy */
+    min-height: 0;
+    padding: 22px 20px;
+  }
+
+  /* The desktop card is landscape and seats all its copy over the dark left
+     third of the photograph, so it needs no veil. Cropped to a portrait
+     card the same copy runs straight across the lit bottle, so mobile lays
+     a scrim between the still and the text. `::after`, not `::before`:
+     `.csd-hero__bg` is a positioned sibling on the same z-index level, so
+     document order decides, and only the trailing pseudo-element paints
+     over the photograph. The copy carries z-index 1 and stays above both. */
+  .csd-page .csd-hero:not(.csd-hero--video)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(180deg,
+                rgba(0, 0, 0, 0.55) 0%,
+                rgba(0, 0, 0, 0.30) 42%,
+                rgba(0, 0, 0, 0.62) 100%);
+    pointer-events: none;
+  }
+
+  /* relative, not static: `.csd-hero__bg` is a positioned sibling, and a
+     non-positioned box would paint underneath it */
+  .csd-page .csd-hero:not(.csd-hero--video) .csd-hero__head,
+  .csd-page .csd-hero:not(.csd-hero--video) .csd-hero__foot {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    z-index: 1;
+  }
+
+  /* holds the technology row on the card's bottom edge whenever the still
+     is taller than the copy, which is what top:441 did on desktop */
+  .csd-page .csd-hero:not(.csd-hero--video) .csd-hero__foot {
+    margin-top: auto;
+  }
+
+  /* 52px on one unbroken line is a 1158px-card measurement - at 350 it is
+     both an overflow and a scrollbar */
+  .csd-page .csd-hero:not(.csd-hero--video) .csd-hero__name {
+    width: auto;
+    font-size: clamp(26px, 7.4vw, 40px);
+    white-space: normal;
+  }
+
+  /* 561px is Figma's wrap measure for the lede; the card sets it here */
+  .csd-page .csd-hero:not(.csd-hero--video) .csd-hero__lede {
+    width: auto;
+    font-size: clamp(14px, 3.8vw, 18px);
+    line-height: 1.5;
+  }
+
+  /* ---------- Project Overview ----------
+     Figma runs the 263px illustration down the left of the copy. Stacked, the
+     illustration first would push the section heading most of a screen down,
+     so the order is inverted: head, copy, View More, then the art as the
+     closing flourish. Every section below does the same, which is what makes
+     the page scan as one column of headings. */
+  .csd-page .csd-overview { min-height: 0; }
+
+  .csd-page .csd-overview .csd-row {
+    gap: 24px;
+    padding: 36px 20px;
+  }
+
+  .csd-page .csd-overview .csd-sec__body { order: 1; }
+
+  .csd-page .csd-overview__art {
+    order: 2;
+    align-self: center;
+    width: 100%;
+    max-width: 230px;
+    height: auto;
+  }
+
+  /* 4 lines is the Figma teaser on a 780px-wide column - roughly a paragraph.
+     The same 4 lines on a 350px panel is about 25 words, which reads as a
+     truncation bug rather than a teaser, so the clamp opens to 6. */
+  .csd-page .csd-overview__text {
+    -webkit-line-clamp: 6;
+    font-size: clamp(15px, 4vw, 18px);
+    line-height: 1.45;
+  }
+
+  .csd-page .csd-overview__copy { gap: 4px; }
+
+  /* ---------- Planning & Execution ----------
+     The one white section. `align-items: center` on the section is what keeps
+     the 1063 project block centred in the panel; stretched, that block can use
+     the panel's own gutter instead - see the Project section below. */
+  .csd-page .csd-planning {
+    min-height: 0;
+    gap: 0;
+    align-items: stretch;
+    padding: 8px 0 36px;
+  }
+
+  .csd-page .csd-planning .csd-row {
+    gap: 26px;
+    padding: 36px 20px;
+  }
+
+  .csd-page .csd-planning .csd-sec__body { order: 1; }
+
+  .csd-page .csd-planning__sub { font-size: clamp(17px, 4.6vw, 22px); }
+
+  .csd-page .csd-planning__list { font-size: clamp(15px, 4vw, 20px); }
+
+  /* 559 is the Figma measure the copy holds while the column beside it grows.
+     It is 200px wider than the whole panel here, and `.page-shell` was
+     clipping the sentences rather than scrolling them - this is the fix. */
+  .csd-page .csd-planning__list > p,
+  .csd-page .csd-planning__list > ul {
+    width: 100%;
+  }
+
+  .csd-page .csd-planning__list ul { margin-left: 22px; }
+
+  /* the showcase strip keeps its 370x381 crop as a ratio, so the screens
+     inside it stay on the same framing at any panel width */
+  .csd-page .csd-planning__art {
+    order: 2;
+    align-self: center;
+    width: 100%;
+    max-width: 370px;
+    height: auto;
+    aspect-ratio: 370 / 381;
+  }
+
+  /* ---------- the Showcase seal ----------
+     The ring is an SVG on a viewBox and rescales itself; the disc and its
+     arrow are pinned in pixels, so they are restated as percentages of the
+     badge - 38% and 60% resolve to the desktop 38.095 / 22.969 exactly. */
+  .csd-page .csd-badge {
+    right: 10px;
+    bottom: -8px;
+    width: clamp(76px, 22vw, 100px);
+    height: clamp(76px, 22vw, 100px);
+  }
+
+  .csd-page .csd-badge__disc {
+    width: 38%;
+    height: 38%;
+  }
+
+  .csd-page .csd-badge__disc img {
+    width: 60%;
+    height: 60%;
+  }
+
+  /* ---------- Project ----------
+     `max-width: calc(100% - 181px)` is the 90.5 Figma leaves either side of
+     the 1063 block. On a 370 panel that resolves to a 189px column - the copy
+     was setting in a strip half the panel wide. The block takes the panel and
+     supplies the 20px gutter itself, since the section no longer centres it. */
+  .csd-page .csd-planning__project {
+    width: 100%;
+    max-width: none;
+    gap: 20px;
+    padding: 0 20px;
+  }
+
+  .csd-page .csd-planning__introtitle { font-size: clamp(20px, 5.4vw, 24px); }
+
+  .csd-page .csd-planning__introtext {
+    font-size: clamp(15px, 4vw, 18px);
+    line-height: 1.45;               /* 1.212 is a display measure, not body copy */
+  }
+
+  /* Four 242x246 cards in a row measure 1052. Every phone inside them is
+     seated on its own pixel crop (136x211 at top:36, 126.116x205 flush to the
+     bottom edge, and so on), so scaling the card would need all four crops
+     restated - and the screens would then be too small to read anyway.
+
+     They become a snap rail at their native size instead: the card is narrower
+     than the panel, so the next one always peeks in as the affordance, and the
+     crops stay exactly as drawn. This is the page's only horizontal scroller
+     and it is deliberate - the rail scrolls, the page does not. */
+  .csd-page .csd-shots {
+    /* bled to the panel edges so a card can sit half-off it, then padded back
+       in by the same 20 so the first card still lines up with the copy */
+    width: calc(100% + 40px);
+    margin: 0 -20px;
+    padding: 4px 20px 12px;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;  /* the rail never hands the page a swipe */
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .csd-page .csd-shots::-webkit-scrollbar { display: none; }
+
+  .csd-page .csd-shot { scroll-snap-align: start; }
+
+  /* ---------- Techs Used ---------- */
+  .csd-page .csd-techs { min-height: 0; }
+
+  .csd-page .csd-techs .csd-row { gap: 26px; }
+
+  .csd-page .csd-techs__body {
+    order: 1;
+    width: 100%;
+  }
+
+  .csd-page .csd-techs__art {
+    order: 2;
+    align-self: center;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+  }
+
+  /* 335 is the Figma clip: on a 780 column it lands just past the lead
+     paragraph, showing it whole plus the first bullet. The same copy sets
+     about three times as tall here, so the clip is re-cut to the same
+     *place* in the text rather than the same number of pixels - head, then
+     the lead paragraph, with the list starting under the fold. */
+  .csd-page .csd-techs__clip { max-height: 330px; }
+
+  /* the head is only 50 tall while "Techs Used" holds one line; it is freed
+     in case the clamped title ever wraps */
+  .csd-page .csd-techs__clip .csd-sec__head { height: auto; }
+
+  .csd-page .csd-techs__clip { gap: 14px; }
+
+  /* Re-cutting the clip above re-opens it, too. `.csd-techs__clip.is-open`
+     lifts the cap with `max-height: none`, but it is two classes deep and so
+     is the rule above it - a tie that source order settles in favour of this
+     sheet, which is read last. The button would then flip its label and its
+     glyph over a block that never grew. Restating the open state at three
+     classes puts the cap back under the button's control.
+
+     The Overview clamp escapes this only by accident: its open state changes
+     `display` as well, and `-webkit-line-clamp` is inert outside a
+     `-webkit-box`, so the losing declaration there costs nothing. */
+  .csd-page .csd-techs__clip.is-open { max-height: none; }
+
+  .csd-page .csd-techs__list li + li { margin-top: 14px; }
+
+  /* ---------- Obstacles Discovered + Solutions ----------
+     The mirrored pair: Obstacles runs copy-then-art in the markup, Solutions
+     art-then-copy. Stacked they both read copy first, so only Solutions needs
+     the order stated. Both illustrations are already caught by the shared
+     `.csd-sec__art` rule above; all they want back is their Figma width, so a
+     235px drawing is not blown up to the same size as a 306px one. */
+  .csd-page .csd-obstacles,
+  .csd-page .csd-solutions { min-height: 0; }
+
+  .csd-page .csd-obstacles .csd-row,
+  .csd-page .csd-solutions .csd-row { gap: 26px; }
+
+  .csd-page .csd-solutions .csd-sec__body { order: 1; }
+
+  .csd-page .csd-obstacles__art { max-width: 306px; }
+
+  .csd-page .csd-solutions__art {
+    order: 2;
+    max-width: 236px;
+  }
+
+  /* Figma leaves no air between these bullets because each is a line or two
+     on a 780 column. The same two bullets set eight and four lines deep here
+     and run straight into each other, so the boundary has to be drawn. */
+  .csd-page .csd-obstacles .csd-sec__list li + li,
+  .csd-page .csd-solutions .csd-sec__list li + li {
+    margin-top: 10px;
+  }
+
+  /* ---------- Final Product ----------
+     Copy leads in the markup already, so only the artwork needs work - and it
+     is the one illustration that cannot just take the shared `.csd-sec__art`
+     treatment. Its image is absolutely positioned at a fixed 236x221.2 to
+     cover the export running 1px over its slot, so `height: auto` on the span
+     would collapse it to nothing. The span carries the ratio instead and the
+     image fills it. */
+  .csd-page .csd-final { min-height: 0; }
+
+  .csd-page .csd-final .csd-row { gap: 26px; }
+
+  .csd-page .csd-final__art {
+    max-width: 236px;
+    height: auto;
+    aspect-ratio: 236 / 221.2;
+  }
+
+  .csd-page .csd-final__art img {
+    inset: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ---------- Testimonials ----------
+     The marquee itself is the home page's component and is dressed by the
+     shared `.reviews` / `.review` rules further up - nothing about the cards
+     is repeated here. This is only the 658px band they sit in: it becomes an
+     auto-height block and the head comes off left:102 / top:38 into the flow
+     above them. */
+  .csd-page .csd-tests {
+    height: auto;
+    padding: 32px 0 36px;
+  }
+
+  .csd-page .csd-tests__head {
+    position: static;
+    width: auto;
+    padding: 0 20px;
+  }
+
+  .csd-page .csd-tests__top { gap: 12px; }
+
+  .csd-page .csd-tests__badge { font-size: clamp(14px, 3.9vw, 18px); }
+
+  .csd-page .csd-tests__title {
+    font-size: clamp(26px, 7.4vw, 32px);
+    white-space: normal;
+  }
+
+  .csd-page .csd-tests__lede { font-size: clamp(15px, 4vw, 20px); }
+
+  /* 593x507 of hard-light watermark on a 370 panel is no longer a wash behind
+     the cards - it sits on the heading and takes the contrast out of it. The
+     home page drops its two equivalents (`.reviews::before` / `::after`) at
+     this width for the same reason. */
+  .csd-page .csd-tests__quote { display: none; }
+
+  /* the shared rule already made the wall `position: relative`; it just needs
+     air between it and the head it now follows in the flow */
+  .csd-page .csd-tests .reviews {
+    top: auto;
+    margin-top: 22px;
+  }
+
+  /* ---------- Footer ----------
+     Deliberately the SAME treatment the Home, About, Staff Augmentation,
+     Salesforce, AI Solutions, Career, Job Details and Industry Detail sheets
+     already give it - brand over links, three columns to one, the bar broken
+     in two - rather than a variation. A footer that reflowed differently on
+     one page in thirteen would read as a bug, and this is a copy of a settled
+     answer, not a new one.
+
+     It is a copy rather than a shared selector only because there are eight
+     equal copies already and no canonical one to extend - unlike the review
+     marquee above, which had `.home` as its home. Consolidating all nine is
+     worth doing, but it is a refactor of eight other pages, not this page's
+     mobile pass. The desktop margin-top is the only page-specific number in
+     it: this page zeroes it (`.csd-page .footer`) where the others carry 66. */
+  .csd-page .footer {
+    height: auto;
+    margin-top: 8px;
+    padding-bottom: 34px;
+  }
+
+  .csd-page .footer__inner {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    height: auto;
+    gap: 30px;
+    padding: 30px var(--shell-gutter) 0;
+  }
+
+  .csd-page .footer__top {
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* 176px was the height that squared the brand against the link row */
+  .csd-page .footer__brand { height: auto; }
+
+  .csd-page .footer__tagline {
+    width: auto;
+    max-width: 320px;
+  }
+
+  /* three link columns side by side, set `nowrap` so the desktop row can
+     never break mid-label - both have to go together, or "Staff
+     Augumentation" pushes the panel wider than the viewport */
+  .csd-page .footer__cols {
+    flex-direction: column;
+    gap: 20px;
+    white-space: normal;
+  }
+
+  .csd-page .footer__col,
+  .csd-page .footer__col--wide {
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  /* the list gap goes to the links themselves: 44px of target each, rather
+     than 24px links with space between them */
+  .csd-page .footer__col ul { gap: 0; }
+
+  .csd-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .csd-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned at left:160.89px, a desktop text
+     length - it lands mid-sentence once the line wraps */
+  .csd-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   CASE STUDY (LIST) - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About, Staff Augmentation,
+   Salesforce, AI Solutions, Career, Job Details, Industry Detail
+   and Case Study Detail sheets are:
+
+     * `.csl-page` - case-study.html alone carries it. The body also
+       carries `.cs-page`, but so do About, Salesforce, AI Solutions,
+       Industry Detail and both Case Study Detail pages: `.cs-page`
+       only supplies the desktop opt-out from the navbar's flow
+       spacer, and scoping mobile work to it would leak into six
+       other pages.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint, so the desktop render is
+       untouched.
+
+   Both of this page's sections are Figma frames: fixed heights
+   (639px hero, 1436px work grid) with every child hung off an
+   absolute left/top. Mobile releases them into flow, in the reading
+   order the desktop composition implies, and re-hangs the pieces
+   that must stay overlaid off their own parent's edges.
+
+   NAVIGATION IS NOT REPEATED HERE. menu.js builds the same
+   `.nav-burger` and `.m-nav` drawer into this page as into every
+   other page, and SHARED MOBILE NAVIGATION - unscoped, further up -
+   is what hides `.burger` / `.menu-overlay` and dresses them. Only
+   the bar's own height and the logo inside it are page work.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset - without touching one of those selectors. */
+  body.csl-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .csl-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .csl-page .wrap section[id],
+  .csl-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The header swap - the split-panel overlay out, `.m-nav` drawer in -
+     is in SHARED MOBILE NAVIGATION, above; it is the same on every page. */
+  .csl-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .csl-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .csl-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .csl-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* the side tab is a second, competing entry point to the enquiry form -
+     on mobile the drawer owns it, so the tab stands down */
+  .csl-page .talk-tab { display: none; }
+
+  /* ---------- Hero ----------
+     Desktop is a 639px frame holding three absolute blocks: copy at
+     left:112, artwork at left:670, stats strip pinned across top:505.
+     Mobile drops the height and reads them top to bottom - headline and
+     lede, then the artwork they describe, then the stats.
+
+     78px of top padding is load-bearing, not breathing room: `.navbar` is
+     position:fixed and `.cs-page` is one of the bodies that opts out of the
+     `.wrap` flow spacer, so on desktop it is the copy's own top:164 that
+     clears the bar. Release that and the headline runs under the logo. Same
+     78px the Case Study Detail stage uses to clear the same 62px bar. */
+  .csl-page .cs-hero {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 78px 0 8px;
+  }
+
+  /* relative, not static: the red rule below is absolute and this is its
+     containing block. Left static, the rule would resolve against `.cs-hero`
+     instead and land up in the navbar.
+
+     left/top must go back to auto with it. Under `absolute` they are the
+     desktop hang; under `relative` they stay live as *offsets*, so keeping
+     them would shove the whole copy block 112px right and 164px down. */
+  .csl-page .cs-hero__copy {
+    position: relative;
+    left: auto;
+    top: auto;
+    order: 1;
+    width: 100%;
+    height: auto;
+    padding: 0 var(--shell-gutter);
+  }
+
+  /* the red rule stays a rule: it hangs off the copy block's own left edge -
+     inside the gutter, not on the panel edge - and is sized as two lines of
+     the clamped headline (line-height is 1) rather than kept at its desktop
+     56px, so it spans "Case / Study." at every width. */
+  .csl-page .cs-hero__bar {
+    top: 4px;
+    left: var(--shell-gutter);
+    height: calc(clamp(34px, 10vw, 54px) * 2);
+  }
+
+  .csl-page .cs-hero__text {
+    position: static;
+    width: 100%;
+    padding-left: 18px;
+    gap: 12px;
+  }
+
+  /* "Case" / "Study." are their own lines already (there is a <br> in the
+     markup), so nowrap can stay - the clamp is what keeps both inside a
+     320px panel */
+  .csl-page .cs-hero__title { font-size: clamp(34px, 10vw, 54px); }
+
+  .csl-page .cs-hero__lede {
+    font-size: clamp(14px, 3.8vw, 16px);
+    line-height: 1.5;
+  }
+
+  /* the artwork keeps its Figma proportion and its internal 121% crop -
+     the inner <img> is still absolute against this box, so only the box
+     needs re-hanging */
+  .csl-page .cs-hero__art {
+    position: relative;
+    order: 2;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 472px;
+    height: auto;
+    aspect-ratio: 472 / 380.141;
+    margin: 20px auto 0;
+  }
+
+  /* ---------- Stats strip ----------
+     Four 120px columns on a 60px gap need 720px; the panel has ~300. Two
+     up, two down, on the panel's own gutter. */
+  .csl-page .cs-stats {
+    position: static;
+    order: 3;
+    height: auto;
+    margin: 28px 0 0;
+    padding: 0 var(--shell-gutter);
+    border-radius: 0;
+  }
+
+  .csl-page .cs-stats__row {
+    position: static;
+    flex-wrap: wrap;
+    gap: 20px 16px;
+    transform: none;
+  }
+
+  .csl-page .cs-stat {
+    flex: 1 1 calc(50% - 8px);
+    width: auto;
+    min-width: 120px;
+  }
+
+  .csl-page .cs-stat b { font-size: clamp(24px, 7vw, 32px); }
+  .csl-page .cs-stat span { font-size: clamp(13px, 3.4vw, 14px); }
+
+  /* ---------- Work section frame ----------
+     Another Figma frame: 1436px tall, with the head, the card grid and the
+     Load More button all hung off absolute tops inside a `.cs-work__body`
+     inset 67px from each side. Mobile lets the section measure itself and
+     puts the body on the panel gutter. */
+  .csl-page .cs-work { height: auto; }
+
+  /* relative rather than static, with the desktop hang zeroed: `.cs-work__grid`
+     is an absolutely-positioned *sibling* carrying an opaque radial vignette,
+     and positioned siblings paint above in-flow ones whatever the source
+     order. Static here would leave the whole head washed out under that
+     vignette - and it hit-tests clean, because the grid is pointer-events:none.
+     Desktop never hit this: there, both are positioned, so DOM order decides. */
+  .csl-page .cs-work__body {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    z-index: 1;
+    height: auto;
+    padding: 36px var(--shell-gutter) 8px;
+  }
+
+  /* the ruled backdrop is decorative and pointer-events:none - it keeps its
+     radial fade, but only over the head and the first card rather than
+     stretching 740px down a much taller column */
+  .csl-page .cs-work__grid {
+    top: 24px;
+    height: 420px;
+  }
+
+  /* badge + heading stack above the filters instead of sitting beside them:
+     the two together need ~1000px on one line */
+  .csl-page .cs-work__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    height: auto;
+  }
+
+  .csl-page .cs-work__headcol { gap: 12px; }
+
+  .csl-page .cs-work__headcol .sec-badge { font-size: clamp(15px, 4vw, 18px); }
+
+  .csl-page .cs-work__title { font-size: clamp(24px, 7vw, 32px); }
+
+  /* ---------- Filter tabs ----------
+     Six tabs measure ~830px; the panel has ~300. Rather than wrap them into
+     three ragged rows, the white card becomes a horizontal scroller and the
+     row keeps its single line at intrinsic width. `overflow-x` replaces the
+     desktop `overflow: hidden`, so the card's rounded corners still clip. */
+  .csl-page .cs-filters {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    /* the strip is a horizontal gesture inside a vertical page: contain stops
+       the swipe chaining out to the document once a tab row hits its end */
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 8px;
+    /* a visible scrollbar would eat into the 44px rows and sit under the
+       active pill; the row's own overhang is the affordance */
+    scrollbar-width: none;
+  }
+
+  .csl-page .cs-filters::-webkit-scrollbar { display: none; }
+
+  /* max-content is what stops the row collapsing to the card's width and
+     wrapping - the tabs stay on one line and the card scrolls them */
+  .csl-page .cs-filters__row {
+    width: max-content;
+    min-width: 100%;
+    gap: 4px;
+  }
+
+  /* 4px + 36px line-height + 4px is already a 44px target; min-height makes
+     that explicit so a shorter clamp can never undercut it */
+  .csl-page .cs-filter {
+    min-height: 44px;
+    padding: 4px 14px;
+    font-size: clamp(13px, 3.6vw, 14px);
+    scroll-snap-align: start;
+  }
+
+  /* ---------- Case Files cards ----------
+     Desktop is a two-up wrap hung at top:160px inside the body frame, each
+     card a fixed 531x565 box. Mobile releases the grid into flow as a single
+     column and lets every card measure its own content. */
+  .csl-page .cs-grid {
+    position: static;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  /* the desktop `flex: 1 1 calc(50% - 24px)` is what pins two per row - in a
+     column it would instead stretch every card to an equal share of the
+     column's height */
+  .csl-page .cs-grid > .cs-card {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .csl-page .cs-card {
+    width: 100%;
+    height: auto;
+    gap: 20px;
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  /* the shot took its height from `flex: 1 0 0` against the card's fixed
+     565px - with the card on auto height there is nothing to divide, and
+     every layer inside is absolute, so the frame has no intrinsic size of
+     its own. 483/352 is the height the desktop flex arithmetic lands on at
+     the design width, so the crop of each overlay reads the same. */
+  .csl-page .cs-card__shot {
+    flex: 0 0 auto;
+    aspect-ratio: 483 / 352;
+    border-radius: 24px;
+  }
+
+  .csl-page .cs-card__shot img { border-radius: 24px; }
+
+  /* The zoom is untouched - `.cs-card:hover .cs-card__shot img` lives outside
+     this query and still owns the transform, transition and the crop-y
+     transform-origin correction. This only gives a touch device a way to
+     reach it: no hover state ever resolves on tap, so press does. */
+  .csl-page .cs-card:active .cs-card__shot img { transform: scale(1.05); }
+
+  .csl-page .cs-card__body { gap: 12px; }
+
+  .csl-page .cs-card__title { font-size: clamp(20px, 5.5vw, 24px); }
+
+  .csl-page .cs-card__desc {
+    font-size: clamp(15px, 4vw, 17px);
+    line-height: 1.5;
+  }
+
+  /* three tags measure ~231px against a ~268px inner width at 320px - it
+     fits, but wrap is what keeps a longer tag off the card's edge */
+  .csl-page .cs-card__tags { flex-wrap: wrap; }
+
+  /* ---------- Load More ----------
+     The last of the body frame's absolute hangs: left:485.5px is the centre
+     line of a 1046px panel, so on mobile it would sit far off the right edge.
+     Released into flow and centred by margin instead, which re-centres it at
+     any panel width rather than at one.
+
+     It stays `relative`, never `static`: `.pill-btn` is the containing block
+     for `.pill-btn__circle`, which is absolute on `inset: 2px`. Drop the
+     positioning and that white disc reparents to `.cs-work` and inflates to
+     the full height of the section - a white sheet over every card, with the
+     reload icon stranded in its top corner. */
+  .csl-page .cs-more {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin: 28px auto 0;
+  }
+
+  /* The pill is 48px tall and 139px wide at rest, so the target is already
+     over 44px - left at its design size rather than stretched full width,
+     which is what the white sweep's 44px disc clip is measured against. */
+
+  /* the sweep and the label flip are hover-only, and no hover state resolves
+     on tap - press is the touch equivalent. Scoped to this page's button, so
+     `.pill-btn` everywhere else is untouched. */
+  .csl-page .cs-more:active .pill-btn__circle { clip-path: inset(0 round 136px); }
+
+  .csl-page .cs-more:active .pill-btn__label {
+    color: var(--text-color);
+    transition-delay: 0.22s;
+  }
+
+  /* ---------- Footer ----------
+     371px tall with a 278px absolute inner - both are desktop measurements
+     of a three-column row that becomes a stack here, so both come off and
+     the content sets the height. */
+  .csl-page .footer {
+    height: auto;
+    margin-top: 24px;
+  }
+
+  /* the gutter has to move from `left`/`right` to `padding` along with the
+     switch to static: the desktop inset is `left/right: var(--shell-gutter)`
+     on an absolute box, and those two go inert the moment the box is in
+     flow - leaving the whole footer flush against the panel edge. */
+  .csl-page .footer__inner {
+    position: static;
+    height: auto;
+    gap: 28px;
+    padding: 36px var(--shell-gutter) 24px;
+  }
+
+  .csl-page .footer__top {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .csl-page .footer__brand {
+    height: auto;
+    gap: 8px;
+  }
+
+  .csl-page .footer__tagline {
+    width: 100%;
+    max-width: 320px;
+    font-size: clamp(15px, 4vw, 16px);
+  }
+
+  /* three columns on one nowrap line need ~540px. Two up, with Services -
+     the five-item column - allowed to take the full width it needs. */
+  .csl-page .footer__cols {
+    flex-wrap: wrap;
+    gap: 24px;
+    white-space: normal;
+  }
+
+  .csl-page .footer__col,
+  .csl-page .footer__col--wide {
+    flex: 1 1 calc(50% - 12px);
+    width: auto;
+    min-width: 140px;
+    gap: 4px;
+  }
+
+  /* the 8px list gap goes to the links themselves: 44px of target each,
+     rather than 24px links with dead space between them */
+  .csl-page .footer__col ul { gap: 0; }
+
+  .csl-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .csl-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned at left:160.89px, a desktop text
+     length - it lands mid-sentence once the line wraps */
+  .csl-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   TRAVEL TECH - MOBILE (max-width: 768px)
+   ===========================================================
+   Scoped exactly the way the home, About, Staff Augmentation,
+   Salesforce, AI Solutions, Career, Job Details, Industry Detail,
+   Case Study Detail and Case Study (list) sheets are:
+
+     * `.tv-page` - only travel-tech.html carries it. The body also
+       carries `.cs-page`, but nothing in this file scopes mobile
+       rules to `.cs-page`, so that class only supplies the desktop
+       opt-out from the navbar's flow spacer.
+     * one `@media (max-width: 768px)` query - nothing below this
+       line is read above the breakpoint, so the desktop render is
+       untouched.
+
+   Last in the file on purpose: every section on this page hangs its
+   children on absolute Figma coordinates inside a centred 1244
+   `.design-frame--fill`, and undoing that means re-declaring
+   `position`, `left/top`, `width` and `transform` on selectors set
+   further up - these have to be the declarations that win.
+
+   NAVIGATION IS NOT REPEATED HERE. menu.js builds the same
+   `.nav-burger` and `.m-nav` drawer into travel-tech.html as into
+   every other page, and SHARED MOBILE NAVIGATION - unscoped,
+   further up - is what hides `.burger` / `.menu-overlay` and
+   dresses them. Only the bar's own height and the logo inside it
+   are page work.
+   =========================================================== */
+@media (max-width: 768px) {
+
+  /* ---------- Panel + gutter ----------
+     Custom properties inherit, so re-basing them on <body> re-measures
+     every rule that already reads them - the navbar's inner margin, the
+     footer's inset - without touching one of those selectors. */
+  body.tv-page {
+    --shell-inset: 10px;
+    --shell-radius: 20px;
+    --shell-gutter: 20px;
+  }
+
+  /* the shell is the only horizontal boundary on mobile: anything that
+     wants to bleed does it inside a section, never past the panel */
+  .tv-page .page-shell { overflow: hidden; }
+
+  /* the fixed header would otherwise sit on whatever an in-page link
+     jumps to */
+  .tv-page .wrap section[id],
+  .tv-page .wrap footer[id] { scroll-margin-top: 72px; }
+
+  /* ---------- Header: logo + hamburger, nothing else ----------
+     The header swap - the split-panel overlay out, `.m-nav` drawer in -
+     is in SHARED MOBILE NAVIGATION, above; it is the same on every page. */
+  .tv-page .navbar {
+    height: 62px;
+    padding-top: 10px;
+  }
+
+  /* the mark alone is 40px tall; the link around it still needs a full target */
+  .tv-page .logo {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .tv-page .logo__mark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .tv-page .logo__text {
+    height: auto;
+    padding: 0 0 0 6px;
+    font-size: 16px;
+    line-height: 1.3;
+    align-items: center;
+  }
+
+  /* the side tab is a second, competing entry point to the enquiry form -
+     on mobile the drawer owns it, so the tab stands down */
+  .tv-page .talk-tab { display: none; }
+
+  /* ---------- Hero ----------
+     A 632px stage carrying three absolute layers: the grid plate hung at
+     left:-621, the phone render at left:701 and the copy column at left:111.
+
+     It becomes an auto-height column. The grid plate stays absolute behind
+     everything - it is wallpaper, not content - while the copy and the
+     render come back into the flow, copy first: the headline is what the
+     reader came for, and a 390px render above it would push it off screen.
+
+     `overflow: hidden` is already on the section, and it is what lets the
+     plate stay wider than the panel without opening a scrollbar. */
+  .tv-page .tv-hero { height: auto; }
+
+  .tv-page .tv-hero .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    /* the fixed 62px bar floats over this hero - .tv-page opts out of the
+       navbar's flow spacer through .cs-page, so the clearance lives here.
+       The 20px sides are the gutter the .design-frame no longer supplies. */
+    padding: 92px 20px 36px;
+  }
+
+  /* 1244 wide at left:-621 in a 632 box: half of it hangs off the panel and
+     the radial vignette is sized in pixels around that centre. Both are
+     desktop measurements, so the plate is re-hung on the section's own
+     centre line and the vignette re-stated in percentages - it now fades
+     from the middle of whatever height the column happens to be. */
+  .tv-page .tv-hero__grid {
+    left: 50%;
+    top: 0;
+    width: 150%;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  .tv-page .tv-hero__grid-fade {
+    background: radial-gradient(
+      62% 46% at 50% 44%,
+      rgba(244, 244, 244, 0) 0%,
+      rgba(244, 244, 244, 1) 100%
+    );
+  }
+
+  /* copy above the render, both back in the flow */
+  .tv-page .tv-hero__copy {
+    position: relative;
+    left: auto;
+    top: auto;
+    z-index: 1;
+    order: 1;
+    width: 100%;
+    gap: 20px;
+  }
+
+  /* the render is a 475x390 crop window with the bitmap overhanging it on
+     every side. Those overhangs are already percentages of this box, so the
+     crop survives untouched as long as the box keeps its ratio - which is
+     what `aspect-ratio` buys: `height: auto` alone would collapse to zero,
+     the image inside being absolutely positioned. */
+  .tv-page .tv-hero__art {
+    position: relative;
+    left: auto;
+    top: auto;
+    order: 2;
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    aspect-ratio: 475 / 390;
+    margin: 0 auto;
+  }
+
+  /* ---------- Hero type ----------
+     Every line is nowrap at desktop, sized for a 627px column. The clamps
+     below re-scale them against the viewport and the nowrap comes off
+     wherever a phrase is longer than one word. */
+  .tv-page .tv-hero__stack { gap: 10px; }
+
+  .tv-page .tv-hero__eyebrow {
+    font-size: clamp(17px, 4.8vw, 22px);
+    white-space: normal;
+  }
+
+  .tv-page .tv-hero__line1 {
+    font-size: clamp(32px, 9.5vw, 46px);
+    white-space: normal;
+  }
+
+  /* "powers modern travel" is a script word beside a two-word roman phrase -
+     at 320px the pair does not fit on one line at any legible size, so the
+     row is allowed to break between them rather than being scaled until it
+     does. Baseline alignment is what keeps the 94px script and the 64px
+     roman sitting on the same line while they still share one. */
+  .tv-page .tv-hero__line2 {
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: clamp(8px, 2.5vw, 14px);
+    row-gap: 0;
+  }
+
+  .tv-page .tv-hero__line2 em { font-size: clamp(52px, 16vw, 76px); }
+
+  .tv-page .tv-hero__line2 > span {
+    font-size: clamp(32px, 9.5vw, 46px);
+    white-space: normal;
+  }
+
+  .tv-page .tv-hero__lede {
+    width: 100%;
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.45;
+  }
+
+  /* the pill is already 48px tall - only the fixed 159px has to go, so the
+     label can keep its own padding at any type size */
+  .tv-page .tv-hero__btn { width: auto; }
+
+  /* ---------- Section heading furniture ----------
+     The badge + title pair opens Why Choose Us, Industries, Work,
+     Testimonials and Contact. `.sec-badge` and `.sec-title` are site-wide
+     components, so the trim is scoped to this page rather than edited at
+     source. Both land after the page's own `line-height: normal` block
+     further up and match its specificity, so these are the declarations
+     that win. */
+  .tv-page .sec-badge {
+    padding: 5px 10px;
+    font-size: 15px;
+  }
+
+  .tv-page .sec-head__top { gap: 12px; }
+
+  .tv-page .sec-title {
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  /* ---------- Why Choose Us ----------
+     A self-sizing band: 48px padding, a head row, then a 3 x 2 grid of
+     fixed 348 x 295 cells. The cells carry no gap - the rules between
+     them ARE the grid, drawn as each cell's own right and bottom border,
+     with `:nth-child(3n)` and `:nth-child(n+4)` clearing the outer edges.
+
+     Stacked, that bookkeeping stops describing the layout: in one column
+     there is no right edge to draw and the last card is the only one that
+     ends the grid. Both are restated below rather than patched, because
+     the desktop selectors would otherwise leave a rule under card 3 and
+     none under cards 4 and 5. */
+  .tv-page .tv-why__inner {
+    left: auto;
+    gap: 28px;
+    width: 100%;
+    padding: 36px 20px;
+    transform: none;
+  }
+
+  /* head and lede are a two-column row held apart by `space-between` and
+     aligned on their baselines; there is no second column on a phone */
+  .tv-page .tv-why__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .tv-page .tv-why__lede {
+    width: 100%;
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.45;
+  }
+
+  .tv-page .tv-why__grid { grid-template-columns: 1fr; }
+
+  /* `space-between` did the vertical spacing inside a fixed 295px cell.
+     At auto height there is no free space left for it to distribute, so
+     the gap becomes explicit. */
+  .tv-page .tv-wc {
+    width: 100%;
+    height: auto;
+    gap: 18px;
+    padding: 22px 4px;
+    border-right: 0;
+    border-bottom: 1px solid var(--sub-text-color);
+  }
+
+  /* one column: only the sixth card ends the grid */
+  .tv-page .tv-wc:nth-child(3n) { border-right: 0; }
+  .tv-page .tv-wc:nth-child(n + 4) { border-bottom: 1px solid var(--sub-text-color); }
+  .tv-page .tv-wc:last-child { border-bottom: 0; }
+
+  /* the 82px icon box is kept at size. Four of the six glyphs are seated
+     inside it on hand-measured absolute offsets (.tv-ic-1/-3/-4), and the
+     box crops with `overflow: hidden` - shrinking it would clip them, so
+     the one component on this page that is already phone-sized is left
+     exactly as the desktop draws it. */
+  .tv-page .tv-wc__body { gap: 12px; }
+
+  .tv-page .tv-wc__text { gap: 10px; }
+
+  .tv-page .tv-wc__title {
+    font-size: 17px;
+    line-height: 1.3;
+  }
+
+  .tv-page .tv-wc__desc {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Industries Served By ----------
+     A 992px white stage with two absolute layers: the head at left:85 and
+     the 1110-wide card grid at top:228. Both come back into the flow and
+     the band sizes itself.
+
+     The grid is two `.tv-ind__row` flex rows of four 260px cards held apart
+     by `space-between`. `display: contents` takes those two wrappers out of
+     the box tree so all eight cards become direct children of one CSS grid -
+     the only way to reflow 4+4 into a single run from this markup, and it
+     keeps the DOM order the design implies.
+
+     `minmax(min(240px, 100%), 1fr)` with `auto-fit` does the column count
+     without a second breakpoint: one column on a phone, two once the panel
+     can hold them, and the `min()` guard stops the track from overflowing
+     a 300px viewport. */
+  .tv-page .tv-ind { height: auto; }
+
+  .tv-page .tv-ind .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 40px 20px;
+  }
+
+  .tv-page .tv-ind__head {
+    position: relative;
+    left: auto;
+    top: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .tv-page .tv-ind__lede {
+    width: 100%;
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.45;
+  }
+
+  .tv-page .tv-ind__grid {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    gap: 16px;
+    width: 100%;
+  }
+
+  .tv-page .tv-ind__row { display: contents; }
+
+  /* ---------- Industries card ----------
+     260 x 330 with every part hung on an absolute offset. The card becomes
+     a fluid, auto-height column: the copy and the "Read more" line come
+     back into the flow, while the ghosted photo and the two corner blobs
+     stay absolute - they are artwork, not content - re-hung off the card's
+     own bottom edge in the same proportions the desktop draws.
+
+     `overflow: hidden` is already on the card, so the blobs still crop
+     against its corner exactly as they do above the breakpoint. */
+  .tv-page .tv-ic {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    height: auto;
+    padding: 24px 20px 20px;
+  }
+
+  /* top:134 / height:208 in a 330 box = 40.6% down, 63% tall, overhanging
+     the bottom edge by 3.6%. Restated as percentages it keeps that framing
+     at whatever height the copy gives the card. */
+  .tv-page .tv-ic__shot {
+    left: 13.33%;
+    top: auto;
+    bottom: -3.6%;
+    width: 115.4%;
+    height: 63%;
+  }
+
+  /* the blobs are fixed-size marks anchored to the bottom-left corner, so
+     they keep their pixels and only swap top for bottom: 330 - 260 - 99 and
+     330 - 242 - 129 are the offsets they already sit at */
+  .tv-page .tv-ic__blob {
+    top: auto;
+    bottom: -29px;
+  }
+
+  .tv-page .tv-ic__blob--on {
+    top: auto;
+    bottom: -41px;
+  }
+
+  .tv-page .tv-ic__copy {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .tv-page .tv-ic__title { font-size: clamp(20px, 5.6vw, 24px); }
+
+  /* THE description is the card's whole reason to exist and desktop only
+     reveals it on hover - a state a touch screen does not have. On mobile
+     it is simply on, recoloured from #eee (which only reads against the
+     dark hover plate) to the body grey that reads against the resting one.
+     Sticky hover after a tap still flips the card dark, so the #eee is put
+     back for that case and both states stay legible. */
+  .tv-page .tv-ic__desc {
+    opacity: 1;
+    color: var(--sub-text-color);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .tv-page .tv-ic:hover .tv-ic__desc { color: #eee; }
+
+  /* "Read more" and the arrow disc share a line on desktop (top:276 against
+     top:264). The label returns to the flow as the card's last row and the
+     disc stays pinned to the corner beside it; the right padding is what
+     keeps a long label off the disc, and 44px makes the label its own tap
+     target rather than leaving only the 44px disc to aim at. */
+  .tv-page .tv-ic__more {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: auto;
+    padding-right: 56px;
+  }
+
+  .tv-page .tv-ic__dot {
+    right: 20px;
+    top: auto;
+    bottom: 20px;
+  }
+
+  /* ---------- Explore The Work Has Done by Us ----------
+     This section is the FoodTech page's `.id-work` / `.id-pf` markup reused
+     whole - only the band differs, and here it sits on the grey panel with
+     no white fill of its own.
+
+     THE TWIN: the identical reflow already exists in INDUSTRY DETAIL (FOOD),
+     above, scoped `.id-page`. Both pages - and only these two - carry this
+     markup, so the two copies must be edited together. They are kept apart
+     because every page block in this file is page-scoped by convention;
+     dropping `.id-page` / `.tv-page` from both would merge them into one
+     shared component instead, which is the better fix if a third page ever
+     picks the markup up.
+
+     A 520px stage holding an absolute `__inner` column inside an absolute
+     1244 frame - two pinned layers to undo before anything reflows. */
+  .tv-page .tv-work { height: auto; }
+
+  .tv-page .tv-work .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 44px 20px 48px;
+  }
+
+  .tv-page .id-work__inner {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    gap: 28px;
+    transform: none;
+  }
+
+  .tv-page .id-sec-head {
+    width: 100%;
+    padding: 0;
+  }
+
+  .tv-page .id-work__title {
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .tv-page .id-work__cards {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+  }
+
+  /* The card is not a box with a picture in it - the PNG is shipped
+     pre-masked with a notch cut out of its bottom-left corner, and the badge
+     is parked IN that notch at left:-12.21, hanging off the card's own edge.
+     Every child sits on a coordinate inside that 317 x 252 box.
+
+     So the card is not re-laid-out, it is scaled: `aspect-ratio` locks the
+     317:252 box and every child coordinate is restated as a percentage of
+     it. Because the ratio is fixed, horizontal and vertical percentages
+     resolve to the same scale factor - the badge keeps the exact shape it
+     was exported at, and the notch stays under it at any width. */
+  .tv-page .id-pf {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+    aspect-ratio: 317 / 252;
+  }
+
+  /* the mask and the ::before copy inside it are both sized 100% 100%, so
+     they follow the box down without a second number to keep in sync */
+  .tv-page .id-pf__img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tv-page .id-pf__badge {
+    left: -3.852%;
+    top: 86.389%;
+    width: 13.799%;
+    height: 17.762%;
+  }
+
+  .tv-page .id-pf__badge--hover {
+    left: -8.376%;
+    top: 80.901%;
+    width: 22.848%;
+    height: 28.740%;
+  }
+
+  .tv-page .id-pf__body {
+    left: 5.776%;
+    top: 7.266%;
+    width: 80.869%;
+    gap: clamp(10px, 4.5vw, 18.311px);
+  }
+
+  .tv-page .id-pf__body > img {
+    width: 5.38%;
+    height: auto;
+  }
+
+  /* the third card's title is the long one on this page - "Provide the best
+     service with out of the box ideas" - so the type scales with the card
+     rather than sitting at a fixed size inside a shrinking box */
+  .tv-page .id-pf__body p {
+    font-size: clamp(15px, 5.6vw, 20.35px);
+  }
+
+  /* ---------- Numbers ----------
+     A white full-bleed band whose content rides a plain `.design-frame`
+     rather than a `--fill` one, so nothing here is absolutely positioned:
+     releasing the 1244 measuring stick is what turns both rows into stacks.
+
+     The 82px side padding is Figma measuring off the 1280 page frame; on
+     mobile the panel gutter replaces it. */
+  .tv-page .tv-stats__inner {
+    left: auto;
+    gap: 28px;
+    width: 100%;
+    padding: 44px 20px;
+    transform: none;
+  }
+
+  /* count | copy | faces - a three-column row on fixed 274 and 304 tracks.
+     Stacked in that same order: the number is the headline, the sentence
+     explains it, the avatars close it. */
+  .tv-page .tv-stats__top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .tv-page .tv-stats__count {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .tv-page .tv-stats__num { font-size: clamp(40px, 12vw, 58px); }
+
+  .tv-page .tv-stats__label { font-size: clamp(16px, 4.4vw, 20px); }
+
+  .tv-page .tv-stats__copy {
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.5;
+  }
+
+  /* the avatars are a fixed 72px chain overlapping by -33.94, which is
+     186px all told - it clears a 320px panel, so the stack keeps its
+     exported size and only stops being right-aligned against a 304px
+     track it no longer has. `.tv-stats__plus` sits on 30% / 40% offsets
+     of that same 72px box, so it needs nothing. */
+  .tv-page .tv-stats__faces {
+    justify-content: flex-start;
+    width: auto;
+  }
+
+  /* four stats on `space-between` become a 2 x 2 grid - at 320px each
+     column is ~130px, which is the widest a four-across row could ever be
+     here and still be legible. */
+  .tv-page .tv-stats__row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 12px;
+  }
+
+  .tv-page .tv-stat { padding: 0; }
+
+  .tv-page .tv-stat img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .tv-page .tv-stat__num { font-size: clamp(24px, 7.5vw, 32px); }
+
+  /* "Years of Experience" is wider than a 130px column at 15.5px, and the
+     nowrap is what would push it out of the grid rather than the size -
+     so the caption is allowed to take two lines and centres over them */
+  .tv-page .tv-stat__label {
+    font-size: clamp(12.5px, 3.6vw, 15.549px);
+    line-height: 1.3;
+    white-space: normal;
+    text-align: center;
+  }
+
+  /* ---------- Testimonials ----------
+     A 676px stage with the head pinned at left:102 and the review wall
+     re-seated to top:211. The wall itself is the home page's marquee reused
+     whole and is NOT dressed here - `.tv-page` was added to the shared
+     `.home` / `.csd-page` selectors in the review-wall block further up, so
+     all three pages get one set of numbers. Only the band is page work.
+
+     Script.js measures a marquee pass from the rendered card widths, so the
+     seam still lands correctly once the cards shrink to 280px. */
+  .tv-page .tv-test { height: auto; }
+
+  .tv-page .tv-test .design-frame--fill {
+    position: relative;
+    left: auto;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    height: auto;
+    transform: none;
+    padding: 40px 20px;
+  }
+
+  /* The oversized quote mark is 593 x 507 hung at left:326 - artwork sized
+     for a 1244 panel, and at phone width it would sit over the cards rather
+     than behind them. It goes, which is also what the shared wall does with
+     its own two quote washes (`.reviews::before` / `::after`).
+
+     That also retires the blend-mode problem this section carries: the
+     `background: var(--shell-bg)` painted on the frame further up exists
+     only so `mix-blend-mode: hard-light` has the panel colour to blend
+     against inside the frame's stacking context. Harmless to leave - it is
+     the panel's own colour - so it stays rather than being unpicked. */
+  .tv-page .tv-test__quote { display: none; }
+
+  .tv-page .tv-test__head {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    padding: 0;
+  }
+
+  /* the head's title is `.id-sec-title`, not the `.sec-title` trimmed with
+     the rest of the heading furniture above - it is also the FAQ and Work
+     title class on the FoodTech markup, so it is sized to match */
+  .tv-page .id-sec-title {
+    font-size: clamp(22px, 6.4vw, 30px);
+    line-height: 1.25;
+    white-space: normal;
+  }
+
+  .tv-page .tv-test__lede {
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.45;
+  }
+
+  /* the wall is full-bleed at desktop (left:0 / right:0 of the 1244 frame),
+     so the negative margin gives it back the 20px the frame's gutter takes -
+     cards drifting into a white margin would read as a broken row rather
+     than a marquee running off the panel edge */
+  .tv-page .tv-test__reviews {
+    top: auto;
+    align-self: stretch;
+    margin: 0 -20px;
+  }
+
+  /* ---------- FAQ ----------
+     A two-column band inside a plain `.design-frame`: a 426px copy rail
+     beside a 578px question list. The rail is ONE element holding the
+     heading at its top and the "Still have a question?" CTA at its bottom,
+     held apart by `space-between` over the list's full height.
+
+     Stacked, that pairing stops making sense - the CTA would land between
+     the heading and the questions it is meant to follow. `display: contents`
+     dissolves the rail so its two halves become items of the band itself,
+     and `order` reads them heading / questions / CTA.
+
+     The accordion needs nothing: Script.js toggles `.is-open` and the
+     answer is a plain `display: none` / `block`, with no measured height to
+     re-measure at this width. */
+  .tv-page .tv-faq__inner {
+    left: auto;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+    padding: 40px 20px;
+    transform: none;
+  }
+
+  .tv-page .tv-faq__col { display: contents; }
+
+  .tv-page .tv-faq__head {
+    order: 1;
+    padding: 0;
+  }
+
+  .tv-page .tv-faq__list {
+    order: 2;
+    width: 100%;
+  }
+
+  .tv-page .tv-faq__foot {
+    order: 3;
+    gap: 24px;
+    padding: 0;
+  }
+
+  .tv-page .tv-faq__headtext { gap: 12px; }
+
+  .tv-page .tv-faq__title { font-size: clamp(24px, 7vw, 36px); }
+
+  .tv-page .tv-faq__lede {
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.45;
+  }
+
+  .tv-page .tv-faq__stilltitle { font-size: clamp(19px, 5.2vw, 24px); }
+
+  .tv-page .tv-faq__stilltext { line-height: 1.5; }
+
+  /* ---------- Question row ----------
+     The whole row is the <button>, so the 84px floor is already far more
+     tap target than it needs; 64 keeps the closed list compact and still
+     clears 44. The 30px gap and 24px padding are what actually squeeze the
+     title at this width, not the type size. */
+  .tv-page .tv-q {
+    gap: 16px;
+    min-height: 64px;
+    padding: 18px 16px;
+  }
+
+  .tv-page .tv-q.is-open { gap: 14px; }
+
+  .tv-page .tv-q.is-open .tv-q__body { padding: 4px 0; }
+
+  /* open and closed are set one point apart at desktop (17.74 / 18) - both
+     are clamped so the row does not resize its own title as it expands */
+  .tv-page .tv-q__title { font-size: clamp(15.5px, 4.3vw, 17.74px); }
+
+  .tv-page .tv-q.is-open .tv-q__title { font-size: clamp(16px, 4.4vw, 18px); }
+
+  /* `line-height: normal` is tight for a five-line answer on a phone */
+  .tv-page .tv-q__answer { line-height: 1.55; }
+
+  /* the caret disc is the affordance, not the target - it stays at 32px */
+  .tv-page .tv-chat { min-height: 44px; }
+
+  /* ---------- Contact ----------
+     A white full-bleed band inside a plain `.design-frame`: the form on the
+     left, a 392px illustration card on the right, bottom-aligned. Released
+     into a stack in DOM order - the form is the point of the section and
+     the card is decorative (`aria-hidden`). */
+  .tv-page .tv-ct__inner {
+    left: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 28px;
+    width: 100%;
+    padding: 44px 20px;
+    transform: none;
+  }
+
+  .tv-page .tv-ct__form {
+    width: 100%;
+    gap: 28px;
+  }
+
+  .tv-page .tv-ct__head { gap: 12px; }
+
+  .tv-page .tv-ct__title {
+    width: 100%;
+    font-size: clamp(26px, 7.4vw, 46px);
+  }
+
+  .tv-page .tv-ct__fields { gap: 16px; }
+
+  .tv-page .tv-ct__btn { width: auto; }
+
+  /* ---------- Contact fields ----------
+     The `sa-*` field markup is the Staff Augmentation / AI / Salesforce
+     form reused whole. Those three pages each carry their own copy of this
+     reflow inside their own block, so this is a fourth - the file scopes
+     page blocks by page, and there is no shared block to join. If a fifth
+     page ever picks the markup up, the four copies are worth collapsing
+     into one unscoped rule the way the review wall already is. */
+  .tv-page .sa-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .tv-page .sa-field {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  /* 12px in a text field is under the 16px iOS Safari zooms the whole
+     viewport to reach, and it does not zoom back out on blur */
+  .tv-page .sa-input input,
+  .tv-page .sa-input textarea { font-size: 16px; }
+
+  /* the second row places its three radios at left:0/176/359 of a 440px
+     strip - here they wrap like the first row does */
+  .tv-page .sa-source__row,
+  .tv-page .sa-source__row--fixed {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+  }
+
+  .tv-page .sa-source__row--fixed .sa-radio {
+    position: static;
+    left: auto;
+    top: auto;
+  }
+
+  .tv-page .sa-radio {
+    align-items: center;
+    min-height: 24px;
+  }
+
+  /* ---------- Illustration card ----------
+     The card takes its height from the row it is stretched in, and holds a
+     480 x 320 scene hung absolutely at left:-44 / top:124 so the artwork
+     overhangs the left edge and the card crops it.
+
+     In a column there is no row height to inherit and the scene is
+     absolute, so the card would collapse to nothing. `aspect-ratio`
+     392:320 gives it exactly the height the scene needs, and the scene is
+     re-hung on the card's bottom edge in the same proportions: at 122.449%
+     wide and 100% tall it resolves to 480 x 320 whenever the card is 392,
+     and stays 3:2 at every width below that. Its 17 layers are already
+     placed as percentages of the scene, so they follow for free. */
+  .tv-page .tv-ct__box {
+    align-self: center;
+    width: 100%;
+    max-width: 392px;
+    aspect-ratio: 392 / 320;
+  }
+
+  .tv-page .tv-ct__art {
+    left: -11.224%;
+    top: auto;
+    bottom: 0;
+    width: 122.449%;
+    height: 100%;
+  }
+
+  /* ---------- Footer ----------
+     371px tall with a 278px absolute inner - both are desktop measurements
+     of a three-column row that becomes a stack here, so both come off and
+     the content sets the height. The page's own 34px gap to the band above
+     (`.tv-page .footer`, further up) comes down with it. */
+  .tv-page .footer {
+    height: auto;
+    margin-top: 24px;
+  }
+
+  /* the gutter has to move from `left`/`right` to `padding` along with the
+     switch to static: the desktop inset is `left/right: var(--shell-gutter)`
+     on an absolute box, and those two go inert the moment the box is in
+     flow - leaving the whole footer flush against the panel edge. */
+  .tv-page .footer__inner {
+    position: static;
+    height: auto;
+    gap: 28px;
+    padding: 36px var(--shell-gutter) 24px;
+  }
+
+  .tv-page .footer__top {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .tv-page .footer__brand {
+    height: auto;
+    gap: 8px;
+  }
+
+  .tv-page .footer__tagline {
+    width: 100%;
+    max-width: 320px;
+    font-size: clamp(15px, 4vw, 16px);
+  }
+
+  /* three columns on one nowrap line need ~540px. Two up, with Services -
+     the five-item column - allowed to take the full width it needs. */
+  .tv-page .footer__cols {
+    flex-wrap: wrap;
+    gap: 24px;
+    white-space: normal;
+  }
+
+  .tv-page .footer__col,
+  .tv-page .footer__col--wide {
+    flex: 1 1 calc(50% - 12px);
+    width: auto;
+    min-width: 140px;
+    gap: 4px;
+  }
+
+  /* Most of the 8px list gap goes to the links themselves: 44px of target
+     each, rather than 24px links with dead space between them.
+
+     The 4px that stays is doing real work. Two entries in Services -
+     "Staff Augumentation" and "Mobile Development" - wrap to two lines in a
+     half-width column, and a wrapped link is taller than the 44px floor, so
+     with `gap: 0` its second line sits flush against the next link's first
+     and the two read as one item. The gap plus the link's own padding is
+     what keeps them apart at any wrap. */
+  .tv-page .footer__col ul { gap: 4px; }
+
+  .tv-page .footer__col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 4px 0;
+    line-height: 1.35;
+  }
+
+  .tv-page .footer__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  /* the underline flourish is pinned at left:160.89px, a desktop text
+     length - it lands mid-sentence once the line wraps */
+  .tv-page .footer__cookies img { display: none; }
 }
