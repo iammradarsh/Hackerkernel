@@ -173,45 +173,51 @@
     svcRender();
   }
 
-  /* ---------- Marquee rows: stamp out copies for a seamless loop ----------
-     A pass is one authored set of cards plus the gap that trails the last one
-     — translate by exactly that and the copy behind lands where the original
-     started, so the seam never shows. The rows are seeded at different offsets
-     and hold different numbers of cards, so the two passes are different
-     lengths and the rows drift out of step instead of marching as a grid. */
-  Array.prototype.forEach.call(document.querySelectorAll('[data-marquee]'), function (row) {
-    var cards = Array.prototype.slice.call(row.children);
+  /* ---------- Review reel: build the batches the CSS animates ----------
+     The reel itself is CSS (`review-reel` in style.css). All this does is put
+     the frame under it: a row becomes two batches of three, each batch a set
+     of cards pinned to the same three evenly spaced slots, so the batch that
+     arrives lands exactly where the one before it stood.
+
+     The pages author four or five cards per row and there are four of them,
+     so the count is normalised here rather than in the markup — every page
+     gets the same reel from whatever quotes it happens to carry, and the
+     copy stays where an editor can find it. */
+  var REVIEW_SLOTS = 3;    /* cards per batch — matches the CSS slot rules */
+
+  Array.prototype.forEach.call(document.querySelectorAll('.reviews__row'), function (row) {
+    var cards = Array.prototype.slice.call(row.querySelectorAll('.review'));
     if (!cards.length) return;
 
-    /* every copy of a card answers to the same slot number, so when the wall
-       shuffles a slot all of its copies change together and the loop stays
-       seamless */
-    for (var s = 0; s < cards.length; s++) cards[s].setAttribute('data-slot', s);
+    var batches = document.createDocumentFragment();
+    var slot = 0;
 
-    var gap = parseFloat(getComputedStyle(row).columnGap) || 0;
-    var pass = row.getBoundingClientRect().width + gap;
-    if (!pass) return;
+    ['a', 'b'].forEach(function (tag) {
+      var batch = document.createElement('div');
+      batch.className = 'reviews__batch reviews__batch--' + tag;
 
-    /* enough width to stay covered at either end of the travel, whatever the
-       row's seeded offset — the widest seed in the design is 390px */
-    var view = row.parentNode.getBoundingClientRect().width;
-    var need = view + pass + 400;
+      for (var i = 0; i < REVIEW_SLOTS; i++, slot++) {
+        /* every card in a row answers to its own slot number, so the shuffle
+           can refresh one without touching the batch it travels with */
+        var card = cards[slot % cards.length].cloneNode(true);
+        card.setAttribute('data-slot', slot);
+        batch.appendChild(card);
+      }
 
-    while (row.getBoundingClientRect().width < need) {
-      var copy = document.createDocumentFragment();
-      for (var i = 0; i < cards.length; i++) copy.appendChild(cards[i].cloneNode(true));
-      row.appendChild(copy);
-    }
+      batches.appendChild(batch);
+    });
 
-    row.style.setProperty('--marq-pass', pass + 'px');
+    row.innerHTML = '';
+    row.appendChild(batches);
   });
 
-  /* ---------- Testimonial wall: drifting shuffle ----------
-     The rows drift on their own (CSS). On top of that, every couple of seconds
-     a visible slot swaps to a different testimonial: the old face fades out
-     while the new one fades in on a card that lifts over its neighbours and
-     settles back. Swaps overlap, so the wall reads as a live shuffle rather
-     than a strip of fixed cards sliding past.
+  /* ---------- Testimonial wall: the shuffle ----------
+     The reel would otherwise cycle the same six quotes forever, so a slot is
+     restocked every couple of seconds. It only ever restocks a card that is
+     currently off the wall — the reel carries a batch right out of the frame
+     for half of every cycle, which is a free window to change the copy in.
+     Nothing crossfades because nothing is on screen to see it: a card simply
+     comes back round carrying a quote it did not leave with.
 
      Placeholder copy — replace with real client quotes. */
   var REVIEW_POOL = [
@@ -237,8 +243,7 @@
       quote: 'We closed the quarter eighteen percent up, and the handover notes meant nobody had to chase them for help.' }
   ];
 
-  var REVIEW_SETTLE = 640;      /* old face out, new face in, plus a little slack */
-  var REVIEW_GAP_MIN = 2000;    /* a swap somewhere every 2–4s */
+  var REVIEW_GAP_MIN = 2000;    /* a slot restocked somewhere every 2–4s */
   var REVIEW_GAP_MAX = 4000;
 
   function reviewFace(entry) {
@@ -262,7 +267,7 @@
     var still = window.matchMedia('(prefers-reduced-motion: reduce)');
     var held = false;
 
-    Array.prototype.forEach.call(wall.querySelectorAll('[data-marquee]'), function (el) {
+    Array.prototype.forEach.call(wall.querySelectorAll('.reviews__row'), function (el) {
       var copies = {};
       Array.prototype.forEach.call(el.querySelectorAll('.review'), function (card) {
         var slot = +card.getAttribute('data-slot');
@@ -272,19 +277,29 @@
       var count = Object.keys(copies).length;
       if (!count) return;
 
-      rows.push({ el: el, copies: copies, count: count, entry: [], busy: {} });
+      rows.push({ el: el, copies: copies, count: count, entry: [] });
     });
 
     if (!rows.length) return;
 
+    /* the slot to a side, but only within the same batch — the row's slots run
+       0-2 for one batch and 3-5 for the next, and two batches are never on the
+       wall together, so slot 2 and slot 3 are not neighbours of anything */
+    function beside(row, slot, step) {
+      var next = slot + step;
+      if (next < 0 || next >= row.count) return null;
+      if (Math.floor(next / REVIEW_SLOTS) !== Math.floor(slot / REVIEW_SLOTS)) return null;
+      return row.entry[next];
+    }
+
     /* Pick an entry for a slot, under three preferences that give way in turn:
-       never the same person as the slot either side (the track wraps, so the
-       last slot neighbours the first), never a quote already showing elsewhere
-       in the row, and ideally a different person from the one leaving. */
+       never the same person as the slot either side of it on the wall, never a
+       quote already showing elsewhere in the row, and ideally a different
+       person from the one leaving. */
     function choose(row, slot) {
       var n = row.count;
-      var left = row.entry[(slot + n - 1) % n];
-      var right = row.entry[(slot + 1) % n];
+      var left = beside(row, slot, -1);
+      var right = beside(row, slot, 1);
       var now = row.entry[slot];
 
       var used = {};
@@ -317,59 +332,31 @@
       return from[Math.floor(Math.random() * from.length)];
     }
 
-    function paint(row, slot, entry, animate) {
+    function paint(row, slot, entry) {
       row.entry[slot] = entry;
 
       row.copies[slot].forEach(function (card) {
-        var next = reviewFace(REVIEW_POOL[entry]);
-
-        if (!animate) {
-          card.innerHTML = '';
-          card.appendChild(next);
-          card.classList.add('is-live');
-          return;
-        }
-
-        var prev = card.querySelector('.review__face');
-        next.classList.add('review__face--in', 'review__face--fresh');
-        card.appendChild(next);
-
-        /* commit the hidden start state before releasing it, or the browser
-           collapses both frames into no transition at all */
-        void next.offsetWidth;
-        next.classList.remove('review__face--in');
-        card.classList.add('is-swapping');
-        if (prev) prev.classList.add('review__face--out');
+        card.innerHTML = '';
+        card.appendChild(reviewFace(REVIEW_POOL[entry]));
+        card.classList.add('is-live');
       });
-
-      if (!animate) return;
-
-      row.busy[slot] = true;
-      window.setTimeout(function () {
-        row.copies[slot].forEach(function (card) {
-          var faces = card.querySelectorAll('.review__face');
-          for (var i = 0; i < faces.length - 1; i++) card.removeChild(faces[i]);
-          /* clear the entry delay, or this face would stall on its way out */
-          faces[faces.length - 1].classList.remove('review__face--fresh');
-          card.classList.remove('is-swapping');
-        });
-        delete row.busy[slot];
-      }, REVIEW_SETTLE);
     }
 
-    /* only shuffle what someone can actually see */
-    function onScreen(row) {
+    /* Slots the reel has carried out of the frame. getBoundingClientRect reads
+       through the animation's transform, so this is the card's live position,
+       not the one the layout gives it. */
+    function offWall(row) {
       var view = wall.getBoundingClientRect();
       var out = [];
 
       Object.keys(row.copies).forEach(function (key) {
         var slot = +key;
-        if (row.busy[slot]) return;
         var copies = row.copies[slot];
         for (var i = 0; i < copies.length; i++) {
           var box = copies[i].getBoundingClientRect();
-          if (box.right > view.left && box.left < view.right) { out.push(slot); return; }
+          if (box.right > view.left && box.left < view.right) return;
         }
+        out.push(slot);
       });
 
       return out;
@@ -377,10 +364,10 @@
 
     function swapOne() {
       var row = rows[Math.floor(Math.random() * rows.length)];
-      var open = onScreen(row);
+      var open = offWall(row);
       if (!open.length) return;
       var slot = open[Math.floor(Math.random() * open.length)];
-      paint(row, slot, choose(row, slot), true);
+      paint(row, slot, choose(row, slot));
     }
 
     function inView() {
@@ -390,24 +377,19 @@
 
     function beat() {
       window.setTimeout(function () {
-        if (!held && !document.hidden && inView()) {
-          /* sometimes two at once, offset from each other, so swaps overlap */
-          var burst = Math.random() < 0.45 ? 2 : 1;
-          for (var i = 0; i < burst; i++) {
-            window.setTimeout(swapOne, i * (120 + Math.random() * 280));
-          }
-        }
+        if (!held && !document.hidden && inView()) swapOne();
         beat();
       }, REVIEW_GAP_MIN + Math.random() * (REVIEW_GAP_MAX - REVIEW_GAP_MIN));
     }
 
     rows.forEach(function (row) {
-      for (var slot = 0; slot < row.count; slot++) paint(row, slot, choose(row, slot), false);
+      for (var slot = 0; slot < row.count; slot++) paint(row, slot, choose(row, slot));
     });
 
     if (still.matches) return;
 
-    /* hovering the wall holds the drift (CSS) — hold the shuffle with it */
+    /* hovering the wall holds the reel (CSS) — a card that is not travelling
+       is a card that could be restocked in plain sight, so hold this too */
     wall.addEventListener('mouseenter', function () { held = true; });
     wall.addEventListener('mouseleave', function () { held = false; });
 

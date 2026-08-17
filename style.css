@@ -12702,6 +12702,7 @@ body.is-apply-open {
   }
 }
 
+
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
   .m-nav__panel,
   .m-nav__scrim { transition-duration: 0.01ms; }
