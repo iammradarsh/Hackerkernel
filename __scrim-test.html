@@ -1,0 +1,1059 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HackerKernel | AI-Enabled Product Engineering Company</title>
+  <meta name="description" content="AI, SaaS & Salesforce Product Engineering Company helping startups and enterprises build scalable digital products.">
+
+  <link rel="icon" type="image/png" href="assets/hk-logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<!-- .home scopes the â‰¤768px mobile stylesheet to this page; nothing targets it
+     above that breakpoint, so the desktop design is untouched. -->
+<body class="home is-talk-open">
+
+  <!-- The loading screen builds itself here, before anything below has been
+       parsed, so there is no frame in which the page shows through it. It has
+       to stay the first tag inside <body> for that to hold. -->
+  
+
+  <!-- Fixed side tab â€” the handle for the slide-in enquiry form -->
+  <button class="talk-tab" type="button" id="talk-toggle" aria-expanded="false" aria-controls="talk-form"><span>Let's Talk Business</span></button>
+
+  <!-- ================= Let's Talk Business â€” slide-in form ================= -->
+  <aside class="lt-form is-open" id="talk-form" aria-hidden="true" aria-label="Get in touch">
+    <form class="lt-form__card" novalidate>
+      <!-- mobile only: the tab that normally closes the drawer is off-canvas
+           once the card fills the viewport, so the card needs its own handle -->
+      <button class="lt-form__close" type="button" id="talk-close" aria-label="Close form">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
+      <p class="lt-form__title">Get In Touch</p>
+
+      <div class="lt-form__scroll">
+        <div class="lt-fields">
+          <label class="lt-field">
+            <span class="lt-field__label">Full Name<b>*</b></span>
+            <input class="lt-input" type="text" name="fullname" autocomplete="name" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Email<b>*</b></span>
+            <input class="lt-input" type="email" name="email" autocomplete="email" required>
+          </label>
+
+          <div class="lt-field">
+            <span class="lt-field__label">Phone Number<b>*</b></span>
+            <div class="lt-phone">
+              <select class="lt-select lt-phone__code" name="dialcode" aria-label="Country dialling code">
+                <option>&#127482;&#127480; +1</option>
+                <option>&#127470;&#127475; +91</option>
+                <option>&#127468;&#127463; +44</option>
+                <option>&#127462;&#127466; +971</option>
+                <option>&#127462;&#127482; +61</option>
+                <option>&#127480;&#127468; +65</option>
+              </select>
+              <input class="lt-input lt-phone__num" type="tel" name="phone" placeholder="(201) 555-0123" autocomplete="tel" required>
+            </div>
+          </div>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company Name<b>*</b></span>
+            <input class="lt-input" type="text" name="company" autocomplete="organization" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company URL</span>
+            <input class="lt-input" type="url" name="website" autocomplete="url">
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Region<b>*</b></span>
+            <select class="lt-select" name="region" required>
+              <option value="" selected>Select Region</option>
+              <option>North America</option>
+              <option>Europe</option>
+              <option>Asia Pacific</option>
+              <option>Middle East</option>
+              <option>Africa</option>
+              <option>Australia &amp; Oceania</option>
+              <option>Other</option>
+            </select>
+          </label>
+
+          <div class="lt-check">
+            <span class="lt-field__label">Services you are looking for<b>*</b></span>
+            <div class="lt-check__list">
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Remote IT Resources">Remote IT Resources</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Custom Software Development">Custom Software Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Web Development">Web Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Mobile App Development">Mobile App Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Other IT Services">Other IT Services</label>
+            </div>
+          </div>
+
+          <label class="lt-field" style="padding-top:8px">
+            <span class="lt-field__label">Project Details<b>*</b></span>
+            <textarea class="lt-input lt-textarea" name="details" required></textarea>
+          </label>
+
+          <button class="lt-form__submit" type="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </aside>
+
+  <!-- ================= Chat Bot â€” the navbar "Let's Talk" CTA opens this =================
+       A centred modal, unlike the enquiry drawer above: the Figma card is
+       rounded on all four corners, so nothing is meant to sit off-screen. -->
+  <div class="chatbot" id="chatbot" aria-hidden="true">
+    <div class="chatbot__scrim" data-chatbot-close></div>
+
+    <div class="chatbot__card" role="dialog" aria-modal="true" aria-labelledby="chatbot-title">
+      <!-- the two blurred circles sit half below the card; the card clips them -->
+      <div class="chatbot__glow" aria-hidden="true"><i></i><i></i></div>
+
+      <button class="chatbot__close" type="button" data-chatbot-close aria-label="Close chat">
+        <img src="assets/chat-close.svg" alt="">
+      </button>
+
+      <div class="chatbot__head">
+        <img class="chatbot__logo" src="assets/chat-logo.svg" alt="">
+        <div class="chatbot__intro">
+          <p class="chatbot__title" id="chatbot-title">Let's Build Your Next Digital Solution</p>
+          <p class="chatbot__sub">Tell us about your business requirements and our AI assistant will guide you with the right IT services and solutions.</p>
+        </div>
+      </div>
+
+      <div class="chatbot__foot">
+        <div class="chatbot__suggest">
+          <p class="chatbot__suggest-label">Suggestions on what to ask Our Chat Bot</p>
+          <div class="chatbot__chips">
+            <button class="chatbot__chip" type="button">Hire developers for project</button>
+            <button class="chatbot__chip" type="button">Looking for AI or automation services</button>
+            <button class="chatbot__chip" type="button">Need a website or software solution</button>
+          </div>
+        </div>
+
+        <form class="chatbot__bar" id="chatbot-form" novalidate>
+          <input class="chatbot__input" id="chatbot-input" type="text" autocomplete="off"
+                 placeholder="Tell us what you want to build..." aria-label="Tell us what you want to build">
+          <button class="chatbot__send" type="submit" aria-label="Send">
+            <img src="assets/chat-send.svg" alt="">
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-shell">
+  <div class="wrap">
+
+    <!-- ================= Navbar ================= -->
+    <header class="navbar">
+      <div class="navbar__veil" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="navbar__inner">
+        <a class="logo" href="index.html">
+          <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+          <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+        </a>
+
+        <nav class="nav-links">
+          <a href="about.html">About Us</a>
+          <a href="ai-solution.html">Explore Ai With us</a>
+          <a href="#services">Services</a>
+          <a href="case-study.html">Case Studies</a>
+          <a href="#industries">Industries</a>
+          <a href="career.html">Career</a>
+          <a class="nav-links__cta" href="">
+            <span class="nav-links__cta-row">
+              Let's Talk
+              <span class="nav-links__cta-icon" aria-hidden="true">
+                <img class="nav-links__cta-ring" src="assets/lt-cta-ring.svg" alt="">
+                <i class="nav-links__cta-disc"></i>
+                <img class="nav-links__cta-arrow" src="assets/lt-cta-arrow.svg" alt="">
+              </span>
+            </span>
+            <i class="nav-links__cta-line" aria-hidden="true"></i>
+          </a>
+        </nav>
+
+        <!-- the â‰¤768px burger is appended here by menu.js, together with the
+             drawer it opens â€” see that file for the shared component -->
+      </div>
+    </header>
+
+    <!-- ================= Hero ================= -->
+    <section class="hero" id="top">
+
+        <div class="hero__copy">
+          <div class="hero__bar"></div>
+
+          <div class="hero__text">
+            <h1 class="hero__title">AI-Enabled<br><em>Product Engineering</em><br>Company</h1>
+            <p class="hero__desc">AI, SaaS &amp; Salesforce Product Engineering Company helping startups and enterprises build scalable digital products.</p>
+            <div class="hero__stats">
+              <div class="hero__stat"><b>230+</b><span>Clients</span></div>
+              <div class="hero__stat"><b>1000+</b><span>Projects Delivered</span></div>
+            </div>
+          </div>
+
+          <!-- opens the Let's Talk Business drawer â€” wired in Script.js -->
+          <button class="pill-btn hero__btn" type="button" aria-controls="talk-form">
+            <span class="pill-btn__label">Book a fee consultation</span>
+            <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+          </button>
+        </div>
+
+        <div class="hero__media">
+          <div class="hero__cards">
+            <div class="hero__card-back">
+              <div class="hero__play"><span><img src="assets/play-red.svg" alt=""></span></div>
+            </div>
+            <div class="hero__card-front">
+              <img src="assets/hero-video.png" alt="">
+              <div class="hero__play hero__play--glass"><span><img src="assets/play-glass.svg" alt=""></span></div>
+            </div>
+          </div>
+
+          <div class="hero__tags">
+            <div class="hero__tag hero__tag--staff">Staff&nbsp; Augmentation</div>
+            <div class="hero__tag--ai"><div class="hero__tag">AI Solutions</div></div>
+          </div>
+
+          <img class="hero__salesforce" src="assets/salesforce.svg" alt="Salesforce">
+        </div>
+
+      <!-- Brand logo slider -->
+      <div class="brands">
+        <div class="brands__track">
+          <div class="brand brand--google"><img src="assets/google.svg" alt="Google"></div>
+          <div class="brand brand--slack"><img src="assets/slack.png" alt="Slack"></div>
+          <div class="brand brand--monday"><img src="assets/monday.svg" alt="Monday.com"></div>
+          <div class="brand brand--trello"><img src="assets/trello.png" alt="Trello"></div>
+          <div class="brand brand--google"><img src="assets/google.svg" alt="Google"></div>
+          <div class="brand brand--monday"><img src="assets/monday.svg" alt="Monday.com"></div>
+          <div class="brand brand--notion"><img src="assets/notion.png" alt="Notion"></div>
+          <div class="brand brand--trello"><img src="assets/trello.png" alt="Trello"></div>
+
+          <div class="brand brand--google"><img src="assets/google.svg" alt=""></div>
+          <div class="brand brand--slack"><img src="assets/slack.png" alt=""></div>
+          <div class="brand brand--monday"><img src="assets/monday.svg" alt=""></div>
+          <div class="brand brand--trello"><img src="assets/trello.png" alt=""></div>
+          <div class="brand brand--google"><img src="assets/google.svg" alt=""></div>
+          <div class="brand brand--monday"><img src="assets/monday.svg" alt=""></div>
+          <div class="brand brand--notion"><img src="assets/notion.png" alt=""></div>
+          <div class="brand brand--trello"><img src="assets/trello.png" alt=""></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Our Services ================= -->
+    <section class="services" id="services">
+      <div class="services__corner">
+        <img src="assets/services-corner.png" alt="">
+      </div>
+
+      <div class="sec-head services__head">
+        <div class="sec-head__top">
+          <div class="sec-badge"><b>#</b>WhatWeDo</div>
+          <p class="sec-title">Our <em>Services</em></p>
+        </div>
+        <p class="sec-copy">Everyone of us loves something different. So, explore the world through the lens of our visual  capabilities and find what you love</p>
+      </div>
+
+      <p class="sec-index services__index">(02)</p>
+
+      <div class="services__rule"></div>
+
+      <div class="services__slider">
+        <div class="services__arrows">
+          <button class="arrow-btn arrow-btn--prev" type="button" aria-label="Previous">
+            <img class="arrow-btn__idle" src="assets/arrow-up.svg" alt="">
+            <img class="arrow-btn__live" src="assets/arrow-up-red.svg" alt="">
+          </button>
+          <button class="arrow-btn arrow-btn--next" type="button" aria-label="Next">
+            <img class="arrow-btn__idle" src="assets/arrow-up.svg" alt="">
+            <img class="arrow-btn__live" src="assets/arrow-up-red.svg" alt="">
+          </button>
+        </div>
+
+        <div class="services__viewport">
+          <div class="services__track" id="services-track">
+
+            <a class="svc-card" href="ai-solution.html">
+              <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
+              <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
+              <div class="svc-card__icon"><img src="assets/icon-ai.svg" alt=""></div>
+              <p class="svc-card__tag">Ai</p>
+              <h3 class="svc-card__heading"><span>AI Solutions +</span><span>Automations</span></h3>
+              <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
+            </a>
+
+            <a class="svc-card" href="salesforce.html">
+              <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
+              <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
+              <div class="svc-card__icon"><img class="wide" src="assets/icon-salesforce.svg" alt=""></div>
+              <p class="svc-card__tag">Salesforce</p>
+              <h3 class="svc-card__heading"><span>Salesforce</span><span>CRM Solutions</span></h3>
+              <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
+            </a>
+
+            <a class="svc-card" href="staff-augmentation.html">
+              <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
+              <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
+              <div class="svc-card__icon"><img src="assets/icon-staff.svg" alt=""></div>
+              <p class="svc-card__tag">Staff</p>
+              <h3 class="svc-card__heading"><span>Staff</span><span>Augmentation</span></h3>
+              <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
+            </a>
+
+            <article class="svc-card">
+              <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
+              <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
+              <div class="svc-card__icon"><img src="assets/icon-mobile.svg" alt=""></div>
+              <p class="svc-card__tag">Mobile</p>
+              <h3 class="svc-card__heading"><span>Mobile App</span><span>Development</span></h3>
+              <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
+            </article>
+
+            <article class="svc-card">
+              <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
+              <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
+              <div class="svc-card__icon"><img src="assets/icon-web.svg" alt=""></div>
+              <p class="svc-card__tag">Web</p>
+              <h3 class="svc-card__heading"><span>Web</span><span>Development</span></h3>
+              <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
+            </article>
+
+            <article class="svc-card">
+              <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
+              <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
+              <div class="svc-card__icon"><img src="assets/icon-erp.svg" alt=""></div>
+              <p class="svc-card__tag">ERP</p>
+              <h3 class="svc-card__heading"><span>ERP</span><span>Solutions</span></h3>
+              <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
+            </article>
+
+            <article class="svc-card">
+              <img class="svc-card__wave" src="assets/card-wave.svg" alt="">
+              <div class="svc-card__blob"><img src="assets/blob2.svg" alt=""></div>
+              <div class="svc-card__icon"><img src="assets/icon-saas.svg" alt=""></div>
+              <p class="svc-card__tag">SaaS</p>
+              <h3 class="svc-card__heading"><span>SaaS Product</span><span>Development</span></h3>
+              <div class="svc-card__chips"><span>UI/UX Design</span><span>App Design</span><span>Wireframe</span></div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= AI Solution ================= -->
+    <section class="ai-sec" id="ai">
+      <div class="ai-sec__grid"><img src="assets/box-line.png" alt=""></div>
+
+      <div class="ai-sec__top">
+        <div class="ai-sec__copy">
+          <div class="sec-head__top">
+            <div class="sec-badge"><b>#</b>AI</div>
+            <p class="sec-title">AI <em>Solution</em></p>
+          </div>
+          <p class="ai-sec__lead">Smarter Solutions. Better Outcomes.</p>
+          <p class="ai-sec__body">We leverage the power of Artificial Intelligence to help business automate processes, gain insights, and create innovative products that drive real impact.</p>
+
+          <a class="pill-btn ai-sec__btn" href="ai-solution.html">
+            <span class="pill-btn__label">Explore Solution</span>
+            <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+          </a>
+
+          <div class="ai-checks">
+            <div><img src="assets/check-circle.svg" alt=""><p>AI Strategy &amp; Consulting</p></div>
+            <div><img src="assets/check-circle.svg" alt=""><p>Machine Learning Development</p></div>
+            <div><img src="assets/check-circle.svg" alt=""><p>Data &amp; Predictive Analytics</p></div>
+            <div><img src="assets/check-circle.svg" alt=""><p>AI Integration &amp; Automation</p></div>
+          </div>
+        </div>
+
+        <img class="ai-sec__robot" src="assets/ai-robot.png" alt="">
+      </div>
+
+      <div class="ai-sec__bottom">
+        <div class="ai-card">
+          <img class="bg" src="assets/ai-usecase.png" alt="">
+          <img class="ai-card__arrow" src="assets/white-arrow.svg" alt="">
+          <div class="ai-card__bar">
+            <span>AI Use Cases.</span>
+            <button type="button" aria-label="Next"><img src="assets/chevron-right.svg" alt=""></button>
+          </div>
+        </div>
+
+        <div class="ai-list">
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>01</span></div>
+              <p class="ai-row__title">AI for Customer Service</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">AI agents that instantly resolve Tier 1 queries, summarize tickets, and smartly prioritize escalations.</p>
+              <a class="ai-row__go" href="ai-solution.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>02</span></div>
+              <p class="ai-row__title">AI for Procurement</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Automate vendor risk, extract key contract insights, and predict supply chain disruptions.</p>
+              <a class="ai-row__go" href="ai-solution.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>03</span></div>
+              <p class="ai-row__title">AI for HR</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Streamline hiring, personalize onboarding, and instantly resolve employee queries with AI.</p>
+              <a class="ai-row__go" href="ai-solution.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>04</span></div>
+              <p class="ai-row__title">AI for Sales</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Launch targeted campaigns, score leads smartly, and generate winning proposals with AI.</p>
+              <a class="ai-row__go" href="ai-solution.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>05</span></div>
+              <p class="ai-row__title">AI for Finance</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Detect anomalies, auto-categorize transactions, and generate smart financial insights.</p>
+              <a class="ai-row__go" href="ai-solution.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>06</span></div>
+              <p class="ai-row__title">AI for IT Operations</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Predict outages early, automate infrastructure, and speed up root-cause analysis.</p>
+              <a class="ai-row__go" href="ai-solution.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Salesforce Solutions ================= -->
+    <section class="ai-sec sf-sec" id="salesforce">
+      <div class="ai-sec__grid"><img src="assets/box-line.png" alt=""></div>
+
+      <div class="sf-diagram">
+        <div class="sf-diagram__art"><img src="assets/sf-diagram.png" alt=""></div>
+        <div class="sf-diagram__cloud"><img src="assets/sf-cloud-small.png" alt=""></div>
+        <img class="sf-diagram__logo" src="assets/sf-logo-diagram.svg" alt="Salesforce">
+      </div>
+
+      <div class="ai-sec__top">
+        <div class="ai-sec__copy">
+          <div class="sec-head__top">
+            <div class="sec-badge"><b>#</b>Salesforce</div>
+            <p class="sec-title">Salesforce <em>Solutions</em></p>
+          </div>
+          <p class="ai-sec__lead">Transform Your Business with Salesforce.</p>
+          <p class="ai-sec__body">We help businesses implement, customize, and optimize Salesforce to streamline sales, improve customer relationships, automate workflows, and drive measurable business growth.</p>
+
+          <a class="pill-btn ai-sec__btn" href="salesforce.html">
+            <span class="pill-btn__label">Explore Solution</span>
+            <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+          </a>
+
+          <div class="ai-checks">
+            <div><img src="assets/check-circle.svg" alt=""><p>Salesforce Consulting</p></div>
+            <div><img src="assets/check-circle.svg" alt=""><p>CRM Implementation</p></div>
+            <div><img src="assets/check-circle.svg" alt=""><p>Sales Cloud &amp; Service Cloud</p></div>
+            <div><img src="assets/check-circle.svg" alt=""><p>Automation &amp; Integration</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-sec__bottom">
+        <div class="ai-card">
+          <img class="bg" src="assets/sf-card.png" alt="">
+          <img class="ai-card__logo" src="assets/sf-logo-card.svg" alt="Salesforce">
+          <div class="ai-card__bar">
+            <span>Salesforce Use Cases.</span>
+            <button type="button" aria-label="Next"><img src="assets/chevron-right.svg" alt=""></button>
+          </div>
+        </div>
+
+        <div class="ai-list">
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>01</span></div>
+              <p class="ai-row__title">Salesforce Consulting</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Design scalable CRM strategies, optimize business processes, and align Salesforce with your business goals.</p>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>02</span></div>
+              <p class="ai-row__title">CRM Implementation</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Deploy Salesforce from scratch with custom objects, workflows, security, and user training.</p>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>03</span></div>
+              <p class="ai-row__title">Sales Cloud</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Manage leads, opportunities, sales pipelines, forecasting, and customer relationships efficiently.</p>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>04</span></div>
+              <p class="ai-row__title">Service Cloud</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Deliver exceptional customer support through case management, omnichannel service, and automation.</p>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>05</span></div>
+              <p class="ai-row__title">Salesforce Integration</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Connect Salesforce with ERP systems, payment gateways, marketing tools, APIs, and third-party applications.</p>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+
+          <div class="ai-row">
+            <div class="ai-row__left">
+              <div class="ai-row__num"><span>06</span></div>
+              <p class="ai-row__title">Custom Development</p>
+            </div>
+            <div class="ai-row__right">
+              <p class="ai-row__desc">Build Lightning Components, Apex solutions, Visualforce pages, Flows, and tailored Salesforce applications.</p>
+              <a class="ai-row__go" href="salesforce.html"><img src="assets/arrow-diag.svg" alt=""></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Case Studies ================= -->
+    <section class="case-sec" id="case-study">
+      <div class="case-sec__head">
+        <div class="sec-head__top">
+          <div class="sec-badge"><b>#</b>OurWork</div>
+          <p class="sec-title">Case <em>Studies</em></p>
+        </div>
+        <p class="case-sec__lede">We design and build products that don't just look good &mdash; they perform.</p>
+      </div>
+
+      <div class="case-sec__main">
+        <div class="case-feature">
+          <div class="case-feature__media">
+            <div class="case-feature__plate"></div>
+            <div class="case-feature__shot">
+              <img src="assets/case-hero.png" alt="UX Case Study">
+              <div class="case-feature__chips">
+                <span>UI/UX Design</span><span>App Design</span><span>Wireframe</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="case-feature__info">
+            <div class="case-feature__bar"></div>
+            <div class="case-feature__col">
+              <div class="case-feature__stack">
+                <div>
+                  <p class="case-feature__title">Rise Pathway</p>
+                  <p class="case-feature__sub"><em>Mood</em> Analyzer App</p>
+                </div>
+                <p class="case-feature__desc">A mood-driven platform that captures daily emotions, analyzes patterns over time, and provides personalized suggestions, challenges, and insights to help users build a healthier mental routine.</p>
+              </div>
+
+              <a class="pill-btn case-feature__btn" href="case-study.html">
+                <span class="pill-btn__label">View More</span>
+                <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-sec__rule"></div>
+
+        <div class="case-cards">
+          <a class="case-card" href="case-study-detail.html" style="--case-art: url('assets/case-1.png')">
+            <span class="case-card__img"></span>
+            <img class="case-card__badge" src="assets/case-badge.svg" alt="">
+            <img class="case-card__badge case-card__badge--hover" src="assets/case-badge-hover.svg" alt="">
+            <div class="case-card__body">
+              <img src="assets/case-book.svg" alt="">
+              <p>Provide the best service with out of the box ideas</p>
+            </div>
+          </a>
+
+          <a class="case-card" href="case-study-detail-video.html" style="--case-art: url('assets/case-2.png')">
+            <span class="case-card__img"></span>
+            <img class="case-card__badge" src="assets/case-badge.svg" alt="">
+            <img class="case-card__badge case-card__badge--hover" src="assets/case-badge-hover.svg" alt="">
+            <div class="case-card__body">
+              <img src="assets/case-book.svg" alt="">
+              <p>Private Jet</p>
+            </div>
+          </a>
+
+          <a class="case-card" href="case-study-detail.html" style="--case-art: url('assets/case-3.png')">
+            <span class="case-card__img"></span>
+            <img class="case-card__badge" src="assets/case-badge.svg" alt="">
+            <img class="case-card__badge case-card__badge--hover" src="assets/case-badge-hover.svg" alt="">
+            <div class="case-card__body">
+              <img src="assets/case-book.svg" alt="">
+              <p>Provide the best service with out of the box ideas</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Industries We Serve ================= -->
+    <section class="ind-sec" id="industries">
+      <div class="ind-sec__grid"><img src="assets/box-line.png" alt=""></div>
+      <img class="ind-sec__map" src="assets/world-map.png" alt="">
+
+      <div class="ind-sec__head">
+        <div class="ind-sec__headcol">
+          <div class="sec-head__top">
+            <div class="sec-badge"><b>#</b>ServesWorldwide</div>
+            <p class="sec-title">Industries We <em>Serve</em></p>
+          </div>
+          <p class="ind-sec__lede">We craft solutions that drive growth and innovation across industries.</p>
+        </div>
+
+        <div class="ind-sec__arrows">
+          <button class="arrow-btn arrow-btn--prev" type="button" id="ind-prev" aria-label="Previous">
+            <img src="assets/arrow-up.svg" alt="">
+          </button>
+          <button class="arrow-btn arrow-btn--next" type="button" id="ind-next" aria-label="Next">
+            <img src="assets/arrow-up-red.svg" alt="">
+          </button>
+        </div>
+      </div>
+
+      <div class="ind-sec__viewport">
+        <div class="ind-track" id="ind-track">
+          <a class="ind-card" href="salesforce.html">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-salesforce.svg" alt=""><p>Salesforce</p></div>
+            <p class="ind-card__desc">CRM implementation, customization, automation, integrations, and managed services.</p>
+          </a>
+
+          <article class="ind-card">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-fintech.svg" alt=""><p>Fintech</p></div>
+            <p class="ind-card__desc">Fintech simplifies finance&mdash;we build tailored apps for banking, insurance, and more.</p>
+          </article>
+
+          <article class="ind-card">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-education.svg" alt=""><p>Education</p></div>
+            <p class="ind-card__desc">Educational apps are growing fast&mdash;we create e-learning solutions that connect tutors and learners.</p>
+          </article>
+
+          <a class="ind-card" href="travel-tech.html">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-travel.svg" alt=""><p>Traveltech</p></div>
+            <p class="ind-card__desc">Seamless platforms for bookings, itineraries, and personalized travel experiences.</p>
+          </a>
+
+          <article class="ind-card">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-ecommerce.svg" alt=""><p>eCommerce</p></div>
+            <p class="ind-card__desc">E-commerce runs on technology&mdash;websites and apps power its communication and services.</p>
+          </article>
+
+          <a class="ind-card" href="industry-detail.html">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-food.svg" alt=""><p>Foodtech</p></div>
+            <p class="ind-card__desc">Smart solutions to simplify ordering, delivery, and customer engagement.</p>
+          </a>
+
+          <article class="ind-card">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-health.svg" alt=""><p>Healthcare</p></div>
+            <p class="ind-card__desc">Digital tools that enhance patient care, access, and efficiency.</p>
+          </article>
+
+          <article class="ind-card">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-media.svg" alt=""><p>Media &amp; Social</p></div>
+            <p class="ind-card__desc">Social platforms connect the world&mdash;our products enhance that connection.</p>
+          </article>
+
+          <article class="ind-card">
+            <img class="bg" src="assets/industry-bg.png" alt="">
+            <div class="ind-card__head"><img src="assets/ind-realestate.svg" alt=""><p>Real eState</p></div>
+            <p class="ind-card__desc">Real estate apps simplify operations&mdash;we help digitize them.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Testimonials ================= -->
+    <section class="test-sec" id="testimonials">
+      <img class="test-sec__quote" src="assets/quote-bg.svg" alt="">
+
+      <div class="test-sec__head">
+        <div class="sec-head__top">
+          <div class="sec-badge"><b>#</b>Clients</div>
+          <p class="sec-title">Our <em>Testimonials</em></p>
+        </div>
+        <p class="test-sec__lede">Hear what our clients have to say about working with us.</p>
+      </div>
+
+      <!-- data-kind="video" cards play their clip in place; data-kind="quote"
+           cards are stills that open their written review instead. -->
+      <div class="test-vids" id="test-vids" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Client testimonials">
+        <div class="test-vids__track" id="tvid-track">
+          <article class="tvid" data-kind="video" data-video="assets/testimonials/robert-plump.mp4">
+            <img class="tvid__poster" src="assets/tvid-1.png" alt="Robert, Co-Founder of Plump" draggable="false">
+            <div class="tvid__shade"></div>
+            <div class="tvid__meta">
+              <p class="tvid__name">Robert</p>
+              <p class="tvid__role">Co-Founder of <b>Plump</b></p>
+            </div>
+            <button class="tvid__play" type="button" aria-label="Play Robert&rsquo;s video testimonial">
+              <svg class="tvid__ico tvid__ico--play" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.906 4.537C6.815 4.483 6.711 4.454 6.605 4.453C6.499 4.452 6.395 4.479 6.303 4.532C6.211 4.584 6.135 4.66 6.081 4.752C6.028 4.843 6 4.947 6 5.053V18.947C6 19.053 6.028 19.157 6.081 19.249C6.135 19.34 6.211 19.416 6.303 19.468C6.395 19.521 6.499 19.548 6.605 19.547C6.711 19.546 6.815 19.517 6.906 19.463L18.629 12.516C18.719 12.463 18.793 12.387 18.844 12.297C18.896 12.206 18.923 12.104 18.923 12C18.923 11.896 18.896 11.794 18.844 11.703C18.793 11.613 18.719 11.537 18.629 11.484L6.906 4.537Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              <svg class="tvid__ico tvid__ico--pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5V17.5M15 6.5V17.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+            </button>
+          </article>
+
+          <article class="tvid" data-kind="quote">
+            <img class="tvid__poster" src="assets/tvid-2.png" alt="Robert, Co-Founder of Coffee" draggable="false">
+            <div class="tvid__shade"></div>
+            <div class="tvid__meta">
+              <p class="tvid__name">Robert</p>
+              <p class="tvid__role">Co-Founder of <b>Coffee</b></p>
+              <p class="tvid__quote">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+              <button class="tvid__more" type="button" aria-expanded="false">More...</button>
+            </div>
+          </article>
+
+          <article class="tvid" data-kind="video" data-video="assets/testimonials/esther-softifie.mp4">
+            <img class="tvid__poster" src="assets/tvid-3.png" alt="Esther Howard, Co-Founder of SOFTIFIE" draggable="false">
+            <div class="tvid__shade"></div>
+            <div class="tvid__meta">
+              <p class="tvid__name">Esther Howard</p>
+              <p class="tvid__role">Co-Founder of <b>SOFTIFIE</b></p>
+            </div>
+            <button class="tvid__play" type="button" aria-label="Play Esther Howard&rsquo;s video testimonial">
+              <svg class="tvid__ico tvid__ico--play" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.906 4.537C6.815 4.483 6.711 4.454 6.605 4.453C6.499 4.452 6.395 4.479 6.303 4.532C6.211 4.584 6.135 4.66 6.081 4.752C6.028 4.843 6 4.947 6 5.053V18.947C6 19.053 6.028 19.157 6.081 19.249C6.135 19.34 6.211 19.416 6.303 19.468C6.395 19.521 6.499 19.548 6.605 19.547C6.711 19.546 6.815 19.517 6.906 19.463L18.629 12.516C18.719 12.463 18.793 12.387 18.844 12.297C18.896 12.206 18.923 12.104 18.923 12C18.923 11.896 18.896 11.794 18.844 11.703C18.793 11.613 18.719 11.537 18.629 11.484L6.906 4.537Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              <svg class="tvid__ico tvid__ico--pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5V17.5M15 6.5V17.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+            </button>
+          </article>
+
+          <article class="tvid" data-kind="quote">
+            <img class="tvid__poster" src="assets/tvid-4.png" alt="Donald, Co-Founder of Coffee" draggable="false">
+            <div class="tvid__shade"></div>
+            <div class="tvid__meta">
+              <p class="tvid__name">Donald</p>
+              <p class="tvid__role">Co-Founder of <b>Coffee</b></p>
+              <p class="tvid__quote">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+              <button class="tvid__more" type="button" aria-expanded="false">More...</button>
+            </div>
+          </article>
+
+          <article class="tvid" data-kind="video" data-video="assets/testimonials/courtney-chbeauty.mp4">
+            <img class="tvid__poster" src="assets/tvid-5.png" alt="Courtney Henry, Founder of CH Beauty" draggable="false">
+            <div class="tvid__shade"></div>
+            <div class="tvid__meta">
+              <p class="tvid__name">Courtney Henry</p>
+              <p class="tvid__role">Founder of <b>CH Beauty</b></p>
+            </div>
+            <button class="tvid__play" type="button" aria-label="Play Courtney Henry&rsquo;s video testimonial">
+              <svg class="tvid__ico tvid__ico--play" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.906 4.537C6.815 4.483 6.711 4.454 6.605 4.453C6.499 4.452 6.395 4.479 6.303 4.532C6.211 4.584 6.135 4.66 6.081 4.752C6.028 4.843 6 4.947 6 5.053V18.947C6 19.053 6.028 19.157 6.081 19.249C6.135 19.34 6.211 19.416 6.303 19.468C6.395 19.521 6.499 19.548 6.605 19.547C6.711 19.546 6.815 19.517 6.906 19.463L18.629 12.516C18.719 12.463 18.793 12.387 18.844 12.297C18.896 12.206 18.923 12.104 18.923 12C18.923 11.896 18.896 11.794 18.844 11.703C18.793 11.613 18.719 11.537 18.629 11.484L6.906 4.537Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+              <svg class="tvid__ico tvid__ico--pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5V17.5M15 6.5V17.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+            </button>
+          </article>
+        </div>
+      </div>
+
+      <div class="test-sec__arrows">
+        <button class="arrow-btn arrow-btn--prev" type="button" aria-label="Previous testimonial"><img src="assets/arrow-up.svg" alt=""></button>
+        <button class="arrow-btn arrow-btn--next" type="button" aria-label="Next testimonial"><img src="assets/arrow-up-red.svg" alt=""></button>
+      </div>
+
+      <div class="test-sec__rule"></div>
+
+      <div class="reviews">
+        <div class="reviews__row reviews__row--1" data-marquee>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-1.png" alt="">
+              <div class="review__id"><p class="review__name">John Doe</p><p class="review__role">Marketing Manager</p></div>
+            </div>
+            <p class="review__body">This platform is incredibly intuitive and efficient, streamlining our workflow and boosting productivity. A must-have for any team!</p>
+            <img class="review__mark" src="assets/quote-blue.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-2.png" alt="">
+              <div class="review__id"><p class="review__name">Emily Smith</p><p class="review__role">Project Manager</p></div>
+            </div>
+            <p class="review__body">User-friendly and feature-rich, it has transformed our operations, making tasks seamless and efficient. Highly recommended for professionals!</p>
+            <img class="review__mark" src="assets/quote-green.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+        </div>
+
+        <div class="reviews__row reviews__row--2" data-marquee>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-2.png" alt="">
+              <div class="review__id"><p class="review__name">Emily Smith</p><p class="review__role">Project Manager</p></div>
+            </div>
+            <p class="review__body">User-friendly and feature-rich, it has transformed our operations, making tasks seamless and efficient. Highly recommended for professionals!</p>
+            <img class="review__mark" src="assets/quote-green.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-1.png" alt="">
+              <div class="review__id"><p class="review__name">John Doe</p><p class="review__role">Marketing Manager</p></div>
+            </div>
+            <p class="review__body">This platform is incredibly intuitive and efficient, streamlining our workflow and boosting productivity. A must-have for any team!</p>
+            <img class="review__mark" src="assets/quote-blue.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-3.png" alt="">
+              <div class="review__id"><p class="review__name">Michael Johnson</p><p class="review__role">Sales Head</p></div>
+            </div>
+            <p class="review__body">A game-changer for our sales team! Easy to use, reliable, and packed with great features that enhance efficiency and collaboration.</p>
+            <img class="review__mark" src="assets/quote-yellow.svg" alt="">
+          </article>
+          <article class="review">
+            <div class="review__head">
+              <img src="assets/avatar-2.png" alt="">
+              <div class="review__id"><p class="review__name">Emily Smith</p><p class="review__role">Project Manager</p></div>
+            </div>
+            <p class="review__body">User-friendly and feature-rich, it has transformed our operations, making tasks seamless and efficient. Highly recommended for professionals!</p>
+            <img class="review__mark" src="assets/quote-green.svg" alt="">
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Our Process ================= -->
+    <section class="proc-sec" id="process">
+      <div class="proc-sec__grid"><img src="assets/box-line.png" alt=""></div>
+
+      <div class="sec-head__top proc-sec__head">
+        <div class="sec-badge"><b>#</b>Flow</div>
+        <p class="sec-title">Our <em>Process</em></p>
+      </div>
+
+      <div class="proc-sec__stage">
+        <img class="proc-sec__art" src="assets/process-illustration.svg" alt="">
+
+        <div class="proc-step proc-step--1">
+          <div class="proc-step__row">
+            <p class="proc-step__num">01.</p>
+            <div class="proc-step__body">
+              <p class="proc-step__title">Requirement<br>Gathering</p>
+              <p class="proc-step__desc">Capturing ideas, goals, and vision.</p>
+            </div>
+          </div>
+          <div class="proc-step__tick"></div>
+        </div>
+
+        <div class="proc-step proc-step--2 proc-step--low">
+          <div class="proc-step__row">
+            <p class="proc-step__num">02.</p>
+            <div class="proc-step__body">
+              <p class="proc-step__title">Business Analysis &amp; Idea Molding</p>
+              <p class="proc-step__desc">Turning data into direction.</p>
+            </div>
+          </div>
+          <div class="proc-step__tick"></div>
+        </div>
+
+        <div class="proc-step proc-step--3">
+          <div class="proc-step__row">
+            <p class="proc-step__num">03.</p>
+            <div class="proc-step__body">
+              <p class="proc-step__title">UI/UX<br>Designing</p>
+              <p class="proc-step__desc">Designing intuitive and engaging experiences.</p>
+            </div>
+          </div>
+          <div class="proc-step__tick"></div>
+        </div>
+
+        <div class="proc-step proc-step--4 proc-step--low">
+          <div class="proc-step__row">
+            <p class="proc-step__num">04.</p>
+            <div class="proc-step__body">
+              <p class="proc-step__title">Product Development</p>
+              <p class="proc-step__desc">Bringing designs to life with code.</p>
+            </div>
+          </div>
+          <div class="proc-step__tick"></div>
+        </div>
+
+        <div class="proc-step proc-step--5">
+          <div class="proc-step__row">
+            <p class="proc-step__num">05.</p>
+            <div class="proc-step__body">
+              <p class="proc-step__title">Quality<br>Analysis</p>
+              <p class="proc-step__desc">Testing for perfection at every step.</p>
+            </div>
+          </div>
+          <div class="proc-step__tick"></div>
+        </div>
+
+        <div class="proc-step proc-step--6 proc-step--low">
+          <div class="proc-step__row">
+            <p class="proc-step__num">06.</p>
+            <div class="proc-step__body">
+              <p class="proc-step__title">Final<br>Deployment</p>
+              <p class="proc-step__desc">Turning vision into reality on launch day.</p>
+            </div>
+          </div>
+          <div class="proc-step__tick"></div>
+        </div>
+
+        <div class="proc-step proc-step--7">
+          <div class="proc-step__row">
+            <p class="proc-step__num">07.</p>
+            <div class="proc-step__body">
+              <p class="proc-step__title">Client<br>Support</p>
+              <p class="proc-step__desc">Reliable support, long-term partnership.</p>
+            </div>
+          </div>
+          <div class="proc-step__tick"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Footer ================= -->
+    <footer class="footer" id="contact">
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <a class="logo" href="index.html">
+              <img class="logo__mark" src="assets/hk-logo.png" alt="HackerKernel">
+              <span class="logo__text"><span>Hacker</span><span>Kernel</span></span>
+            </a>
+            <p class="footer__tagline">Discover the power of our secure Services</p>
+          </div>
+
+          <div class="footer__cols">
+            <div class="footer__col">
+              <h4>About us</h4>
+              <ul>
+                <li><a href="#services">Features</a></li>
+                <li><a href="#contact">Let&rsquo;s Talk</a></li>
+              </ul>
+            </div>
+
+            <div class="footer__col footer__col--wide">
+              <h4>Services</h4>
+              <ul>
+                <li><a href="ai-solution.html">Ai Solutions</a></li>
+                <li><a href="salesforce.html">Salesforce</a></li>
+                <li><a href="staff-augmentation.html">Staff Augumentation</a></li>
+                <li><a href="#services">Mobile Development</a></li>
+                <li><a href="#services">Web Development</a></li>
+              </ul>
+            </div>
+
+            <div class="footer__col">
+              <h4>Social</h4>
+              <ul>
+                <li><a href="https://www.instagram.com/hackerkernel" target="_blank" rel="noopener">Instagram</a></li>
+                <li><a href="https://www.facebook.com/hackerkernel" target="_blank" rel="noopener">Facebook</a></li>
+                <li><a href="https://www.linkedin.com/company/hackerkernel" target="_blank" rel="noopener">Linkedin</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer__bar">
+          <p>copyright 2026 Hackerkernel All Rights Reserved</p>
+          <p class="footer__cookies">This page uses cookies. See cookies details here
+            <img src="assets/footer-underline.svg" alt="">
+          </p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+  </div>
+
+  <!-- The â‰¤768px navigation â€” burger and drawer both â€” is one shared
+       component built into every page by menu.js. Loaded ahead of Script.js
+       so the menu still works if anything in that file fails. -->
+  <script src="menu.js"></script>
+  <script src="Script.js"></script>
+</body>
+</html>
+
