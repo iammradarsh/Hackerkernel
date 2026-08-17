@@ -4610,11 +4610,38 @@ body.is-menu-open .talk-tab {
 
 /* The two glyphs share that one absolutely-placed box, so swapping which is
    shown needs no second set of offsets - the breakpoint overrides on
-   `.tm__plus img` keep applying to whichever one is on screen. Rows still
-   carrying a single plus (Staff Augmentation) match neither and are untouched. */
-.tm__ico--open { display: none; }
-.tm.is-open .tm__ico--shut { display: none; }
-.tm.is-open .tm__ico--open { display: block; }
+   `.tm__plus img` keep applying to whichever one is on screen. Both the AI
+   Solutions and Staff Augmentation lists ship the pair.
+
+   They cross-fade instead of display-swapping: stacked on the same inset, the
+   outgoing glyph spins out while the incoming one spins in, on the same
+   0.45s curve the panel and tile use. transform-origin stays the default
+   centre of the 18px box, so the pivot sits on the pill's centre. */
+.tm__ico {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+  transition: opacity 0.25s ease,
+              transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.tm__ico--shut {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.tm.is-open .tm__ico--shut {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.6);
+}
+
+.tm.is-open .tm__ico--open {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm__ico { transition: none; }
+}
 
 /* ===========================================================
    Staff Augmentation — Technologies We Use
@@ -20434,4 +20461,214 @@ body.is-chatbot-open { overflow: hidden; }
   /* the underline flourish is pinned at left:160.89px, a desktop text
      length - it lands mid-sentence once the line wraps */
   .tv-page .footer__cookies img { display: none; }
+}
+
+/* ===========================================================
+   LOADING SCREEN
+   Markup is injected by loader.js — a page carries the script
+   tag and nothing else. Geometry inside the mark is the 80x80
+   grid of assets/hk-logo.svg; the numbers below (r 33 arc,
+   28.5 face) only make sense against it.
+   =========================================================== */
+
+/* The screen is dark so the mark can carry it: on white, the logo's own
+   #171717 disc is the loudest thing on the page and the ring drawing inside
+   it barely registers. Here the disc sits just above the backdrop, the ring
+   and the letters do the work, and the wipe at the end reveals a white page
+   instead of fading white into white. */
+html.hk-loading,
+html.hk-loading body {
+  overflow: hidden;
+}
+
+/* Hiding the overflow takes the scrollbar away, and the page behind would
+   then be laid out one scrollbar wider than it will be a second later —
+   every centred block shifts as the screen lifts. Reserving the gutter for
+   the length of the lock means the layout under the screen is already the
+   layout that gets revealed. (Overlay-scrollbar platforms reserve 0, and
+   browsers without the property land back on the shift they'd have had.) */
+html.hk-loading { scrollbar-gutter: stable; }
+
+#hk-loader {
+  position: fixed;
+  inset: 0;
+  /* over the navbar, the enquiry drawer and the mobile menu panel alike */
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111112;
+  /* the wipe: the panel is clipped away upwards, so the page arrives from
+     under it rather than dissolving through it */
+  /* both ends are written as percentages of the same four-value inset, so
+     the interpolation is percentage-to-percentage and cannot fall back to a
+     hard swap the way a mixed length/percentage pair can */
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 0.82s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+#hk-loader.is-done { clip-path: inset(0% 0% 100% 0%); }
+
+.hk-load__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  animation: hk-load-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  /* the entrance deliberately does not hold its end state — a `forwards`
+     fill would keep owning transform and opacity, and the exit below could
+     never transition them */
+  transition: opacity 0.42s ease, transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* the mark leaves ahead of the panel, so the wipe uncovers a clear screen */
+#hk-loader.is-done .hk-load__inner {
+  opacity: 0;
+  transform: translateY(-10px) scale(1.06);
+}
+
+@keyframes hk-load-rise {
+  from { opacity: 0; transform: translateY(12px) scale(0.94); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hk-load__mark {
+  width: 132px;
+  height: 132px;
+  overflow: visible;
+  /* starts once the letters have landed, so the mark is whole before it
+     begins to breathe */
+  animation: hk-load-breathe 3.2s ease-in-out 1.25s infinite;
+}
+
+@keyframes hk-load-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.038); }
+}
+
+/* ---------- The ring ----------
+   Each half is a semicircle of r 33, so both are pi * 33 = 103.673 long.
+   That number is the dash: one dash the length of the path, offset by its
+   own length, is a path that has not been drawn yet. */
+.hk-load__arc {
+  fill: none;
+  stroke-width: 4;
+  stroke-dasharray: 103.673;
+  stroke-dashoffset: 0;
+  animation: hk-load-draw 0.85s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+}
+
+.hk-load__arc--w { stroke: #f6f7f8; }
+.hk-load__arc--r { stroke: var(--primary-color); }
+
+@keyframes hk-load-draw {
+  from { stroke-dashoffset: 103.673; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Both halves are drawn from twelve o'clock, so they close together at the
+   bottom; the ring then keeps turning for as long as the page is still
+   coming. Rotating the closed ring rather than sweeping an arc is what keeps
+   the mark itself readable while it spins. */
+.hk-load__ring {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: hk-load-spin 2.6s linear 0.85s infinite;
+}
+
+@keyframes hk-load-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- The letters ----------
+   Both sit under the face clip, so they slide out from beneath the ring
+   rather than appearing over it. Units are user units on the 80 grid — 18 of
+   them is a little under a quarter of the mark. */
+.hk-load__h,
+.hk-load__k {
+  animation: hk-load-letter 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.5s backwards;
+}
+
+.hk-load__h { --hk-from: -18px; }
+.hk-load__k { --hk-from: 18px; animation-delay: 0.62s; }
+
+@keyframes hk-load-letter {
+  from { opacity: 0; transform: translateX(var(--hk-from)); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Wordmark ---------- */
+.hk-load__word {
+  display: flex;
+  gap: 0;
+  font-family: var(--font-poppins);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  animation: hk-load-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.85s backwards;
+}
+
+.hk-load__word span:first-child { color: var(--primary-color); }
+.hk-load__word span:last-child  { color: #f6f7f8; }
+
+/* ---------- Progress ---------- */
+.hk-load__rail {
+  width: 176px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(246, 247, 248, 0.16);
+  overflow: hidden;
+  animation: hk-load-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.95s backwards;
+}
+
+/* scaled rather than widened: the fill is repainted every frame while the
+   page is at its busiest, and a transform costs no layout */
+.hk-load__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-color);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.hk-load__pct {
+  font-family: var(--font-poppins);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(246, 247, 248, 0.42);
+  font-variant-numeric: tabular-nums;
+  animation: hk-load-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.95s backwards;
+}
+
+@media (max-width: 768px) {
+  .hk-load__mark { width: 104px; height: 104px; }
+  .hk-load__word { font-size: 17px; }
+  .hk-load__rail { width: 148px; }
+}
+
+/* Nothing here is load-bearing — the mark is legible standing still, and
+   loader.js drops its minimum display time to match, so a reader who has
+   asked for less motion waits for the page rather than for an animation. */
+@media (prefers-reduced-motion: reduce) {
+  #hk-loader,
+  .hk-load__inner,
+  .hk-load__mark,
+  .hk-load__arc,
+  .hk-load__ring,
+  .hk-load__h,
+  .hk-load__k,
+  .hk-load__word,
+  .hk-load__rail,
+  .hk-load__pct {
+    animation: none;
+    transition: opacity 0.25s ease;
+  }
+
+  #hk-loader.is-done { clip-path: inset(0 0 0 0); opacity: 0; }
+  #hk-loader.is-done .hk-load__inner { transform: none; }
 }

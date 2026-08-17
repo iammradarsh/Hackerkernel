@@ -1,0 +1,34 @@
+<!-- HackerKernel mark, vectorised from assets/hk-logo.png.
+
+     The raster is only 80x80, so the viewBox keeps that grid and every
+     coordinate below is measured off it: the mark reads identically at 48px in
+     the navbar and at 160px in the loading screen, which the PNG could not do.
+
+     The mark is a colour swap about the vertical centre line - the ring is
+     white on the left and red on the right, and the letters answer it the
+     other way round: a red H on the white side, a white K on the red side.
+     Everything inside the face is cut by one circle (r 28.5), which is what
+     rounds off the H's outer stem and clips both arms of the K. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80" role="img" aria-label="HackerKernel">
+  <clipPath id="hk-face"><circle cx="40" cy="40" r="28.5"/></clipPath>
+
+  <circle cx="40" cy="40" r="40" fill="#171717"/>
+  <circle cx="40" cy="40" r="31" fill="#272727"/>
+
+  <!-- the split ring: two semicircles, drawn from 12 o'clock, stroked at 4
+       across r 33 so the band sits between r 31 and r 35 -->
+  <path d="M40 7A33 33 0 0 0 40 73" fill="none" stroke="#f6f7f8" stroke-width="4"/>
+  <path d="M40 7A33 33 0 0 1 40 73" fill="none" stroke="#ed313a" stroke-width="4"/>
+
+  <g clip-path="url(#hk-face)">
+    <!-- H: two 8-wide stems and the crossbar, all run past the face circle
+         and let the clip decide where they end -->
+    <path fill="#ed313a" d="M11.5 6h8v68h-8zM30.5 6h8v68h-8zM11.5 33.5h27v9h-27z"/>
+    <!-- K: stem, then both arms as one polyline through the vertex at 51,38.5.
+         One path rather than two strokes on purpose - the miter join is what
+         pulls the outer corner out to x 57.7, which is where the raster puts
+         it. Split the arms and the vertex comes back 2 short. -->
+    <path fill="#f6f7f8" d="M40.5 6h8v68h-8z"/>
+    <path fill="none" stroke="#f6f7f8" stroke-width="8" stroke-linejoin="miter" d="M73.5 8.5 51 38.5 73.5 68.5"/>
+  </g>
+</svg>

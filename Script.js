@@ -884,6 +884,20 @@
     if (chatForm) chatForm.addEventListener('submit', function (e) { e.preventDefault(); });
   }
 
+  /* ---------- Hero CTA opens the same enquiry drawer as the side tab ----------
+     The click is stopped here because the drawer's outside-click handler sits on
+     document: without it the same click would open the form and close it again. */
+  var heroCta = document.querySelector('.hero__btn');
+
+  if (heroCta && typeof setTalk === 'function') {
+    heroCta.addEventListener('click', function (e) {
+      e.stopPropagation();
+      /* the modal and the drawer both claim the screen — never both */
+      if (typeof setChat === 'function') setChat(false);
+      setTalk(true);
+    });
+  }
+
   /* The mobile navigation drawer lives in menu.js — one component shared by
      every page, rather than a block here that only fires on the pages whose
      markup happens to carry the panel. */

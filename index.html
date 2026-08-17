@@ -13,6 +13,11 @@
      above that breakpoint, so the desktop design is untouched. -->
 <body class="home">
 
+  <!-- The loading screen builds itself here, before anything below has been
+       parsed, so there is no frame in which the page shows through it. It has
+       to stay the first tag inside <body> for that to hold. -->
+  <script src="loader.js"></script>
+
   <!-- Fixed side tab — the handle for the slide-in enquiry form -->
   <button class="talk-tab" type="button" id="talk-toggle" aria-expanded="false" aria-controls="talk-form"><span>Let's Talk Business</span></button>
 
@@ -198,7 +203,8 @@
             </div>
           </div>
 
-          <button class="pill-btn hero__btn" type="button">
+          <!-- opens the Let's Talk Business drawer — wired in Script.js -->
+          <button class="pill-btn hero__btn" type="button" aria-controls="talk-form">
             <span class="pill-btn__label">Book a fee consultation</span>
             <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
           </button>
