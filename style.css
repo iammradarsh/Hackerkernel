@@ -10722,13 +10722,41 @@ body.is-menu-open .talk-tab {
   transition: transform 0.55s cubic-bezier(0.22, 0.9, 0.24, 1), visibility 0s;
 }
 
+/* Backdrop veil — the open drawer read as part of the page without one, so
+   everything behind it is dimmed and blurred out of focus. It hangs off
+   <body> rather than the drawer markup because that markup is repeated on
+   every page carrying the form; the class Script.js already toggles there is
+   enough to light it up everywhere at once. It sits over the navbar (60) and
+   under the card (70), and matches the card's easing so the two move as one. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: rgba(24, 22, 22, 0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.55s ease, visibility 0s linear 0.55s;
+}
+
+body.is-talk-open::before {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.55s ease, visibility 0s;
+}
+
 /* the handle rides the card, so it needs the same easing and duration */
 .talk-tab {
   transition: transform 0.55s cubic-bezier(0.22, 0.9, 0.24, 1);
 }
 
+/* the tab is also the close control, so it has to clear the veil it would
+   otherwise sit under — its resting z-index is 40, below the scrim */
 body.is-talk-open .talk-tab {
   transform: translateX(-486px);
+  z-index: 80;
 }
 
 .lt-form__card {
@@ -20479,6 +20507,14 @@ body.is-chatbot-open { overflow: hidden; }
 html.hk-loading,
 html.hk-loading body {
   overflow: hidden;
+  /* Refusing the gesture as well as the overflow. iOS goes on panning a
+     document whose overflow is hidden, and a wheel that runs out of room
+     inside the overlay hands the rest of the scroll to whatever is behind
+     it — either one leaves the reader partway down a page they have not
+     seen yet the moment the screen lifts. loader.js swallows the same
+     gestures in JS; this is the half that needs no listener to work. */
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 /* Hiding the overflow takes the scrollbar away, and the page behind would
@@ -20505,6 +20541,10 @@ html.hk-loading { scrollbar-gutter: stable; }
      hard swap the way a mixed length/percentage pair can */
   clip-path: inset(0% 0% 0% 0%);
   transition: clip-path 0.82s cubic-bezier(0.76, 0, 0.24, 1);
+  /* the panel itself scrolls nothing, so a gesture that lands on it should
+     die there rather than chain out to the document */
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 #hk-loader.is-done { clip-path: inset(0% 0% 100% 0%); }

@@ -81,6 +81,54 @@
   root.classList.add('hk-loading');
   document.body.appendChild(el);
 
+  /* ---------- Scroll lock ----------
+     `html.hk-loading { overflow: hidden }` in style.css is the load-bearing
+     half. These are the gestures it does not reliably stop: iOS pans a
+     document whose overflow is hidden, and the scroll keys move the page
+     whether or not it shows a scrollbar. Either one would drop the reader
+     partway down a page they have not seen yet as the screen lifts.
+
+     Held for exactly as long as the class is, so the page becomes scrollable
+     at the moment it becomes visible - and released inside finish(), which
+     the MAX_MS timeout reaches even if `load` never arrives. */
+  /* space, page up/down, end, home, the four arrows */
+  var SCROLL_KEYS = { 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1 };
+
+  function eatScroll(e) {
+    /* a listener registered non-passively can still be handed an
+       uncancelable event - a fling already in flight, say */
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function eatScrollKey(e) {
+    if (!SCROLL_KEYS[e.keyCode]) return;
+
+    /* tabbing through and typing stay possible: only the keys' scrolling
+       side effect is refused, and only when they are not being typed */
+    var t = e.target || {};
+    var tag = (t.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select' ||
+        t.isContentEditable) return;
+
+    eatScroll(e);
+  }
+
+  /* passive: false is the point - the default for wheel and touchmove is
+     passive in current browsers, and a passive listener's preventDefault is
+     ignored. Older engines read the object as a truthy `capture`, which is
+     harmless as long as the removal below passes the same thing. */
+  var eatOpts = { passive: false };
+
+  window.addEventListener('wheel', eatScroll, eatOpts);
+  window.addEventListener('touchmove', eatScroll, eatOpts);
+  window.addEventListener('keydown', eatScrollKey);
+
+  function unlockScroll() {
+    window.removeEventListener('wheel', eatScroll, eatOpts);
+    window.removeEventListener('touchmove', eatScroll, eatOpts);
+    window.removeEventListener('keydown', eatScrollKey);
+  }
+
   var bar = el.querySelector('.hk-load__bar');
   var pct = el.querySelector('.hk-load__pct');
 
@@ -163,6 +211,7 @@
     window.setTimeout(function () {
       if (el.parentNode) el.parentNode.removeChild(el);
       root.classList.remove('hk-loading');
+      unlockScroll();
       root.classList.add('hk-loaded');
 
       /* anything that wants to run its own entrance can wait for this

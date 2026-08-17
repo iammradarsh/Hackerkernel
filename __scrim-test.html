@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,20 +9,20 @@
   <link rel="icon" type="image/png" href="assets/hk-logo.png">
   <link rel="stylesheet" href="style.css">
 </head>
-<!-- .home scopes the ≤768px mobile stylesheet to this page; nothing targets it
+<!-- .home scopes the â‰¤768px mobile stylesheet to this page; nothing targets it
      above that breakpoint, so the desktop design is untouched. -->
-<body class="home">
+<body class="home is-talk-open">
 
   <!-- The loading screen builds itself here, before anything below has been
        parsed, so there is no frame in which the page shows through it. It has
        to stay the first tag inside <body> for that to hold. -->
-  <script src="loader.js"></script>
+  
 
-  <!-- Fixed side tab — the handle for the slide-in enquiry form -->
+  <!-- Fixed side tab â€” the handle for the slide-in enquiry form -->
   <button class="talk-tab" type="button" id="talk-toggle" aria-expanded="false" aria-controls="talk-form"><span>Let's Talk Business</span></button>
 
-  <!-- ================= Let's Talk Business — slide-in form ================= -->
-  <aside class="lt-form" id="talk-form" aria-hidden="true" aria-label="Get in touch">
+  <!-- ================= Let's Talk Business â€” slide-in form ================= -->
+  <aside class="lt-form is-open" id="talk-form" aria-hidden="true" aria-label="Get in touch">
     <form class="lt-form__card" novalidate>
       <!-- mobile only: the tab that normally closes the drawer is off-canvas
            once the card fills the viewport, so the card needs its own handle -->
@@ -105,7 +105,7 @@
     </form>
   </aside>
 
-  <!-- ================= Chat Bot — the navbar "Let's Talk" CTA opens this =================
+  <!-- ================= Chat Bot â€” the navbar "Let's Talk" CTA opens this =================
        A centred modal, unlike the enquiry drawer above: the Figma card is
        rounded on all four corners, so nothing is meant to sit off-screen. -->
   <div class="chatbot" id="chatbot" aria-hidden="true">
@@ -183,8 +183,8 @@
           </a>
         </nav>
 
-        <!-- the ≤768px burger is appended here by menu.js, together with the
-             drawer it opens — see that file for the shared component -->
+        <!-- the â‰¤768px burger is appended here by menu.js, together with the
+             drawer it opens â€” see that file for the shared component -->
       </div>
     </header>
 
@@ -203,7 +203,7 @@
             </div>
           </div>
 
-          <!-- opens the Let's Talk Business drawer — wired in Script.js -->
+          <!-- opens the Let's Talk Business drawer â€” wired in Script.js -->
           <button class="pill-btn hero__btn" type="button" aria-controls="talk-form">
             <span class="pill-btn__label">Book a fee consultation</span>
             <span class="pill-btn__circle"><img src="assets/arrow-btn.svg" alt=""></span>
@@ -1049,10 +1049,11 @@
   </div>
   </div>
 
-  <!-- The ≤768px navigation — burger and drawer both — is one shared
+  <!-- The â‰¤768px navigation â€” burger and drawer both â€” is one shared
        component built into every page by menu.js. Loaded ahead of Script.js
        so the menu still works if anything in that file fails. -->
   <script src="menu.js"></script>
   <script src="Script.js"></script>
 </body>
 </html>
+
