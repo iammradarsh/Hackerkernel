@@ -5482,10 +5482,12 @@ body.is-menu-open .talk-tab {
 }
 
 /* ── Our Story: the journey rail ─────────────────────────── */
+/* overflow stays visible: the track slides past this box on both sides and
+   .jr__line runs edge to edge through it. .page-shell is the clip. */
 .jr {
   position: relative;
   height: 647px;
-  overflow: hidden;
+  overflow: visible;
   background: var(--text-color);
 }
 
@@ -5541,16 +5543,18 @@ body.is-menu-open .talk-tab {
   height: 258px;
 }
 
-/* The rail runs in from 40px left of the stop grid. Without the lead-in the
-   line started on the same x as the active dot, so all that showed left of
-   the marker was a 7px stub and the rule read as cut off at the gutter. The
-   lead-in is small enough to keep 60-odd px of panel clear on its left, so
-   the end of the line is visible rather than clipped. */
+/* Full-bleed, deliberately. A 40px lead-in was enough while .jr clipped at the
+   panel edge, but the 1440 cap moved the rail's origin inward while the track
+   still slides left past it - so the line began ~290px in and the year being
+   stepped out of sat on bare panel with no rule under it. The line is one
+   element, not a segment per year, so overshooting the rail on both sides
+   makes it read as a single continuous rule from edge to edge; the spill is
+   clipped by .page-shell, not by .jr, so nothing shortens it at the cap. */
 .jr__line {
   position: absolute;
-  left: -40px;
+  left: -4000px;
   top: 157px;
-  width: 4514px;
+  width: 12000px;
   height: 2px;
   border-radius: 100px;
   background: #fff;
@@ -20763,5 +20767,217 @@ html.hk-loading { scrollbar-gutter: stable; }
   .home .navbar__inner {
     max-width: calc(var(--home-max) - var(--shell-gutter) * 2);
     margin-inline: auto;
+  }
+}
+
+/* ===========================================================
+   ABOUT US — WIDE-SCREEN CENTRING
+   ===========================================================
+   Same problem, same cure as the home block above. Every About
+   section carries literal Figma offsets measured off a 1244 panel
+   (.ab-hero__copy left:112 against .ab-hero__art right:0,
+   .jr__head left:102, ...). Past ~1441 the left-pinned copy and the
+   right-pinned art walk away from each other — at 1600 the hero
+   opens a 1149px gap where the design has 517.
+
+   Capping each section at 1440 and centring it makes the section box
+   the coordinate origin again, so left-pinned and right-pinned
+   children come back into one composition.
+
+   Desktop only: the cap is inert below 1440 and the query floor keeps
+   it out of the mobile (<=768) and tablet (<=1024) cascade entirely.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --about-max: 1440px; }
+
+  /* Hero. It needs no full-bleed backfill: .ab-hero's #f4f4f4 is exactly
+     --shell-bg, so the panel's own colour carries on past the cap and the
+     seam is invisible. The grid plate (left:-621) and the art (right:0)
+     both measure off the capped box, so they travel in with it. */
+  .ab-page .ab-hero {
+    max-width: var(--about-max);
+    margin-inline: auto;
+  }
+
+  /* Believe in Process. The wire art is already centred on the section, so
+     the cap is really for .ab-grid--wire (right:0), which otherwise walks
+     off to the panel's right edge and leaves the wire adrift in the middle.
+
+     It paints its own white, so capped alone it would read as a white card
+     with the shell's grey either side. Four zero-blur shadows tile the
+     section's own shape sideways at exactly its own width, so the white
+     reaches the panel edge (and stops there, clipped by .page-shell) while
+     the content box stays 1440. They share the section's vertical extent, so
+     nothing bleeds onto the sections above or below, and none of it affects
+     layout. Same device as the home block uses on .services/.ai-sec. */
+  .ab-page .ab-wire {
+    max-width: var(--about-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--about-max) * -2) 0 0 #fff,
+      calc(var(--about-max) * -1) 0 0 #fff,
+      var(--about-max) 0 0 #fff,
+      calc(var(--about-max) * 2) 0 0 #fff;
+  }
+
+  /* Our Story. The rail is deliberately 4474px and steps one year per click,
+     so its overflow is the carousel, not a bug - .jr stays overflow:visible so
+     the stops either side of the cap keep showing, and the dark band is tiled
+     out to the panel edges below rather than clipped. .jr__line is full-bleed
+     for the same reason: measured off .jr__rail it would ride in with the cap
+     and leave the outer stops without a rule. Same tiling as .ab-wire, in
+     --text-color. */
+  .ab-page .jr {
+    max-width: var(--about-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--about-max) * -2) 0 0 var(--text-color),
+      calc(var(--about-max) * -1) 0 0 var(--text-color),
+      var(--about-max) 0 0 var(--text-color),
+      calc(var(--about-max) * 2) 0 0 var(--text-color);
+  }
+
+  /* left:1079 put the arrows 73px off the right edge of the 1244 design frame;
+     kept as a left offset they would drift to 269px inside the 1440 cap and
+     float mid-band. Anchoring right restores the design relationship at the
+     capped width. */
+  .ab-page .jr__arrows {
+    left: auto;
+    right: 73px;
+  }
+
+  /* Meet the Team already centres itself - its contents hang off a
+     .design-frame--fill, so the heading, the cards and the backdrop are
+     centred on the section rather than pinned to an edge. The cap is
+     therefore a no-op today; it is here so the section cannot start
+     stretching if anything inside it is ever given a literal offset.
+     No background of its own, so no tiling. */
+  .ab-page .mt {
+    max-width: var(--about-max);
+    margin-inline: auto;
+  }
+
+  /* Footer. .footer__inner is a 102px gutter off each side, so uncapped it
+     stretches the columns the full width of the panel and pulls away from the
+     sections above. Transparent background, so no tiling. */
+  .ab-page .footer {
+    max-width: var(--about-max);
+    margin-inline: auto;
+  }
+
+  /* the navbar is fixed to the viewport, so it does not inherit the cap.
+     1236 = 1440 - 2x102 (--shell-gutter): centred in the viewport it lands on
+     the same content edges as the capped sections, keeping the logo over
+     .jr__head and the footer columns exactly as it does at the design width. */
+  .ab-page .navbar__inner {
+    max-width: calc(var(--about-max) - var(--shell-gutter) * 2);
+    margin-inline: auto;
+  }
+}
+
+/* ===========================================================
+   AI SOLUTIONS — WIDE-SCREEN CENTRING
+   ===========================================================
+   This page is better behaved than home and About: every section
+   hangs its contents off a .design-frame, so the copy blocks are
+   already centred on the 1244 measuring stick at any width. What
+   stretches is the section box itself, and the two blocks that
+   inset off the panel rather than the frame — the navbar and the
+   footer, which at 1920 start 285px left of every heading below.
+
+   Capping each section at 1440 makes the section box the coordinate
+   origin again, so nothing inside can drift if it is ever given a
+   literal offset, and the navbar/footer cap puts the logo back over
+   the section headings.
+
+   Desktop only: the cap is inert below 1440 and the query floor
+   keeps it out of the mobile (<=768) and tablet (<=1024) cascade.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --ai-max: 1440px; }
+
+  /* The hero is deliberately NOT capped. It needs no cap — the copy, the
+     cards, the photo and the grid plate all hang off its .design-frame, so
+     they are centred on the 1244 stick at any width already (.ai-hero__copy
+     lands on the same pixel capped or not).
+
+     And a cap actively breaks it. .ai-hero__fade is the hero's
+     fade-to-white into the white section below, drawn 100vw so it reaches
+     the panel edges; it is a child, and the hero clips (overflow:hidden is
+     load-bearing — the grid plate sits at left:-621). Capped, the fade gets
+     clipped to 1440 and the hero's bottom goes white inside the cap and
+     grey outside, seaming against .sa-proc's white. Uncapped it is
+     full-bleed grey-plus-fade, exactly as designed. */
+
+  /* Sections that paint --shell-bg or nothing at all: the cap alone is
+     enough, since the panel's own colour continues past it.
+     .ai-cases holds the Case Files grid — capped here so the 2-up grid
+     keeps its 1110 content width instead of tracking the panel. */
+  .ai-page .sa-tech,
+  .ai-page .ai-auto,
+  .ai-page .ai-cases,
+  .ai-page .footer {
+    max-width: var(--ai-max);
+    margin-inline: auto;
+  }
+
+  /* Sections that paint their own white. Capped alone they would read as
+     white cards with the shell's grey either side, so four zero-blur
+     shadows tile the section's own shape sideways at exactly its own
+     width: the white reaches the panel edge (and stops there, clipped by
+     .page-shell) while the content box stays 1440. The shadows share the
+     section's vertical extent, so nothing bleeds onto the sections above
+     or below, and none of it affects layout. Same device the home and
+     About blocks use. */
+  .ai-page .sa-proc,
+  .ai-page .sa-teams,
+  .ai-page .sa-hire {
+    max-width: var(--ai-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--ai-max) * -2) 0 0 #fff,
+      calc(var(--ai-max) * -1) 0 0 #fff,
+      var(--ai-max) 0 0 #fff,
+      calc(var(--ai-max) * 2) 0 0 #fff;
+  }
+
+  /* Benefits — same tiling, in the dark --text-color it paints. */
+  .ai-page .sa-ben {
+    max-width: var(--ai-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--ai-max) * -2) 0 0 var(--text-color),
+      calc(var(--ai-max) * -1) 0 0 var(--text-color),
+      var(--ai-max) 0 0 var(--text-color),
+      calc(var(--ai-max) * 2) 0 0 var(--text-color);
+  }
+
+  /* Navbar and footer are the only blocks that inset off the panel rather
+     than the design frame, so they are the ones that actually pull apart:
+     at 1920 they started 285px left of every heading below.
+
+     1200 = 1440 - 2x(18 + 102), the inset and the gutter both: at the 1440
+     design width the panel is 1404, not 1440, so subtracting the gutter
+     alone would leave these 36px wider than they are at design width and
+     the logo would sit 63px inside the headings instead of 45. With the
+     inset taken off, the relationship is exactly the design's at any width.
+
+     The navbar is fixed to the viewport and never inherits the section cap;
+     the footer inner is absolute, so it centres on the capped .footer with
+     left/transform rather than auto margins. */
+  .ai-page .navbar__inner,
+  .ai-page .footer__inner {
+    width: calc(var(--ai-max) - (var(--shell-inset) + var(--shell-gutter)) * 2);
+  }
+
+  .ai-page .navbar__inner {
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .ai-page .footer__inner {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
 }
