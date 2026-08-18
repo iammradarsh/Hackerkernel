@@ -20981,3 +20981,137 @@ html.hk-loading { scrollbar-gutter: stable; }
     transform: translateX(-50%);
   }
 }
+
+/* ===========================================================
+   SALESFORCE — WIDE-SCREEN CENTRING
+   ===========================================================
+   Same architecture as the AI Solutions page: every section hangs
+   its contents off a .design-frame, so the copy, the grids and the
+   cards are already centred on the 1244 measuring stick at any
+   width. What stretches is the section box itself — and with it the
+   few children pinned to a section edge rather than to the frame.
+
+   Capping each section at 1440 and centring it makes the section box
+   the coordinate origin again, so edge-pinned children come back
+   into one composition and nothing inside can drift if it is ever
+   given a literal offset.
+
+   Desktop only: the cap is inert below 1440 and the query floor
+   keeps it out of the mobile (<=768) and tablet (<=1024) cascade.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --sf-max: 1440px; }
+
+  /* The hero is deliberately NOT capped, for the same reason the AI hero
+     is not. It needs no cap — the photo, the fade, the grid plate and the
+     copy column all hang off its .design-frame--fill, so they are centred
+     on the 1244 stick at any width already (.sf-hero__copy lands on the
+     same pixel capped or not).
+
+     And a cap actively breaks it. The hero clips (overflow:hidden is
+     load-bearing — the grid plate sits at left:-621), so a capped box
+     clips the plate at the cap instead of at the panel edge, and the
+     plate's ::after is what carries the fade to white. The hero's bottom
+     then goes white inside the cap and grey outside, seaming against
+     .sf-fw's white.
+
+     What the hero does need is a fade that reaches the panel edges: drawn
+     at the frame's 1244 it stops short on both sides, leaving grey wedges
+     either end of the seam. 100vw, centred on the frame and clipped by the
+     hero itself, carries the white all the way out. */
+  .sf-page .sf-hero__fade {
+    left: 50%;
+    right: auto;
+    width: 100vw;
+    transform: translateX(-50%);
+  }
+
+  /* The Future of Work. The cap is load-bearing here, not defensive: the two
+     cloud windows are pinned left:0 / right:0 on the section, so uncapped they
+     walk to the panel edges and open a 1565px hole in a band the design draws
+     with a 461px gap. Capped, they meet the design relationship again.
+
+     It paints its own white, so capped alone it would read as a white card with
+     the shell's grey either side. Four zero-blur shadows tile the section's own
+     shape sideways at exactly its own width: the white reaches the panel edge
+     (and stops there, clipped by .page-shell) while the content box stays 1440.
+     They share the section's vertical extent, so nothing bleeds onto the
+     sections above or below, and none of it affects layout. Same device the
+     home, About and AI blocks use. */
+  .sf-page .sf-fw {
+    max-width: var(--sf-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--sf-max) * -2) 0 0 #fff,
+      calc(var(--sf-max) * -1) 0 0 #fff,
+      var(--sf-max) 0 0 #fff,
+      calc(var(--sf-max) * 2) 0 0 #fff;
+  }
+
+  /* Sections that paint --shell-bg or nothing at all: the cap alone is enough,
+     since the panel's own colour continues past it.
+     .sf-crm holds the CRM orbit and its two cloud panels (1132 stage),
+     .sf-serv the 01-04 service cards and .sf-cases the 2-up Case Files grid —
+     all three sit on a .design-frame at 1110-1132, so the cap keeps them at
+     that content width instead of letting the section track the panel. None of
+     them scrolls sideways, and the cap does not introduce one. */
+  .sf-page .sf-crm,
+  .sf-page .sf-serv,
+  .sf-page .sf-cases,
+  .sf-page .footer {
+    max-width: var(--sf-max);
+    margin-inline: auto;
+  }
+
+  /* Ready to Transform, and Contact — both paint their own white, so they take
+     the same sideways tiling as .sf-fw above. */
+  .sf-page .sf-cta,
+  .sf-page .sa-contact {
+    max-width: var(--sf-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--sf-max) * -2) 0 0 #fff,
+      calc(var(--sf-max) * -1) 0 0 #fff,
+      var(--sf-max) 0 0 #fff,
+      calc(var(--sf-max) * 2) 0 0 #fff;
+  }
+
+  /* Benefits — same tiling, in the dark --text-color it paints. */
+  .sf-page .sf-ben {
+    max-width: var(--sf-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--sf-max) * -2) 0 0 var(--text-color),
+      calc(var(--sf-max) * -1) 0 0 var(--text-color),
+      var(--sf-max) 0 0 var(--text-color),
+      calc(var(--sf-max) * 2) 0 0 var(--text-color);
+  }
+
+  /* Navbar and footer are the only blocks that inset off the panel rather than
+     the design frame, so they are the ones that actually pull apart: at 1920
+     they started 269px left of every heading below.
+
+     1200 = 1440 - 2x(18 + 102), the inset and the gutter both: at the 1440
+     design width the panel is 1404, not 1440, so insetting off the capped
+     section alone would leave these 36px wider than they are at design width
+     and the logo would sit outside the headings instead of inside.
+
+     The navbar is fixed to the viewport and never inherits the section cap;
+     the footer inner is absolute, so it centres on the capped .footer with
+     left/transform rather than auto margins. */
+  .sf-page .navbar__inner,
+  .sf-page .footer__inner {
+    width: calc(var(--sf-max) - (var(--shell-inset) + var(--shell-gutter)) * 2);
+  }
+
+  .sf-page .navbar__inner {
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .sf-page .footer__inner {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
