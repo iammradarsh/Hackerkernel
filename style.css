@@ -975,7 +975,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   top: 511px;
   z-index: 5;
   height: 108px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .brands__track {
@@ -1024,7 +1024,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   position: relative;
   height: 737px;
   background: #fff;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .services__corner {
@@ -1162,7 +1162,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
      clip that hides the off-rail cards does not slice the shadow off */
   height: 284px;
   padding-bottom: 40px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .services__track {
@@ -2156,7 +2156,6 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 .ind-sec {
   position: relative;
   height: 762px;
-  overflow: hidden;
 }
 
 .ind-sec__grid {
@@ -2165,7 +2164,6 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   right: 0;
   top: 22px;
   height: 740px;
-  overflow: hidden;
   pointer-events: none;
 }
 
@@ -2227,7 +2225,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   right: 26px;
   top: 281px;
   height: 371px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .ind-track {
@@ -2303,7 +2301,7 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
 .test-sec {
   position: relative;
   height: 1231px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .test-sec__quote {
@@ -2635,22 +2633,11 @@ body:not(.cs-page):not(.cr-page):not(.jd-page) .wrap {
   right: 0;
   top: 701px;
   height: 369px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 /* oversized quote marks washed back into the panel, one behind each row */
-.reviews::before,
-.reviews::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  width: 620px;
-  height: 530px;
-  background: url(assets/quote-bg.svg) center / contain no-repeat;
-  filter: grayscale(1);
-  opacity: 0.3;
-  pointer-events: none;
-}
+
 
 .reviews::before { left: -120px; top: -150px; }
 
@@ -20711,4 +20698,70 @@ html.hk-loading { scrollbar-gutter: stable; }
 
   #hk-loader.is-done { clip-path: inset(0 0 0 0); opacity: 0; }
   #hk-loader.is-done .hk-load__inner { transform: none; }
+}
+
+/* ===========================================================
+   HOME — WIDE-SCREEN CENTRING
+   ===========================================================
+   The shell is full-bleed by design, but every home section carries
+   literal Figma coordinates (.hero__copy left:112, .case-sec__head
+   left:102, ...). Past ~1476 those pin to the panel edge while the
+   centred .design-frame blocks stay put, so the composition pulls
+   apart: copy hard left, art hard right, a hole in the middle.
+
+   Capping each section at 1440 and centring it restores the design
+   frame the coordinates were drawn against — the section box becomes
+   the origin again, so absolutely positioned children and full-bleed
+   children (left:0/right:0, width:100%) all resolve inside 1440.
+
+   Desktop only: max-width is inert below 1440 and the query floor
+   keeps it out of the mobile/tablet cascade entirely.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --home-max: 1440px; }
+
+  /* Hero, incl. the .brands marquee it holds (left:0/right:0) */
+  .home .hero { max-width: var(--home-max); margin-inline: auto; }
+
+  /* Every remaining section, in page order. Capping the section is enough
+     on its own: the full-bleed children inside each one (.ai-sec__grid,
+     .ind-sec__map, .*__viewport, ...) are sized off it, so they come in
+     with it instead of stretching, and the carousels keep the overflow-x
+     that makes them carousels. */
+  .home .services,
+  .home .ai-sec,
+  .home .case-sec,
+  .home .ind-sec,
+  .home .test-sec,
+  .home .proc-sec,
+  .home .footer {
+    max-width: var(--home-max);
+    margin-inline: auto;
+  }
+
+  /* Sections that paint their own white keep it full-bleed — capped alone
+     they would read as white cards with the shell's grey either side.
+     Four zero-blur shadows tile the section's own shape sideways at exactly
+     its own width, so the white reaches the panel edge (and stops there,
+     clipped by .page-shell) while the content box stays 1440. The shadows
+     share the section's vertical extent, so nothing bleeds onto the
+     sections above or below, and none of this affects layout. */
+  .home .services,
+  .home .ai-sec,
+  .home .proc-sec {
+    box-shadow:
+      calc(var(--home-max) * -2) 0 0 #fff,
+      calc(var(--home-max) * -1) 0 0 #fff,
+      var(--home-max) 0 0 #fff,
+      calc(var(--home-max) * 2) 0 0 #fff;
+  }
+
+  /* the navbar is fixed to the viewport, so it does not inherit the cap.
+     1236 = 1440 - 2x102 (--shell-gutter): centred in the viewport it lands
+     on the same content edges as the capped sections, keeping the logo
+     over the section headings exactly as it does at the design width. */
+  .home .navbar__inner {
+    max-width: calc(var(--home-max) - var(--shell-gutter) * 2);
+    margin-inline: auto;
+  }
 }
