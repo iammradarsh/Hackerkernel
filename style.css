@@ -16839,6 +16839,69 @@ body.is-chatbot-open { overflow: hidden; }
 }
 
 /* ===========================================================
+   CAREER — WIDE-SCREEN CENTRING
+   ===========================================================
+   Same architecture as Home/About/AI/Salesforce: the hero hangs
+   everything off .design-frame--fill, which centres on the 1244
+   stick inside its own section regardless of the section's own
+   width — so .cr-hero needs no cap, only the sections that paint
+   a full-width fill or inset off the panel instead of the frame.
+
+   Desktop only: inert below 1440, and the query floor keeps it out
+   of the mobile (<=768) cascade above.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --cr-max: 1440px; }
+
+  /* Open positions paints its own white and its grid is already a fixed
+     1094px centred with `justify-content: center`, so capping the section
+     alone would leave the shell's grey either side instead of white
+     reaching the panel edge. Four zero-blur shadows tile the section's
+     own shape sideways at exactly its own width — the white reaches the
+     panel edge (and stops there, clipped by .page-shell) while the
+     content box stays 1440. Same device the Home/AI/Salesforce blocks
+     use. */
+  .cr-page .cr-jobs {
+    max-width: var(--cr-max);
+    margin-inline: auto;
+    box-shadow:
+      calc(var(--cr-max) * -2) 0 0 #fff,
+      calc(var(--cr-max) * -1) 0 0 #fff,
+      var(--cr-max) 0 0 #fff,
+      calc(var(--cr-max) * 2) 0 0 #fff;
+  }
+
+  /* Navbar and footer are the only blocks that inset off the panel rather
+     than the design frame, so they are the ones that actually pull apart
+     at wide screens — at 1920 they start well left of the hero board and
+     the job cards below.
+
+     1200 = 1440 - 2x(18 + 102), the inset and the gutter both: at the
+     1440 design width the panel is 1404, not 1440, so insetting off the
+     panel alone would leave these 36px wider than they are at design
+     width. The navbar is fixed to the viewport, so centring it on the
+     viewport lines it up with the shell (symmetric insets either side).
+     .footer paints nothing and is left uncapped, so it stays exactly the
+     panel's width — the footer inner is absolute and centres on that
+     panel with left/transform rather than auto margins. */
+  .cr-page .navbar__inner,
+  .cr-page .footer__inner {
+    width: calc(var(--cr-max) - (var(--shell-inset) + var(--shell-gutter)) * 2);
+  }
+
+  .cr-page .navbar__inner {
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .cr-page .footer__inner {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
+/* ===========================================================
    JOB DETAILS - MOBILE (max-width: 768px)
    ===========================================================
    Scoped exactly the way the home, About, Staff Augmentation,
