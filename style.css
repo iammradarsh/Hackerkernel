@@ -9901,7 +9901,7 @@ body.is-menu-open .talk-tab {
 .tv-test {
   position: relative;
   height: 676px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 /* the design frame's transform opens a stacking context, so a blended
@@ -16902,6 +16902,65 @@ body.is-chatbot-open { overflow: hidden; }
 }
 
 /* ===========================================================
+   JOB DETAILS — WIDE-SCREEN CENTRING
+   ===========================================================
+   Same architecture as Career: the hero board hangs off
+   .design-frame--fill, which centres on the 1244 stick inside its
+   own section regardless of the section's own width — so .jd-hero
+   needs no cap today. It gets a defensive one anyway (the same
+   guard .ab-page .mt takes) so the header can never start
+   stretching if anything inside it is given a literal offset later.
+
+   Desktop only: inert below 1440, and the query floor keeps it out
+   of the mobile (<=768) cascade below.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --jd-max: 1440px; }
+
+  .jd-page .jd-hero {
+    max-width: var(--jd-max);
+    margin-inline: auto;
+  }
+
+  /* Content blocks + More Jobs rail. .jd-body__inner is already a fixed
+     1035px box centred with margin-inline:auto, so this is a defensive
+     cap on the section itself — same guard as the hero above. */
+  .jd-page .jd-body {
+    max-width: var(--jd-max);
+    margin-inline: auto;
+  }
+
+  /* The rail stays inside the capped body. The modal is fixed to the
+     viewport, so its overlay remains full-bleed while its usable width is
+     constrained to the same 1440px composition. */
+  .jd-page .jd-aside { max-width: 100%; }
+
+  .jd-page .jm-modal {
+    padding-inline: max(24px, calc((100vw - var(--jd-max)) / 2 + 24px));
+  }
+
+  /* Navbar and footer inset off the panel rather than the design frame,
+     so — same as Career — they are the ones that actually pull apart at
+     wide screens. 1200 = 1440 - 2x(18 + 102), the inset and the gutter
+     both. */
+  .jd-page .navbar__inner,
+  .jd-page .footer__inner {
+    width: calc(var(--jd-max) - (var(--shell-inset) + var(--shell-gutter)) * 2);
+  }
+
+  .jd-page .navbar__inner {
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .jd-page .footer__inner {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
+/* ===========================================================
    JOB DETAILS - MOBILE (max-width: 768px)
    ===========================================================
    Scoped exactly the way the home, About, Staff Augmentation,
@@ -21176,5 +21235,38 @@ html.hk-loading { scrollbar-gutter: stable; }
     left: 50%;
     right: auto;
     transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 1441px) {
+  .tv-page .tv-hero {
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+
+  .tv-page .tv-why,
+  .tv-page .tv-work,
+  .tv-page .tv-test,
+  .tv-page .tv-faq,
+  .tv-page .footer {
+    max-width: 1440px;
+    margin-inline: auto;
+  }
+
+  .tv-page .tv-ind,
+  .tv-page .tv-stats,
+  .tv-page .tv-ct {
+    max-width: 1440px;
+    margin-inline: auto;
+    box-shadow:
+      -2880px 0 0 #fff,
+      -1440px 0 0 #fff,
+      1440px 0 0 #fff,
+      2880px 0 0 #fff;
+  }
+
+  .tv-page .navbar__inner {
+    max-width: calc(1440px - var(--shell-gutter) * 2);
+    margin-inline: auto;
   }
 }
