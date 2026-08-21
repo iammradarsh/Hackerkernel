@@ -898,6 +898,62 @@
     });
   }
 
+  /* ---------- AI solution page hero and CTA buttons open enquiry drawer ----------
+     Both .ai-hero__btn and .ai-cta__btn on the AI solution page trigger the form */
+  Array.prototype.forEach.call(document.querySelectorAll('.ai-hero__btn, .ai-cta__btn'), function (btn) {
+    if (typeof setTalk === 'function') {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        /* the modal and the drawer both claim the screen — never both */
+        if (typeof setChat === 'function') setChat(false);
+        setTalk(true);
+      });
+    }
+  });
+
+  /* ---------- Salesforce page hero and CTA buttons open enquiry drawer ----------
+     Both .sf-hero__btn and .sf-cta__btn on the Salesforce page trigger the form */
+  Array.prototype.forEach.call(document.querySelectorAll('.sf-hero__btn, .sf-cta__btn'), function (btn) {
+    if (typeof setTalk === 'function') {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        /* the modal and the drawer both claim the screen — never both */
+        if (typeof setChat === 'function') setChat(false);
+        setTalk(true);
+      });
+    }
+  });
+
+  /* ---------- Staff Augmentation page hero and CTA buttons open enquiry drawer ----------
+     Both .sa-hero__btn and .sa-hire__btn on the Staff Augmentation page trigger the form */
+  Array.prototype.forEach.call(document.querySelectorAll('.sa-hero__btn, .sa-hire__btn'), function (btn) {
+    if (typeof setTalk === 'function') {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        /* the modal and the drawer both claim the screen — never both */
+        if (typeof setChat === 'function') setChat(false);
+        setTalk(true);
+      });
+    }
+  });
+
+  /* ---------- Industry detail page hero button opens enquiry drawer ----------
+     The .id-hero__btn on industry detail pages triggers the form */
+  Array.prototype.forEach.call(document.querySelectorAll('.id-hero__btn'), function (btn) {
+    if (typeof setTalk === 'function') {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        /* the modal and the drawer both claim the screen — never both */
+        if (typeof setChat === 'function') setChat(false);
+        setTalk(true);
+      });
+    }
+  });
+
   /* The mobile navigation drawer lives in menu.js — one component shared by
      every page, rather than a block here that only fires on the pages whose
      markup happens to carry the panel. */

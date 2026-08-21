@@ -13667,6 +13667,51 @@ body.is-chatbot-open { overflow: hidden; }
     line-height: 1.3;
     align-items: center;
   }
+
+  /* the side tab is a second, competing entry point to the enquiry form -
+     on mobile the drawer's CTA owns it, so the tab stands down */
+  .sa-page .talk-tab { display: none; }
+
+  /* ---------- Enquiry form: full-screen sheet ----------
+     With the side tab gone the card has no handle, so the ✕ added to the
+     markup is switched on here and here only. */
+  .sa-page .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .sa-page .lt-form__card {
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .sa-page .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .sa-page .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .sa-page .lt-form__title { font-size: 26px; }
+
+  .sa-page .lt-form__submit {
+    min-height: 44px;
+    padding: 0 24px;
+  }
 }
 
 /* ===========================================================
@@ -18575,6 +18620,47 @@ body.is-chatbot-open { overflow: hidden; }
      on mobile the drawer owns it, so the tab stands down */
   .csd-page .talk-tab { display: none; }
 
+  /* ---------- Enquiry form: full-screen sheet ----------
+     With the side tab gone the card has no handle, so the ✕ added to the
+     markup is switched on here and here only. */
+  .csd-page .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .csd-page .lt-form__card {
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .csd-page .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .csd-page .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .csd-page .lt-form__title { font-size: 26px; }
+
+  .csd-page .lt-form__submit {
+    min-height: 44px;
+    padding: 0 24px;
+  }
+
   /* ---------- Shared section furniture ----------
      Every `.csd-row` is a two-column band (art beside copy) held apart by a
      100px gutter. One rule turns all six of them into a single column on the
@@ -19285,6 +19371,47 @@ body.is-chatbot-open { overflow: hidden; }
      on mobile the drawer owns it, so the tab stands down */
   .csl-page .talk-tab { display: none; }
 
+  /* ---------- Enquiry form: full-screen sheet ----------
+     With the side tab gone the card has no handle, so the ✕ added to the
+     markup is switched on here and here only. */
+  .csl-page .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .csl-page .lt-form__card {
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .csl-page .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .csl-page .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .csl-page .lt-form__title { font-size: 26px; }
+
+  .csl-page .lt-form__submit {
+    min-height: 44px;
+    padding: 0 24px;
+  }
+
   /* ---------- Hero ----------
      Desktop is a 639px frame holding three absolute blocks: copy at
      left:112, artwork at left:670, stats strip pinned across top:505.
@@ -19720,6 +19847,47 @@ body.is-chatbot-open { overflow: hidden; }
   /* the side tab is a second, competing entry point to the enquiry form -
      on mobile the drawer owns it, so the tab stands down */
   .tv-page .talk-tab { display: none; }
+
+  /* ---------- Enquiry form: full-screen sheet ----------
+     With the side tab gone the card has no handle, so the ✕ added to the
+     markup is switched on here and here only. */
+  .tv-page .lt-form {
+    width: 100vw;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .tv-page .lt-form__card {
+    padding: 30px 20px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .tv-page .lt-form__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    margin: -8px -8px -20px 0;
+    color: var(--text-color);
+  }
+
+  .tv-page .lt-form__close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .tv-page .lt-form__title { font-size: 26px; }
+
+  .tv-page .lt-form__submit {
+    min-height: 44px;
+    padding: 0 24px;
+  }
 
   /* ---------- Hero ----------
      A 632px stage carrying three absolute layers: the grid plate hung at
@@ -21161,7 +21329,7 @@ html.hk-loading { scrollbar-gutter: stable; }
      sections above or below, and none of it affects layout. Same device the
      home, About and AI blocks use. */
   .sf-page .sf-fw {
-    max-width: var(--sf-max);
+    /* max-width: var(--sf-max); */
     margin-inline: auto;
     box-shadow:
       calc(var(--sf-max) * -2) 0 0 #fff,
@@ -21200,7 +21368,7 @@ html.hk-loading { scrollbar-gutter: stable; }
 
   /* Benefits — same tiling, in the dark --text-color it paints. */
   .sf-page .sf-ben {
-    max-width: var(--sf-max);
+    /* max-width: var(--sf-max); */
     margin-inline: auto;
     box-shadow:
       calc(var(--sf-max) * -2) 0 0 var(--text-color),
@@ -21267,6 +21435,122 @@ html.hk-loading { scrollbar-gutter: stable; }
 
   .tv-page .navbar__inner {
     max-width: calc(1440px - var(--shell-gutter) * 2);
+    margin-inline: auto;
+  }
+}
+
+/* ===========================================================
+   CASE STUDY (LIST) — WIDE-SCREEN CENTRING
+   ===========================================================
+   Same problem, same cure as the home block above. .cs-hero
+   (.cs-hero__art left:670, .cs-hero__copy left:112, .cs-stats
+   left:152/right:188) and .cs-work (.cs-work__body left:67/right:67)
+   both carry literal Figma offsets measured off a ~1244 panel. Past
+   ~1441 those pin to the panel edge while their counterpart drifts
+   with the growing panel, so the composition pulls apart.
+
+   Capping each section at 1440 and centring it makes the section box
+   the coordinate origin again, so the literal-offset children resolve
+   inside 1440 instead of tracking the panel. Neither section paints a
+   background of its own — the panel's grey carries straight through —
+   so no shadow tiling is needed, unlike the white/dark sections on
+   other pages.
+
+   Desktop only: the cap is inert below 1440 and the query floor keeps
+   it out of the mobile (<=768) and tablet (<=1024) cascade entirely.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --csl-max: 1440px; }
+
+  .cs-page .cs-hero,
+  .cs-page .cs-work {
+    max-width: var(--csl-max);
+    margin-inline: auto;
+  }
+}
+
+/* ===========================================================
+   CASE STUDY DETAIL — WIDE-SCREEN CENTRING
+   ===========================================================
+   Same problem, same cure as the blocks above. .csd-page never got this
+   treatment, so every section rode .wrap full-bleed: .csd-top__grid/.csd-hero
+   (left/right insets as gutters off a 1244 panel), .csd-tests__head/.csd-tests__quote
+   (literal left offsets) and .csd-row (fixed 100px side padding with a fluid
+   body) all keep stretching past 1440 with nothing to stop them, instead of
+   staying centred like the home page's capped sections.
+
+   Capping each section at 1440 and centring it makes the section box the
+   coordinate origin again, so the inset/absolute children resolve inside
+   1440 instead of tracking the panel.
+
+   Desktop only: the cap is inert below 1440 and the query floor keeps it
+   out of the mobile (<=768) and tablet (<=1024) cascade entirely.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --csd-max: 1440px; }
+
+  .csd-page .csd-top,
+  .csd-page .csd-overview,
+  .csd-page .csd-planning,
+  .csd-page .csd-techs,
+  .csd-page .csd-obstacles,
+  .csd-page .csd-solutions,
+  .csd-page .csd-final,
+  .csd-page .csd-tests,
+  .csd-page .footer {
+    max-width: var(--csd-max);
+    margin-inline: auto;
+  }
+
+  /* .csd-planning is the one section that paints its own white (see its
+     rule above) — capped alone it would read as a white card with the
+     shell's grey either side. Four zero-blur shadows tile the section's
+     own shape sideways at exactly its own width, so the white reaches the
+     panel edge (and stops there, clipped by .page-shell) while the content
+     box stays 1440, exactly like .home .services/.ai-sec/.proc-sec. */
+  .csd-page .csd-planning {
+    box-shadow:
+      calc(var(--csd-max) * -2) 0 0 #fff,
+      calc(var(--csd-max) * -1) 0 0 #fff,
+      var(--csd-max) 0 0 #fff,
+      calc(var(--csd-max) * 2) 0 0 #fff;
+  }
+
+  /* the navbar is fixed to the viewport, so it does not inherit the cap.
+     1236 = 1440 - 2x102 (--shell-gutter): centred in the viewport it lands
+     on the same content edges as the capped sections, keeping the logo
+     over the section headings exactly as it does at the design width. */
+  .csd-page .navbar__inner {
+    max-width: calc(var(--csd-max) - var(--shell-gutter) * 2);
+    margin-inline: auto;
+  }
+}
+
+/* ===========================================================
+   SHARED cs-page — NAVBAR + FOOTER WIDE-SCREEN CENTRING
+   ===========================================================
+   .case-study, .staff-augmentation and .industry-detail all carry
+   body.cs-page but never got the navbar/footer cap the other cs-page
+   siblings (about, ai-solution, salesforce, travel-tech, case-study
+   detail) each picked up individually above. Past 1441 their navbar
+   row and footer columns stretch to the panel edge instead of
+   capping and centring like every other page.
+
+   Scoped to .cs-page rather than repeated per page-specific class:
+   it is a no-op on the five siblings that already cap to the same
+   1440/1236 via their own block, and closes the gap on the three
+   that had no block at all. Same device as .home above.
+   =========================================================== */
+@media (min-width: 1441px) {
+  :root { --cs-max: 1440px; }
+
+  .cs-page .footer {
+    max-width: var(--cs-max);
+    margin-inline: auto;
+  }
+
+  .cs-page .navbar__inner {
+    max-width: calc(var(--cs-max) - var(--shell-gutter) * 2);
     margin-inline: auto;
   }
 }

@@ -17,6 +17,14 @@
   <!-- ================= Let's Talk Business — slide-in form ================= -->
   <aside class="lt-form" id="talk-form" aria-hidden="true" aria-label="Get in touch">
     <form class="lt-form__card" novalidate>
+      <!-- mobile only: the side tab that normally closes the drawer is
+           off-canvas once the card fills the viewport, so the card needs
+           its own handle. `.lt-form__close` is display:none in the base
+           sheet, so it never renders on desktop. -->
+      <button class="lt-form__close" type="button" id="talk-close" aria-label="Close form">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
       <p class="lt-form__title">Get In Touch</p>
 
       <div class="lt-form__scroll">
