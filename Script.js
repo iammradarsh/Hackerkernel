@@ -835,18 +835,18 @@
     if (talkClose) talkClose.addEventListener('click', function () { setTalk(false); });
   }
 
-  /* ---------- Navbar "Let's Talk" CTA opens the enquiry form drawer ----------
+  /* ---------- Navbar "Let's Talk" CTA opens the chatbot modal ----------
      The CTA keeps its fallback href, so the click has to be cancelled here
      rather than turned into a button. Works on both mobile and desktop. */
   var chatCta = document.querySelector('.nav-links__cta');
 
-  if (chatCta && typeof setTalk === 'function') {
+  if (chatCta) {
     chatCta.addEventListener('click', function (e) {
       e.preventDefault();
       e.stopPropagation();
       /* the chatbot modal and the drawer both claim the screen — never both */
-      if (typeof setChat === 'function') setChat(false);
-      setTalk(true);
+      if (typeof setTalk === 'function') setTalk(false);
+      if (typeof setChat === 'function') setChat(true);
     });
   }
 
