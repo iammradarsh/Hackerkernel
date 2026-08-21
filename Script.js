@@ -835,13 +835,41 @@
     if (talkClose) talkClose.addEventListener('click', function () { setTalk(false); });
   }
 
-  /* ---------- Chat Bot modal, opened from the navbar "Let's Talk" CTA ----------
-     The CTA keeps its #contact href as the no-JS fallback, so the click has to
-     be cancelled here rather than the link turned into a button. */
-  var chatbot = document.getElementById('chatbot');
+  /* ---------- Navbar "Let's Talk" CTA opens the enquiry form drawer ----------
+     The CTA keeps its fallback href, so the click has to be cancelled here
+     rather than turned into a button. Works on both mobile and desktop. */
   var chatCta = document.querySelector('.nav-links__cta');
 
-  if (chatbot && chatCta) {
+  if (chatCta && typeof setTalk === 'function') {
+    chatCta.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      /* the chatbot modal and the drawer both claim the screen — never both */
+      if (typeof setChat === 'function') setChat(false);
+      setTalk(true);
+    });
+  }
+
+  /* ---------- Menu overlay "Get In Touch" button opens enquiry form ----------
+     The custom menu overlay on about.html and career.html has a "Get In Touch"
+     CTA that should open the form drawer */
+  Array.prototype.forEach.call(document.querySelectorAll('.menu-overlay .menu-cta .pill-btn'), function (btn) {
+    if (typeof setTalk === 'function') {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        /* the modal and the drawer both claim the screen — never both */
+        if (typeof setChat === 'function') setChat(false);
+        setTalk(true);
+      });
+    }
+  });
+
+  /* ---------- Chat Bot modal ----------
+     Kept as reference for future use or other pages. */
+  var chatbot = document.getElementById('chatbot');
+
+  if (chatbot) {
     var chatInput = document.getElementById('chatbot-input');
     var setChat = function (open) {
       chatbot.classList.toggle('is-open', open);
@@ -849,15 +877,7 @@
       document.body.classList.toggle('is-chatbot-open', open);
 
       if (open && chatInput) chatInput.focus({ preventScroll: true });
-      else if (!open) chatCta.focus({ preventScroll: true });
     };
-
-    chatCta.addEventListener('click', function (e) {
-      e.preventDefault();
-      /* the enquiry drawer and the modal both claim the screen — never both */
-      if (typeof setTalk === 'function') setTalk(false);
-      setChat(true);
-    });
 
     /* the ✕ and the scrim both carry data-chatbot-close */
     Array.prototype.forEach.call(chatbot.querySelectorAll('[data-chatbot-close]'), function (el) {

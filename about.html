@@ -12,6 +12,93 @@
 </head>
 <body class="cs-page ab-page">
 
+  <!-- Fixed side tab — the handle for the slide-in enquiry form -->
+  <button class="talk-tab" type="button" id="talk-toggle" aria-expanded="false" aria-controls="talk-form"><span>Let's Talk Business</span></button>
+
+  <!-- ================= Let's Talk Business — slide-in form ================= -->
+  <aside class="lt-form" id="talk-form" aria-hidden="true" aria-label="Get in touch">
+    <form class="lt-form__card" novalidate>
+      <!-- mobile only: the tab that normally closes the drawer is off-canvas
+           once the card fills the viewport, so the card needs its own handle -->
+      <button class="lt-form__close" type="button" id="talk-close" aria-label="Close form">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
+      <p class="lt-form__title">Get In Touch</p>
+
+      <div class="lt-form__scroll">
+        <div class="lt-fields">
+          <label class="lt-field">
+            <span class="lt-field__label">Full Name<b>*</b></span>
+            <input class="lt-input" type="text" name="fullname" autocomplete="name" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Email<b>*</b></span>
+            <input class="lt-input" type="email" name="email" autocomplete="email" required>
+          </label>
+
+          <div class="lt-field">
+            <span class="lt-field__label">Phone Number<b>*</b></span>
+            <div class="lt-phone">
+              <select class="lt-select lt-phone__code" name="dialcode" aria-label="Country dialling code">
+                <option>&#127482;&#127480; +1</option>
+                <option>&#127470;&#127475; +91</option>
+                <option>&#127468;&#127463; +44</option>
+                <option>&#127462;&#127466; +971</option>
+                <option>&#127462;&#127482; +61</option>
+                <option>&#127480;&#127468; +65</option>
+              </select>
+              <input class="lt-input lt-phone__num" type="tel" name="phone" placeholder="(201) 555-0123" autocomplete="tel" required>
+            </div>
+          </div>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company Name<b>*</b></span>
+            <input class="lt-input" type="text" name="company" autocomplete="organization" required>
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Company URL</span>
+            <input class="lt-input" type="url" name="website" autocomplete="url">
+          </label>
+
+          <label class="lt-field">
+            <span class="lt-field__label">Region<b>*</b></span>
+            <select class="lt-select" name="region" required>
+              <option value="" selected>Select Region</option>
+              <option>North America</option>
+              <option>Europe</option>
+              <option>Asia Pacific</option>
+              <option>Middle East</option>
+              <option>Africa</option>
+              <option>Australia &amp; Oceania</option>
+              <option>Other</option>
+            </select>
+          </label>
+
+          <div class="lt-check">
+            <span class="lt-field__label">Services you are looking for<b>*</b></span>
+            <div class="lt-check__list">
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Remote IT Resources">Remote IT Resources</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Custom Software Development">Custom Software Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Web Development">Web Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Mobile App Development">Mobile App Development</label>
+              <label class="lt-check__row"><input type="checkbox" name="services" value="Other IT Services">Other IT Services</label>
+            </div>
+          </div>
+
+          <label class="lt-field" style="padding-top:8px">
+            <span class="lt-field__label">Project Details<b>*</b></span>
+            <textarea class="lt-input lt-textarea" name="details" required></textarea>
+          </label>
+
+          <button class="lt-form__submit" type="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </aside>
+
   <div class="page-shell">
   <div class="wrap">
 
